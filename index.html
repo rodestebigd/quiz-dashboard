@@ -173,6 +173,46 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .funnel-summary-item .label { color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
 .funnel-summary-item .value { font-weight:700; font-size:16px; }
 
+/* CARNATION CUSTOM */
+.carnation-list { display:flex; flex-direction:column; gap:8px; }
+.carnation-row {
+  display:flex; align-items:center; gap:14px; padding:12px 16px;
+  background:var(--bg-dark); border-radius:10px; transition:background .15s;
+}
+.carnation-row:hover { background:rgba(99,102,241,0.08); }
+.carnation-swatch {
+  width:36px; height:36px; border-radius:50%; flex-shrink:0;
+  border:2px solid rgba(255,255,255,0.1); box-shadow:0 0 0 1px rgba(0,0,0,0.3);
+}
+.carnation-info { flex:1; min-width:0; }
+.carnation-name { font-size:14px; font-weight:600; color:var(--text); }
+.carnation-stats { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.carnation-bar-bg {
+  flex:0 0 100px; height:6px; background:var(--border); border-radius:3px; overflow:hidden;
+}
+.carnation-bar-fg { height:100%; border-radius:3px; background:var(--accent); transition:width .6s ease; }
+.carnation-pct { flex:0 0 44px; text-align:right; font-size:13px; font-weight:700; color:var(--accent-light); }
+
+/* ZONES RIDES CUSTOM */
+.zones-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+.zone-card {
+  background:var(--bg-dark); border-radius:12px; overflow:hidden; transition:transform .15s, box-shadow .15s;
+  border:1px solid var(--border);
+}
+.zone-card:hover { transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,0.3); }
+.zone-img {
+  width:100%; height:120px; object-fit:cover; display:block;
+  border-bottom:1px solid var(--border);
+}
+.zone-body { padding:12px 14px; }
+.zone-name { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.zone-stats { font-size:12px; color:var(--text-muted); }
+.zone-stats strong { color:var(--accent-light); font-weight:700; }
+.zone-bar-bg {
+  height:5px; background:var(--border); border-radius:3px; overflow:hidden; margin-top:8px;
+}
+.zone-bar-fg { height:100%; border-radius:3px; background:var(--accent); transition:width .6s ease; }
+
 /* LOADING */
 .loading-state { text-align:center; padding:80px 20px; }
 .loading-state p { color:var(--text-muted); font-size:14px; margin-top:12px; }
@@ -496,6 +536,86 @@ function renderFunnel(funnelData, total) {
     + '<div class="funnel-summary-item"><span class="label">Pire drop</span><span class="value" style="color:var(--red)">' + worstName + ' (-' + Math.round(worstDrop) + '%)</span></div>';
 }
 
+/* ============================================================
+   CUSTOM RENDERERS — Carnation & Zones
+   ============================================================ */
+var CARNATION_COLORS = {
+  'Claire': '#F5D6C3',
+  'Légèrement hâlée': '#F0C8A0',
+  'Médium': '#C68642',
+  'Foncée': '#8D5524',
+  'Très foncée': '#5C3310',
+  'Je ne sais pas': '#6b7280'
+};
+
+var ZONE_IMAGES = {
+  'Rides autour de la bouche': 'assets/images/rides_de_la_bouche.avif',
+  'Rides du front': 'assets/images/rides_du_front.avif',
+  'Rides du contour des yeux': 'assets/images/rides_des_yeux.avif',
+  'Cou relâché': 'assets/images/rides_du_cou.avif'
+};
+
+function renderCarnation(card, stepAnswers) {
+  var allAnswers = [];
+  stepAnswers.forEach(function(r) { if (r.answer.trim()) allAnswers.push(r.answer.trim()); });
+  var counts = {};
+  allAnswers.forEach(function(a) { counts[a] = (counts[a] || 0) + 1; });
+  var labels = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
+  var total = allAnswers.length;
+  var maxCount = labels.length > 0 ? counts[labels[0]] : 1;
+
+  var html = '<div class="carnation-list">';
+  labels.forEach(function(label) {
+    var c = counts[label];
+    var pct = total > 0 ? Math.round(c / total * 100) : 0;
+    var barW = maxCount > 0 ? Math.round(c / maxCount * 100) : 0;
+    var color = CARNATION_COLORS[label] || '#6b7280';
+    html += '<div class="carnation-row">'
+      + '<div class="carnation-swatch" style="background:' + color + '"></div>'
+      + '<div class="carnation-info"><div class="carnation-name">' + label + '</div>'
+      + '<div class="carnation-stats">' + c + ' réponse' + (c > 1 ? 's' : '') + '</div></div>'
+      + '<div class="carnation-bar-bg"><div class="carnation-bar-fg" style="width:' + barW + '%;background:' + color + '"></div></div>'
+      + '<div class="carnation-pct">' + pct + '%</div>'
+      + '</div>';
+  });
+  html += '</div>';
+  card.insertAdjacentHTML('beforeend', html);
+}
+
+function renderZones(card, stepAnswers) {
+  var allAnswers = [];
+  stepAnswers.forEach(function(r) {
+    var parts = r.answer.split(', ');
+    parts.forEach(function(p) { if (p.trim()) allAnswers.push(p.trim()); });
+  });
+  var counts = {};
+  allAnswers.forEach(function(a) { counts[a] = (counts[a] || 0) + 1; });
+  var labels = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
+  var total = allAnswers.length;
+  var maxCount = labels.length > 0 ? counts[labels[0]] : 1;
+
+  var html = '<div class="zones-grid">';
+  labels.forEach(function(label) {
+    var c = counts[label];
+    var pct = total > 0 ? Math.round(c / total * 100) : 0;
+    var barW = maxCount > 0 ? Math.round(c / maxCount * 100) : 0;
+    var img = ZONE_IMAGES[label] || '';
+    var imgTag = img ? '<img class="zone-img" src="' + img + '" alt="' + label + '" loading="lazy">' : '';
+    html += '<div class="zone-card">'
+      + imgTag
+      + '<div class="zone-body">'
+      + '<div class="zone-name">' + label + '</div>'
+      + '<div class="zone-stats"><strong>' + c + '</strong> sélection' + (c > 1 ? 's' : '') + ' — ' + pct + '%</div>'
+      + '<div class="zone-bar-bg"><div class="zone-bar-fg" style="width:' + barW + '%"></div></div>'
+      + '</div></div>';
+  });
+  html += '</div>';
+  card.insertAdjacentHTML('beforeend', html);
+}
+
+/* ============================================================
+   RENDER CHARTS
+   ============================================================ */
 function renderCharts(sessions) {
   var grid = document.getElementById('chartGrid');
   grid.innerHTML = '';
@@ -508,7 +628,27 @@ function renderCharts(sessions) {
     var stepAnswers = rawData.filter(function(r) { return parseInt(r.step) === step; });
     if (stepAnswers.length === 0) return;
 
-    /* For multi-select, split by comma */
+    /* ---- CARNATION (step 9) — custom render ---- */
+    if (step === 9) {
+      var card = document.createElement('div');
+      card.className = 'chart-card';
+      card.innerHTML = '<h3>' + qName + '</h3><div class="chart-sub">' + stepAnswers.length + ' réponses — Étape ' + step + '</div>';
+      grid.appendChild(card);
+      renderCarnation(card, stepAnswers);
+      return;
+    }
+
+    /* ---- ZONES RIDES (step 4) — custom render ---- */
+    if (step === 4) {
+      var card = document.createElement('div');
+      card.className = 'chart-card';
+      card.innerHTML = '<h3>' + qName + '</h3><div class="chart-sub">' + stepAnswers.length + ' réponses — Étape ' + step + '</div>';
+      grid.appendChild(card);
+      renderZones(card, stepAnswers);
+      return;
+    }
+
+    /* ---- DEFAULT Chart.js render ---- */
     var allAnswers = [];
     stepAnswers.forEach(function(r) {
       var parts = r.answer.split(', ');
