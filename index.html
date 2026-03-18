@@ -115,63 +115,60 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .persona-detail { font-size:13px; color:var(--text-muted); margin-bottom:6px; line-height:1.4; }
 .persona-detail strong { color:var(--text); font-weight:600; }
 
-/* FUNNEL BARS */
-.funnel-visual { margin-bottom:24px; }
-.funnel-bar-wrap { margin-bottom:8px; }
-.funnel-label { display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; }
-.funnel-label span:first-child { color:var(--text); font-weight:500; }
-.funnel-label span:last-child { color:var(--text-muted); }
-.funnel-bar { height:10px; background:var(--bg-dark); border-radius:5px; overflow:hidden; }
-.funnel-bar-fill { height:100%; border-radius:5px; transition:width .6s ease; }
+/* FUNNEL VISUAL — Entonnoir */
+.funnel-container { display:flex; flex-direction:column; align-items:center; padding:20px 0; }
+.funnel-row {
+  display:grid; grid-template-columns:160px 1fr 160px; align-items:center;
+  width:100%; margin-bottom:3px; min-height:0;
+}
+.funnel-row-left {
+  text-align:right; padding-right:16px; font-size:12px; font-weight:600; color:var(--text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.funnel-row-left .step-num { color:var(--text-muted); font-weight:400; margin-right:4px; font-size:11px; }
+.funnel-row-center { display:flex; justify-content:center; }
+.funnel-band {
+  height:36px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:#fff; position:relative;
+  transition:all .4s ease; cursor:default; min-width:40px;
+  text-shadow:0 1px 2px rgba(0,0,0,0.3);
+}
+.funnel-band:hover { filter:brightness(1.15); transform:scaleY(1.08); }
+.funnel-band-worst { box-shadow:0 0 0 2px var(--red), 0 0 12px rgba(239,68,68,0.3); }
+.funnel-row-right {
+  padding-left:16px; font-size:12px; color:var(--text-muted); white-space:nowrap;
+}
+.funnel-row-right .drop-count { color:var(--red); font-weight:600; }
+.funnel-row-right .worst-flag {
+  display:inline-block; font-size:11px; margin-left:4px; color:var(--red); font-weight:700;
+}
 
-/* FUNNEL TABLE */
-.funnel-table-wrap { overflow-x:auto; }
-.funnel-table {
-  width:100%; border-collapse:separate; border-spacing:0;
-  font-size:13px;
+/* Funnel completed footer */
+.funnel-completed {
+  margin-top:16px; text-align:center; padding:16px 24px;
+  background:var(--bg-dark); border-radius:10px; display:inline-flex;
+  align-items:center; gap:12px;
 }
-.funnel-table thead th {
-  text-align:left; padding:12px 16px; font-size:11px; font-weight:600;
-  color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px;
-  border-bottom:1px solid var(--border); background:var(--bg-dark);
-  position:sticky; top:0;
-}
-.funnel-table thead th:first-child { border-radius:8px 0 0 0; }
-.funnel-table thead th:last-child { border-radius:0 8px 0 0; }
-.funnel-table tbody td {
-  padding:11px 16px; border-bottom:1px solid var(--border);
-  color:var(--text); vertical-align:middle;
-}
-.funnel-table tbody tr:last-child td { border-bottom:none; }
-.funnel-table tbody tr { transition:background .15s; }
-.funnel-table tbody tr:hover { background:rgba(99,102,241,0.06); }
-.funnel-table .col-step { color:var(--text-muted); font-variant-numeric:tabular-nums; width:50px; }
-.funnel-table .col-name { font-weight:500; }
-.funnel-table .col-count { font-variant-numeric:tabular-nums; font-weight:600; }
-.funnel-table .col-pct { font-variant-numeric:tabular-nums; }
-.funnel-table .col-drop { font-variant-numeric:tabular-nums; font-weight:600; }
-.funnel-table .drop-badge {
-  display:inline-block; padding:2px 8px; border-radius:6px; font-size:12px; font-weight:600;
-}
-.funnel-table .drop-low { background:rgba(34,197,94,0.12); color:var(--green); }
-.funnel-table .drop-mid { background:rgba(245,158,11,0.12); color:var(--amber); }
-.funnel-table .drop-high { background:rgba(239,68,68,0.12); color:var(--red); }
-.funnel-table .row-worst {
-  background:rgba(239,68,68,0.08);
-}
-.funnel-table .row-worst:hover { background:rgba(239,68,68,0.14); }
-.funnel-table .pct-bar-cell { min-width:120px; }
-.funnel-table .pct-bar-bg {
-  height:6px; background:var(--bg-dark); border-radius:3px; overflow:hidden; margin-top:4px;
-}
-.funnel-table .pct-bar-fg { height:100%; border-radius:3px; transition:width .6s ease; }
+.funnel-completed-icon { font-size:24px; }
+.funnel-completed-text { font-size:14px; color:var(--text); }
+.funnel-completed-text strong { font-size:20px; font-weight:700; color:var(--green); }
+.funnel-completed-text .sub { display:block; font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+/* Funnel summary strip */
 .funnel-summary {
-  display:flex; gap:24px; margin-top:16px; padding:16px;
+  display:flex; gap:24px; margin-top:16px; padding:16px; width:100%;
   background:var(--bg-dark); border-radius:10px; font-size:13px;
 }
 .funnel-summary-item { display:flex; flex-direction:column; gap:2px; }
 .funnel-summary-item .label { color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
 .funnel-summary-item .value { font-weight:700; font-size:16px; }
+
+@media(max-width:768px) {
+  .funnel-row { grid-template-columns:100px 1fr 100px; }
+  .funnel-row-left { font-size:11px; padding-right:8px; }
+  .funnel-row-right { font-size:11px; padding-left:8px; }
+  .funnel-band { height:30px; font-size:11px; }
+}
 
 /* CARNATION CUSTOM */
 .carnation-list { display:flex; flex-direction:column; gap:8px; }
@@ -307,26 +304,9 @@ var DASHBOARD_PASSWORD = 'julie2026';
     <div id="funnel" class="section">
       <h2 class="section-title"><span class="dot"></span> Funnel de conversion</h2>
       <div class="chart-card">
-        <h3 style="margin-bottom:4px">Progression visuelle</h3>
-        <div class="chart-sub">Rétention par étape par rapport au départ</div>
-        <div class="funnel-visual" id="funnelBars"></div>
-        <h3 style="margin-bottom:4px">Détail par étape</h3>
-        <div class="chart-sub" style="margin-bottom:12px">Analyse de la perte entre chaque question</div>
-        <div class="funnel-table-wrap">
-          <table class="funnel-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Question</th>
-                <th>Réponses</th>
-                <th>% vs étape 1</th>
-                <th class="pct-bar-cell"></th>
-                <th>Perte vs précédent</th>
-              </tr>
-            </thead>
-            <tbody id="funnelTableBody"></tbody>
-          </table>
-        </div>
+        <h3 style="margin-bottom:4px">Entonnoir de conversion</h3>
+        <div class="chart-sub" style="margin-bottom:8px">Rétention par étape — largeur proportionnelle au % de personnes restantes</div>
+        <div class="funnel-container" id="funnelVisual"></div>
         <div class="funnel-summary" id="funnelSummary"></div>
       </div>
     </div>
@@ -460,26 +440,21 @@ var QMAP = {
 var COLORS = ['#6366f1','#ec4899','#06b6d4','#f59e0b','#22c55e','#ef4444','#8b5cf6','#14b8a6','#f97316','#64748b'];
 
 function renderFunnel(funnelData, total) {
-  /* ---- VISUAL BARS ---- */
-  var barsContainer = document.getElementById('funnelBars');
-  barsContainer.innerHTML = '';
+  var container = document.getElementById('funnelVisual');
+  container.innerHTML = '';
   var max = funnelData.length > 0 ? funnelData[0].count : 1;
   if (max === 0) max = 1;
-  funnelData.forEach(function(f) {
-    var pct = Math.round(f.count / max * 100);
-    var color = 'var(--accent)';
-    if (pct < 30) color = 'var(--red)';
-    else if (pct < 60) color = 'var(--amber)';
-    else if (pct < 80) color = 'var(--blue)';
-    else color = 'var(--green)';
-    barsContainer.innerHTML += '<div class="funnel-bar-wrap"><div class="funnel-label"><span>' + f.name + '</span><span>' + f.count + ' (' + pct + '%)</span></div><div class="funnel-bar"><div class="funnel-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div></div>';
-  });
+  var len = funnelData.length;
 
-  /* ---- DETAIL TABLE ---- */
-  var tbody = document.getElementById('funnelTableBody');
-  tbody.innerHTML = '';
+  /* Color gradient: from accent-green (top) to deep purple-red (bottom) */
+  var gradientColors = [
+    '#22c55e','#34d058','#3bba5c','#4ca65e',
+    '#5b9bd5','#6366f1','#7054e8','#8b5cf6',
+    '#a855f7','#c026d3','#d946a8','#e74580',
+    '#ef4444','#dc2626'
+  ];
 
-  /* Find worst drop index (skip first row) */
+  /* Find worst drop */
   var worstIdx = -1, worstDrop = 0;
   funnelData.forEach(function(f, i) {
     if (i === 0) return;
@@ -489,40 +464,71 @@ function renderFunnel(funnelData, total) {
     if (dropPct > worstDrop) { worstDrop = dropPct; worstIdx = i; }
   });
 
+  /* Count completed (step 24) */
+  var sessions = groupBy(rawData, 'session_id');
+  var sessionIds = Object.keys(sessions);
+  var completed = sessionIds.filter(function(sid) {
+    return sessions[sid].some(function(r) { return parseInt(r.step) >= 24; });
+  }).length;
+
+  /* Render funnel bands */
   funnelData.forEach(function(f, i) {
     var pctVsFirst = max > 0 ? (f.count / max * 100) : 0;
-    var dropPct = 0;
-    var dropLabel = '—';
-    var dropClass = '';
+    /* Width: min 15%, max 100%, proportional */
+    var widthPct = Math.max(15, pctVsFirst);
+    var colorIdx = Math.min(Math.floor(i / len * gradientColors.length), gradientColors.length - 1);
+    var bandColor = gradientColors[colorIdx];
+    var isWorst = (i === worstIdx);
 
+    /* Drop info */
+    var dropCount = 0;
+    var dropPct = 0;
     if (i > 0 && funnelData[i - 1].count > 0) {
-      dropPct = (funnelData[i - 1].count - f.count) / funnelData[i - 1].count * 100;
-      dropLabel = '-' + Math.round(dropPct) + '%';
-      if (dropPct <= 5) dropClass = 'drop-low';
-      else if (dropPct <= 15) dropClass = 'drop-mid';
-      else dropClass = 'drop-high';
+      dropCount = funnelData[i - 1].count - f.count;
+      dropPct = dropCount / funnelData[i - 1].count * 100;
     }
 
-    var barColor = 'var(--accent)';
-    if (pctVsFirst < 30) barColor = 'var(--red)';
-    else if (pctVsFirst < 60) barColor = 'var(--amber)';
-    else if (pctVsFirst < 80) barColor = 'var(--blue)';
-    else barColor = 'var(--green)';
+    if (isWorst) bandColor = '#ef4444';
 
-    var rowClass = (i === worstIdx) ? ' class="row-worst"' : '';
+    var row = document.createElement('div');
+    row.className = 'funnel-row';
 
-    var tr = '<tr' + rowClass + '>'
-      + '<td class="col-step">' + f.step + '</td>'
-      + '<td class="col-name">' + f.name + '</td>'
-      + '<td class="col-count">' + f.count + '</td>'
-      + '<td class="col-pct">' + Math.round(pctVsFirst) + '%</td>'
-      + '<td class="pct-bar-cell"><div class="pct-bar-bg"><div class="pct-bar-fg" style="width:' + Math.round(pctVsFirst) + '%;background:' + barColor + '"></div></div></td>'
-      + '<td class="col-drop">' + (dropClass ? '<span class="drop-badge ' + dropClass + '">' + dropLabel + '</span>' : dropLabel) + '</td>'
-      + '</tr>';
-    tbody.innerHTML += tr;
+    /* Left — question name */
+    var left = '<div class="funnel-row-left"><span class="step-num">' + f.step + '.</span>' + f.name + '</div>';
+
+    /* Center — band */
+    var worstClass = isWorst ? ' funnel-band-worst' : '';
+    var center = '<div class="funnel-row-center">'
+      + '<div class="funnel-band' + worstClass + '" style="width:' + widthPct + '%;background:' + bandColor + '" title="' + f.name + ': ' + f.count + ' réponses">'
+      + pctVsFirst.toFixed(1) + '%'
+      + '</div></div>';
+
+    /* Right — drop info */
+    var right = '<div class="funnel-row-right">';
+    if (i === 0) {
+      right += '<span style="color:var(--green);font-weight:600">' + f.count + ' entrées</span>';
+    } else if (dropCount > 0) {
+      right += '<span class="drop-count">-' + dropCount + '</span> abandon' + (dropCount > 1 ? 's' : '');
+      if (isWorst) right += '<span class="worst-flag">⚠️ Plus gros drop</span>';
+    } else {
+      right += '<span style="color:var(--green)">0 abandon</span>';
+    }
+    right += '</div>';
+
+    row.innerHTML = left + center + right;
+    container.appendChild(row);
   });
 
-  /* ---- SUMMARY ---- */
+  /* Completed footer */
+  var completedPct = max > 0 ? (completed / max * 100).toFixed(1) : 0;
+  var footer = document.createElement('div');
+  footer.className = 'funnel-completed';
+  footer.innerHTML = '<div class="funnel-completed-icon">🏁</div>'
+    + '<div class="funnel-completed-text"><strong>' + completed + '</strong> quiz complétés'
+    + '<span class="sub">' + completedPct + '% du total — étape 24 atteinte</span></div>';
+  container.appendChild(footer);
+
+  /* Summary strip */
   var summary = document.getElementById('funnelSummary');
   var firstCount = funnelData.length > 0 ? funnelData[0].count : 0;
   var lastCount = funnelData.length > 0 ? funnelData[funnelData.length - 1].count : 0;
@@ -531,9 +537,10 @@ function renderFunnel(funnelData, total) {
 
   summary.innerHTML = ''
     + '<div class="funnel-summary-item"><span class="label">Entrées</span><span class="value">' + firstCount + '</span></div>'
-    + '<div class="funnel-summary-item"><span class="label">Sorties (ét. 20)</span><span class="value">' + lastCount + '</span></div>'
+    + '<div class="funnel-summary-item"><span class="label">Dernière étape</span><span class="value">' + lastCount + '</span></div>'
     + '<div class="funnel-summary-item"><span class="label">Taux global</span><span class="value" style="color:' + (overallRate >= 50 ? 'var(--green)' : overallRate >= 30 ? 'var(--amber)' : 'var(--red)') + '">' + overallRate + '%</span></div>'
-    + '<div class="funnel-summary-item"><span class="label">Pire drop</span><span class="value" style="color:var(--red)">' + worstName + ' (-' + Math.round(worstDrop) + '%)</span></div>';
+    + '<div class="funnel-summary-item"><span class="label">Pire drop</span><span class="value" style="color:var(--red)">' + worstName + ' (-' + Math.round(worstDrop) + '%)</span></div>'
+    + '<div class="funnel-summary-item"><span class="label">Complétés</span><span class="value" style="color:var(--green)">' + completed + '</span></div>';
 }
 
 /* ============================================================
