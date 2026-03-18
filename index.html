@@ -70,15 +70,83 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 }
 .sidebar-logo { font-size:16px; font-weight:700; color:var(--accent-light); margin-bottom:32px; padding:0 8px; }
 .sidebar-logo span { color:var(--text-muted); font-weight:400; font-size:13px; display:block; margin-top:2px; }
+/* Accordion nav sections */
+.nav-group { margin-bottom:4px; }
+.nav-group-header {
+  display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px;
+  color:var(--text); font-size:12px; font-weight:700; cursor:pointer;
+  text-transform:uppercase; letter-spacing:.6px; transition:all .15s;
+  user-select:none;
+}
+.nav-group-header:hover { background:rgba(99,102,241,0.06); }
+.nav-group-header svg { width:16px; height:16px; flex-shrink:0; color:var(--text-muted); }
+.nav-group-header .chevron {
+  margin-left:auto; width:14px; height:14px; transition:transform .2s;
+  color:var(--text-muted);
+}
+.nav-group.closed .chevron { transform:rotate(-90deg); }
+.nav-group.closed .nav-group-items { display:none; }
+.nav-group-items { padding:2px 0 4px; }
+
 .nav-item {
-  display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px;
-  color:var(--text-muted); font-size:14px; font-weight:500; cursor:pointer; margin-bottom:2px;
+  display:flex; align-items:center; gap:10px; padding:7px 12px 7px 32px; border-radius:8px;
+  color:var(--text-muted); font-size:13px; font-weight:500; cursor:pointer; margin-bottom:1px;
   transition:all .15s;
 }
 .nav-item:hover { background:rgba(99,102,241,0.08); color:var(--text); }
 .nav-item.active { background:rgba(99,102,241,0.12); color:var(--accent-light); }
-.nav-item svg { width:18px; height:18px; flex-shrink:0; }
-.nav-section { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; padding:16px 12px 8px; }
+.nav-item svg { width:15px; height:15px; flex-shrink:0; }
+
+/* Responses table */
+.responses-section { margin-bottom:32px; }
+.responses-controls {
+  display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap;
+}
+.responses-controls .sort-btn {
+  padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); background:var(--bg-card);
+  color:var(--text-muted); font-family:inherit; transition:all .15s;
+}
+.responses-controls .sort-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+.responses-controls .sort-btn:hover:not(.active) { border-color:var(--accent); color:var(--text); }
+.responses-controls .page-info { margin-left:auto; font-size:12px; color:var(--text-muted); }
+
+.resp-table-wrap { overflow-x:auto; }
+.resp-table {
+  width:100%; border-collapse:separate; border-spacing:0; font-size:12px;
+}
+.resp-table thead th {
+  text-align:left; padding:10px 12px; font-size:11px; font-weight:600;
+  color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px;
+  border-bottom:1px solid var(--border); background:var(--bg-dark);
+  position:sticky; top:0; white-space:nowrap;
+}
+.resp-table tbody td {
+  padding:8px 12px; border-bottom:1px solid var(--border);
+  color:var(--text); vertical-align:middle; max-width:240px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.resp-table tbody tr:hover { filter:brightness(1.1); }
+.resp-table .col-sid { font-family:monospace; font-size:11px; color:var(--text-muted); }
+.resp-table .col-step { font-weight:600; text-align:center; width:50px; }
+.resp-table .col-time { white-space:nowrap; color:var(--text-muted); font-size:11px; }
+
+.pagination {
+  display:flex; gap:6px; align-items:center; justify-content:center; margin-top:12px;
+}
+.pagination button {
+  padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); background:var(--bg-card);
+  color:var(--text); font-family:inherit; transition:all .15s;
+}
+.pagination button:hover { border-color:var(--accent); }
+.pagination button:disabled { opacity:0.4; cursor:default; }
+.pagination .page-num { font-size:12px; color:var(--text-muted); }
+
+/* Sidebar bottom actions */
+.sidebar-bottom {
+  margin-top:auto; padding-top:12px; display:flex; flex-direction:column; gap:6px;
+}
 
 .main { flex:1; padding:32px; overflow-x:hidden; }
 .main-header { margin-bottom:28px; }
@@ -391,37 +459,62 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">Julie Cosmétique <span>Quiz Analytics</span></div>
-    <div class="nav-section">Tableau de bord</div>
-    <div class="nav-item active" onclick="scrollToSection('kpis')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Aperçu
+
+    <!-- ANALYTICS -->
+    <div class="nav-group" id="navAnalytics">
+      <div class="nav-group-header" onclick="toggleNavGroup('navAnalytics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        Analytics
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="nav-group-items">
+        <div class="nav-item active" onclick="navTo('kpis',this)">Vue d'ensemble</div>
+        <div class="nav-item" onclick="navTo('funnel',this)">Funnel</div>
+        <div class="nav-item" onclick="navTo('activity',this)">Activité par heure</div>
+      </div>
     </div>
-    <div class="nav-item" onclick="scrollToSection('funnel')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-      Funnel
+
+    <!-- PERSONAS -->
+    <div class="nav-group" id="navPersonas">
+      <div class="nav-group-header" onclick="toggleNavGroup('navPersonas')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+        Personas
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="nav-group-items">
+        <div class="nav-item" onclick="navTo('avgProfile',this)">Profil moyen</div>
+        <div class="nav-item" onclick="navTo('personaCards',this)">Personas</div>
+      </div>
     </div>
-    <div class="nav-item" onclick="scrollToSection('activity')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Heures
+
+    <!-- RÉPONSES -->
+    <div class="nav-group" id="navReponses">
+      <div class="nav-group-header" onclick="toggleNavGroup('navReponses')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Réponses
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="nav-group-items">
+        <div class="nav-item" onclick="navTo('allResponses',this)">Toutes les réponses</div>
+        <div class="nav-item" onclick="navTo('questions',this)">Par question</div>
+      </div>
     </div>
-    <div class="nav-item" onclick="scrollToSection('questions')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-      Questions
+
+    <!-- Bottom: theme + export + refresh -->
+    <div class="sidebar-bottom">
+      <div class="nav-item" onclick="fetchData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        Rafraîchir
+      </div>
+      <div class="nav-item" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exporter CSV
+      </div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <span id="themeLabel">Mode clair</span>
+      </button>
     </div>
-    <div class="nav-item" onclick="scrollToSection('personas')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-      Personas
-    </div>
-    <div class="nav-section">Actions</div>
-    <div class="nav-item" onclick="fetchData()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-      Rafraîchir
-    </div>
-    <div style="flex:1"></div>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-      <span id="themeLabel">Mode clair</span>
-    </button>
   </aside>
 
   <main class="main">
@@ -430,12 +523,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
         <h1>Tableau de bord Quiz</h1>
         <p id="lastUpdate">Chargement des données...</p>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="refresh-btn" onclick="exportCSV()" title="Exporter les données brutes">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter CSV
-        </button>
-        <button class="refresh-btn" onclick="fetchData()">Rafraîchir</button>
-      </div>
+      <button class="refresh-btn" onclick="fetchData()">Rafraîchir</button>
     </div>
 
     <!-- KPIs -->
@@ -473,12 +561,37 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
       <div class="chart-grid" id="chartGrid"></div>
     </div>
 
-    <!-- PERSONAS -->
-    <div id="personas" class="section">
-      <h2 class="section-title"><span class="dot"></span> Profil type & Personas</h2>
-      <div id="avgProfile"></div>
-      <h3 style="font-size:15px;font-weight:700;margin:24px 0 12px;display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:var(--pink);display:inline-block"></span> Personas détaillés</h3>
+    <!-- PERSONAS — PROFIL MOYEN -->
+    <div id="avgProfile" class="section">
+      <h2 class="section-title"><span class="dot"></span> Profil type</h2>
+      <div id="avgProfileContent"></div>
+    </div>
+
+    <!-- PERSONAS — CARDS -->
+    <div id="personaCards" class="section">
+      <h2 class="section-title"><span class="dot"></span> Personas détaillés</h2>
       <div class="persona-grid" id="personaGrid"></div>
+    </div>
+
+    <!-- ALL RESPONSES TABLE -->
+    <div id="allResponses" class="section responses-section">
+      <h2 class="section-title"><span class="dot"></span> Toutes les réponses</h2>
+      <div class="chart-card">
+        <div class="responses-controls">
+          <button class="sort-btn active" id="sortNewest" onclick="setResponseSort('desc')">Plus récent</button>
+          <button class="sort-btn" id="sortOldest" onclick="setResponseSort('asc')">Plus ancien</button>
+          <span class="page-info" id="respPageInfo"></span>
+        </div>
+        <div class="resp-table-wrap">
+          <table class="resp-table">
+            <thead><tr>
+              <th>Date/Heure</th><th>Session ID</th><th>Étape</th><th>Question</th><th>Réponse</th>
+            </tr></thead>
+            <tbody id="respTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="respPagination"></div>
+      </div>
     </div>
   </main>
 </div>
@@ -523,14 +636,23 @@ function doGuestLogin() {
   fetchData();
 }
 
-function scrollToSection(id) {
+function navTo(id, el) {
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
-  event.currentTarget.classList.add('active');
-  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-  /* Close sidebar on mobile after nav click */
+  if (el) el.classList.add('active');
+  var target = document.getElementById(id);
+  if (target) target.scrollIntoView({ behavior: 'smooth' });
+  /* Close sidebar on mobile */
   var sb = document.getElementById('sidebar');
   if (sb && sb.classList.contains('open')) toggleSidebar();
 }
+
+function toggleNavGroup(groupId) {
+  var g = document.getElementById(groupId);
+  if (g) g.classList.toggle('closed');
+}
+
+/* Keep old function for compatibility */
+function scrollToSection(id) { navTo(id, null); }
 
 function toggleSidebar() {
   var sb = document.getElementById('sidebar');
@@ -702,6 +824,9 @@ function renderAll() {
 
   /* PERSONAS */
   renderPersonas(sessions);
+
+  /* ALL RESPONSES TABLE */
+  renderResponses();
 }
 
 var QMAP = {
@@ -1231,7 +1356,7 @@ var PERSONA_FIELDS = [
 var CLUSTER_KEYS = ['Âge', 'Préoccupation peau', 'Niveau de stress', 'Solutions essayées'];
 
 function renderPersonas(sessions) {
-  var profileContainer = document.getElementById('avgProfile');
+  var profileContainer = document.getElementById('avgProfileContent');
   var container = document.getElementById('personaGrid');
   profileContainer.innerHTML = '';
   container.innerHTML = '';
@@ -1319,6 +1444,88 @@ function renderPersonas(sessions) {
       + details;
     container.appendChild(card);
   });
+}
+
+/* ============================================================
+   ALL RESPONSES TABLE
+   ============================================================ */
+var respSortOrder = 'desc';
+var respCurrentPage = 1;
+var RESP_PER_PAGE = 50;
+
+function setResponseSort(order) {
+  respSortOrder = order;
+  respCurrentPage = 1;
+  document.getElementById('sortNewest').classList.toggle('active', order === 'desc');
+  document.getElementById('sortOldest').classList.toggle('active', order === 'asc');
+  renderResponses();
+}
+
+function setResponsePage(page) {
+  respCurrentPage = page;
+  renderResponses();
+}
+
+/* Generate a stable pastel color from session ID for row highlighting */
+function sessionColor(sid) {
+  var hash = 0;
+  for (var i = 0; i < sid.length; i++) hash = sid.charCodeAt(i) + ((hash << 5) - hash);
+  var hue = Math.abs(hash) % 360;
+  return 'hsla(' + hue + ',50%,50%,0.06)';
+}
+
+function renderResponses() {
+  if (!rawData || rawData.length === 0) return;
+
+  /* Sort */
+  var sorted = rawData.slice().sort(function(a, b) {
+    var tA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+    var tB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+    return respSortOrder === 'desc' ? tB - tA : tA - tB;
+  });
+
+  var totalRows = sorted.length;
+  var totalPages = Math.ceil(totalRows / RESP_PER_PAGE);
+  if (respCurrentPage > totalPages) respCurrentPage = totalPages;
+  if (respCurrentPage < 1) respCurrentPage = 1;
+
+  var start = (respCurrentPage - 1) * RESP_PER_PAGE;
+  var pageRows = sorted.slice(start, start + RESP_PER_PAGE);
+
+  /* Render table */
+  var tbody = document.getElementById('respTableBody');
+  var html = '';
+  pageRows.forEach(function(r) {
+    var ts = r.timestamp ? new Date(r.timestamp) : null;
+    var timeStr = '—';
+    if (ts && !isNaN(ts.getTime())) {
+      try {
+        timeStr = ts.toLocaleString('fr-FR', { timeZone: 'Europe/Paris', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      } catch(e) { timeStr = ts.toLocaleString('fr-FR'); }
+    }
+    var sid = (r.session_id || '').toString();
+    var sidShort = sid.length > 8 ? sid.substr(0, 8) + '…' : sid;
+    var bg = sessionColor(sid);
+    html += '<tr style="background:' + bg + '">'
+      + '<td class="col-time">' + timeStr + '</td>'
+      + '<td class="col-sid" title="' + sid + '">' + sidShort + '</td>'
+      + '<td class="col-step">' + (r.step || '') + '</td>'
+      + '<td>' + (r.question || '') + '</td>'
+      + '<td>' + (r.answer || '') + '</td>'
+      + '</tr>';
+  });
+  tbody.innerHTML = html;
+
+  /* Page info */
+  document.getElementById('respPageInfo').textContent = totalRows + ' réponses — page ' + respCurrentPage + '/' + totalPages;
+
+  /* Pagination */
+  var pag = document.getElementById('respPagination');
+  if (totalPages <= 1) { pag.innerHTML = ''; return; }
+  var pagHtml = '<button ' + (respCurrentPage <= 1 ? 'disabled' : '') + ' onclick="setResponsePage(' + (respCurrentPage - 1) + ')">← Précédent</button>';
+  pagHtml += '<span class="page-num">' + respCurrentPage + ' / ' + totalPages + '</span>';
+  pagHtml += '<button ' + (respCurrentPage >= totalPages ? 'disabled' : '') + ' onclick="setResponsePage(' + (respCurrentPage + 1) + ')">Suivant →</button>';
+  pag.innerHTML = pagHtml;
 }
 
 /* ============================================================
