@@ -360,7 +360,12 @@ var DASHBOARD_PASSWORD = 'julie2026';
         <h1>Tableau de bord Quiz</h1>
         <p id="lastUpdate">Chargement des données...</p>
       </div>
-      <button class="refresh-btn" onclick="fetchData()">Rafraîchir</button>
+      <div style="display:flex;gap:8px">
+        <button class="refresh-btn" onclick="exportCSV()" title="Exporter les données brutes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter CSV
+        </button>
+        <button class="refresh-btn" onclick="fetchData()">Rafraîchir</button>
+      </div>
     </div>
 
     <!-- KPIs -->
@@ -449,6 +454,39 @@ function fetchData() {
       document.getElementById('lastUpdate').textContent = 'Erreur de chargement — vérifiez l\'URL Apps Script';
       console.error(err);
     });
+}
+
+/* ============================================================
+   EXPORT CSV
+   ============================================================ */
+function exportCSV() {
+  if (!rawData || rawData.length === 0) { alert('Aucune donnée à exporter. Rafraîchissez d\'abord.'); return; }
+  var sep = ';'; /* semicolon for Excel FR */
+  var headers = ['Timestamp', 'Session ID', 'Étape', 'Question', 'Réponse'];
+  var lines = [headers.join(sep)];
+  rawData.forEach(function(r) {
+    var row = [
+      (r.timestamp || '').replace(/;/g, ','),
+      (r.session_id || '').replace(/;/g, ','),
+      r.step || '',
+      (r.question || '').replace(/;/g, ','),
+      (r.answer || '').replace(/;/g, ',').replace(/"/g, '""')
+    ];
+    lines.push(row.map(function(v) { return '"' + v + '"'; }).join(sep));
+  });
+  var csvContent = lines.join('\r\n');
+  /* UTF-8 BOM for Excel accent support */
+  var bom = '\uFEFF';
+  var blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  var today = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = 'quiz-data-' + today + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 /* ============================================================
