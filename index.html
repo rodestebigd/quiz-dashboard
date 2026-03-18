@@ -115,6 +115,42 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .persona-detail { font-size:13px; color:var(--text-muted); margin-bottom:6px; line-height:1.4; }
 .persona-detail strong { color:var(--text); font-weight:600; }
 
+/* Average profile card */
+.avg-profile {
+  background:var(--bg-card); border:1px solid var(--border); border-radius:14px;
+  padding:24px; position:relative; overflow:hidden; margin-bottom:0;
+}
+.avg-profile::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg, var(--green), var(--accent), var(--pink));
+}
+.avg-profile-header {
+  display:flex; align-items:center; gap:12px; margin-bottom:14px;
+}
+.avg-profile-icon {
+  width:42px; height:42px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--pink));
+  display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+}
+.avg-profile-title { font-size:16px; font-weight:700; }
+.avg-profile-sub { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.avg-profile-sentence {
+  font-size:14px; line-height:1.6; color:var(--text); padding:14px 16px;
+  background:var(--bg-dark); border-radius:10px; border-left:3px solid var(--accent);
+}
+.avg-profile-sentence strong { color:var(--accent-light); font-weight:600; }
+
+/* Persona detail rows */
+.persona-details-grid {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:6px 16px; margin-top:12px;
+}
+.persona-detail-row {
+  font-size:12px; color:var(--text-muted); line-height:1.4; padding:4px 0;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.persona-detail-row strong { color:var(--text); font-weight:600; font-size:12px; }
+.persona-detail-row .val { color:var(--accent-light); font-weight:500; }
+
 /* FUNNEL — True trapezoid funnel */
 .funnel-container { display:flex; flex-direction:column; align-items:center; padding:20px 0; width:100%; }
 
@@ -350,7 +386,9 @@ var DASHBOARD_PASSWORD = 'julie2026';
 
     <!-- PERSONAS -->
     <div id="personas" class="section">
-      <h2 class="section-title"><span class="dot"></span> Personas types</h2>
+      <h2 class="section-title"><span class="dot"></span> Profil type & Personas</h2>
+      <div id="avgProfile"></div>
+      <h3 style="font-size:15px;font-weight:700;margin:24px 0 12px;display:flex;align-items:center;gap:8px"><span style="width:6px;height:6px;border-radius:50%;background:var(--pink);display:inline-block"></span> Personas détaillés</h3>
       <div class="persona-grid" id="personaGrid"></div>
     </div>
   </main>
@@ -802,12 +840,36 @@ function renderCharts(sessions) {
   });
 }
 
+/* All question fields for persona profiling, in display order */
+var PERSONA_FIELDS = [
+  { key: 'Âge', label: 'Âge' },
+  { key: 'Préoccupation peau', label: 'Préoccupation' },
+  { key: 'Profondeur rides', label: 'Profondeur rides' },
+  { key: 'Zones à atténuer', label: 'Zones à traiter' },
+  { key: 'Exposition soleil', label: 'Exposition soleil' },
+  { key: 'Heures de sommeil', label: 'Sommeil' },
+  { key: 'Niveau de stress', label: 'Stress' },
+  { key: 'Carnation', label: 'Carnation' },
+  { key: 'Peau sensible', label: 'Peau sensible' },
+  { key: 'Solutions essayées', label: 'Solutions essayées' },
+  { key: 'Temps routine', label: 'Temps routine' },
+  { key: 'Peau vieillit', label: 'Sentiment peau' },
+  { key: 'Miroir rajeuni', label: 'Motivation miroir' },
+  { key: 'Événement', label: 'Événement' }
+];
+
+/* Clustering keys: the 4 most discriminating variables */
+var CLUSTER_KEYS = ['Âge', 'Préoccupation peau', 'Niveau de stress', 'Solutions essayées'];
+
 function renderPersonas(sessions) {
+  var profileContainer = document.getElementById('avgProfile');
   var container = document.getElementById('personaGrid');
+  profileContainer.innerHTML = '';
   container.innerHTML = '';
   var sessionIds = Object.keys(sessions);
+
   if (sessionIds.length < 3) {
-    container.innerHTML = '<div class="chart-card"><p style="color:var(--text-muted);padding:20px">Pas assez de données pour générer des personas (minimum 3 sessions).</p></div>';
+    profileContainer.innerHTML = '<div class="chart-card"><p style="color:var(--text-muted);padding:20px">Pas assez de données pour générer des personas (minimum 3 sessions).</p></div>';
     return;
   }
 
@@ -821,41 +883,71 @@ function renderPersonas(sessions) {
     return profile;
   });
 
-  /* Simple clustering: group by age + stress + skin concern combo */
+  /* ================================================================
+     PARTIE 1 — Profil moyen (réponse la plus fréquente par question)
+     ================================================================ */
+  var avgData = {};
+  PERSONA_FIELDS.forEach(function(f) {
+    var vals = profiles.map(function(p) { return p[f.key]; }).filter(Boolean);
+    avgData[f.key] = mostCommon(vals) || '—';
+  });
+
+  /* Build the sentence */
+  var sentence = 'Femme de <strong>' + avgData['Âge'] + '</strong>, '
+    + 'préoccupée par <strong>' + (avgData['Préoccupation peau'] || '—').toLowerCase() + '</strong>, '
+    + 'avec des rides <strong>' + (avgData['Profondeur rides'] || '—').toLowerCase() + '</strong>, '
+    + 'exposée au soleil <strong>' + (avgData['Exposition soleil'] || '—').toLowerCase() + '</strong>, '
+    + 'dormant <strong>' + (avgData['Heures de sommeil'] || '—').toLowerCase() + '</strong>, '
+    + 'stressée <strong>' + (avgData['Niveau de stress'] || '—').toLowerCase() + '</strong>, '
+    + 'ayant déjà essayé <strong>' + (avgData['Solutions essayées'] || '—').toLowerCase() + '</strong>, '
+    + 'avec <strong>' + (avgData['Temps routine'] || '—').toLowerCase() + '</strong> pour sa routine.';
+
+  profileContainer.innerHTML = '<div class="avg-profile">'
+    + '<div class="avg-profile-header">'
+    + '<div class="avg-profile-icon">👩</div>'
+    + '<div><div class="avg-profile-title">Votre cliente type</div>'
+    + '<div class="avg-profile-sub">Basé sur ' + sessionIds.length + ' répondantes — réponse la plus fréquente par question</div></div>'
+    + '</div>'
+    + '<div class="avg-profile-sentence">' + sentence + '</div>'
+    + '</div>';
+
+  /* ================================================================
+     PARTIE 2 — Personas clusterisés (4 variables discriminantes)
+     ================================================================ */
   var clusters = {};
   profiles.forEach(function(p) {
-    var key = (p['Âge'] || 'unknown') + '|' + (p['Niveau de stress'] || 'unknown');
+    var parts = CLUSTER_KEYS.map(function(k) { return p[k] || 'unknown'; });
+    var key = parts.join('|');
     if (!clusters[key]) clusters[key] = [];
     clusters[key].push(p);
   });
 
-  /* Sort clusters by size, take top 3 */
+  /* Sort by size, take top 3 */
   var sorted = Object.keys(clusters).sort(function(a, b) { return clusters[b].length - clusters[a].length; });
   var top3 = sorted.slice(0, 3);
   var personaNames = ['Persona A', 'Persona B', 'Persona C'];
-  var personaColors = ['var(--accent)', 'var(--pink)', 'var(--cyan)'];
 
   top3.forEach(function(key, i) {
     var group = clusters[key];
     var pct = Math.round(group.length / sessionIds.length * 100);
-    var parts = key.split('|');
 
-    /* Find most common answers in this group */
-    var fields = ['Préoccupation peau', 'Profondeur rides', 'Exposition soleil', 'Heures de sommeil', 'Peau sensible', 'Temps routine beauté', 'Solutions déjà essayées'];
-    var details = '';
-    details += '<div class="persona-detail"><strong>Âge :</strong> ' + parts[0] + '</div>';
-    details += '<div class="persona-detail"><strong>Stress :</strong> ' + parts[1] + '</div>';
-    fields.forEach(function(f) {
-      var vals = group.map(function(p) { return p[f]; }).filter(Boolean);
+    /* Get most common answer for EVERY field in this group */
+    var details = '<div class="persona-details-grid">';
+    PERSONA_FIELDS.forEach(function(f) {
+      var vals = group.map(function(p) { return p[f.key]; }).filter(Boolean);
       var mode = mostCommon(vals);
       if (mode) {
-        details += '<div class="persona-detail"><strong>' + f + ' :</strong> ' + (mode.length > 50 ? mode.substr(0, 48) + '…' : mode) + '</div>';
+        var truncated = mode.length > 40 ? mode.substr(0, 38) + '…' : mode;
+        details += '<div class="persona-detail-row"><strong>' + f.label + ' :</strong> <span class="val">' + truncated + '</span></div>';
       }
     });
+    details += '</div>';
 
     var card = document.createElement('div');
     card.className = 'persona-card';
-    card.innerHTML = '<div class="persona-name">' + personaNames[i] + '</div><div class="persona-pct">' + pct + '% des répondantes (' + group.length + ')</div>' + details;
+    card.innerHTML = '<div class="persona-name">' + personaNames[i] + '</div>'
+      + '<div class="persona-pct">' + pct + '% des répondantes (' + group.length + ')</div>'
+      + details;
     container.appendChild(card);
   });
 }
