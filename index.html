@@ -580,13 +580,13 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
     <div id="kpis" class="kpi-grid">
       <div class="kpi-card"><div class="kpi-label">Sessions totales</div><div class="kpi-value" id="kpiSessions">—</div><div class="kpi-sub">Visiteurs uniques du quiz</div></div>
       <div class="kpi-card"><div class="kpi-label">Quiz terminés</div><div class="kpi-value" id="kpiCompleted">—</div><div class="kpi-sub" id="kpiCompletedPct"></div></div>
+      <div class="kpi-card"><div class="kpi-label">Taux de complétion</div><div class="kpi-value" id="kpiCompletion">—</div><div class="kpi-sub" id="kpiDropSub"></div></div>
       <div class="kpi-card"><div class="kpi-label">Âge moyen</div><div class="kpi-value" id="kpiAge">—</div><div class="kpi-sub">Tranche la plus fréquente</div></div>
-      <div class="kpi-card"><div class="kpi-label">Taux d'abandon</div><div class="kpi-value" id="kpiDrop">—</div><div class="kpi-sub" id="kpiDropStep"></div></div>
     </div>
 
     <!-- KEY ANSWERS -->
     <div id="keyAnswers" class="section">
-      <h2 class="section-title"><span class="dot"></span> Réponses clés</h2>
+      <h2 class="section-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="dot"></span> Réponses clés</span><a onclick="switchPage('pageReponses','navReponses');setTimeout(function(){scrollInPage('questions',null)},100)" style="font-size:13px;color:var(--accent-light);cursor:pointer;font-weight:500">Voir la totalité →</a></h2>
       <div class="key-answers-grid" id="keyAnswersGrid"></div>
     </div>
 
@@ -944,8 +944,13 @@ function renderAll() {
       if (drop > maxDropPct) { maxDropPct = drop; maxDropStep = step; }
     }
   });
-  document.getElementById('kpiDrop').textContent = totalSessions > 0 ? Math.round((1 - completed / totalSessions) * 100) + '%' : '—';
-  document.getElementById('kpiDropStep').textContent = maxDropStep > 0 ? 'Plus gros drop : ' + (QMAP[maxDropStep] || 'Étape ' + maxDropStep) : '';
+  /* Completion rate KPI */
+  var completionPct = totalSessions > 0 ? Math.round(completed / totalSessions * 100) : 0;
+  var abandonPct = totalSessions > 0 ? 100 - completionPct : 0;
+  var completionEl = document.getElementById('kpiCompletion');
+  completionEl.textContent = totalSessions > 0 ? completionPct + '%' : '—';
+  completionEl.style.color = completionPct > 60 ? 'var(--green)' : completionPct >= 30 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('kpiDropSub').textContent = totalSessions > 0 ? abandonPct + '% d\'abandon' + (maxDropStep > 0 ? ' · pire drop : ' + (QMAP[maxDropStep] || 'Ét. ' + maxDropStep) : '') : '';
 
   /* KEY ANSWERS */
   renderKeyAnswers();
