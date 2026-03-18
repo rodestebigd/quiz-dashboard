@@ -291,13 +291,53 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 }
 .refresh-btn:hover { border-color:var(--accent); color:var(--accent-light); }
 
+/* HAMBURGER MENU */
+.hamburger {
+  display:none; position:fixed; top:12px; left:12px; z-index:200;
+  width:40px; height:40px; border-radius:10px; background:var(--bg-card);
+  border:1px solid var(--border); cursor:pointer; align-items:center; justify-content:center;
+  flex-direction:column; gap:4px; padding:0;
+}
+.hamburger span {
+  display:block; width:18px; height:2px; background:var(--text); border-radius:1px;
+  transition:all .2s;
+}
+.sidebar-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  z-index:150; backdrop-filter:blur(2px);
+}
+.sidebar-overlay.open { display:block; }
+
 /* RESPONSIVE */
 @media(max-width:768px) {
-  .sidebar { display:none; }
-  .main { padding:20px 16px; }
+  .hamburger { display:flex; }
+  .sidebar {
+    position:fixed; top:0; left:0; bottom:0; z-index:180;
+    transform:translateX(-100%); transition:transform .25s ease;
+    width:260px; display:block;
+  }
+  .sidebar.open { transform:translateX(0); }
+  .main { padding:60px 14px 20px; }
+  .main-header { flex-direction:column; gap:12px; }
+  .main-header > div:last-child { align-self:flex-start; }
+  .kpi-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
+  .kpi-card { padding:14px; }
+  .kpi-value { font-size:24px; }
   .chart-grid { grid-template-columns:1fr; }
+  .chart-card { padding:14px; }
   .persona-grid { grid-template-columns:1fr; }
-  .kpi-grid { grid-template-columns:repeat(2,1fr); }
+  .persona-details-grid { grid-template-columns:1fr; }
+  .funnel-container { overflow-x:auto; }
+  .funnel-row { grid-template-columns:100px 1fr 110px; min-width:420px; }
+  .funnel-row-left { font-size:10px; padding-right:8px; }
+  .funnel-row-right { font-size:10px; padding-left:8px; }
+  .funnel-band { height:28px; font-size:10px; }
+  .funnel-summary { flex-wrap:wrap; gap:12px; }
+  .zones-grid { grid-template-columns:1fr; }
+  .avg-profile { padding:16px; }
+  .avg-profile-sentence { font-size:13px; padding:10px 12px; }
+  .section-title { font-size:16px; }
+  .refresh-btn { padding:6px 10px; font-size:12px; }
 }
 </style>
 </head>
@@ -324,7 +364,11 @@ var DASHBOARD_PASSWORD = 'julie2026';
 
 <!-- APP -->
 <div class="app" id="app" style="display:none">
-  <aside class="sidebar">
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">Julie Cosmétique <span>Quiz Analytics</span></div>
     <div class="nav-section">Tableau de bord</div>
     <div class="nav-item active" onclick="scrollToSection('kpis')">
@@ -433,6 +477,16 @@ function scrollToSection(id) {
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   event.currentTarget.classList.add('active');
   document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  /* Close sidebar on mobile after nav click */
+  var sb = document.getElementById('sidebar');
+  if (sb && sb.classList.contains('open')) toggleSidebar();
+}
+
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebarOverlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('open');
 }
 
 /* ============================================================
