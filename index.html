@@ -426,6 +426,29 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 }
 .zone-bar-fg { height:100%; border-radius:3px; background:var(--accent); transition:width .6s ease; }
 
+/* Yes/No blocks */
+.yesno-grid { display:flex; gap:10px; flex-wrap:wrap; }
+.yesno-block {
+  flex:1; min-width:100px; padding:16px; border-radius:8px; text-align:center;
+  border:1px solid var(--border);
+}
+.yesno-block .yn-label { font-size:18px; font-weight:800; margin-bottom:4px; }
+.yesno-block .yn-count { font-size:13px; color:var(--text-muted); }
+.yesno-block .yn-pct { font-size:22px; font-weight:800; margin-top:4px; }
+
+/* Emoji cards */
+.emoji-list { display:flex; flex-direction:column; gap:8px; }
+.emoji-row {
+  display:flex; align-items:center; gap:14px; padding:10px 14px;
+  background:var(--bg-dark); border-radius:6px; transition:background .15s;
+}
+.emoji-row:hover { background:rgba(99,102,241,0.06); }
+.emoji-icon { font-size:32px; flex-shrink:0; width:44px; text-align:center; }
+.emoji-info { flex:1; }
+.emoji-label { font-size:13px; font-weight:600; color:var(--text); }
+.emoji-stats { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.emoji-pct { font-size:14px; font-weight:700; color:var(--accent-light); flex-shrink:0; min-width:40px; text-align:right; }
+
 /* LOADING */
 .loading-state { text-align:center; padding:80px 20px; }
 .loading-state p { color:var(--text-muted); font-size:14px; margin-top:12px; }
@@ -1676,6 +1699,36 @@ function renderZones(card, stepAnswers) {
 /* ============================================================
    RENDER CHARTS
    ============================================================ */
+/* Emoji mappings for specific questions */
+var EMOJI_MAP_19 = { /* Miroir rajeuni */
+  'Me sentir belle et confiante': '👑',
+  'Avoir l\'air reposée et en bonne santé': '👍',
+  'Être fière de ma peau sans maquillage': '💋',
+  'Retrouver l\'éclat de ma jeunesse': '💃'
+};
+var EMOJI_MAP_20 = { /* Événement */
+  'Anniversaire ou fête de famille': '🎁',
+  'Vacances ou voyage': '🏖️',
+  'Retrouvailles ou rendez-vous': '👫',
+  'Juste envie de prendre soin de moi': '🥇',
+  'Autre': '⭐',
+  'Pas d\'événement particulier': '❌',
+  'Non, pas spécialement': '❌'
+};
+
+/* Yes/No color mapping */
+function ynColor(label) {
+  var l = label.toLowerCase();
+  if (l === 'oui' || l === 'yes') return { bg: 'rgba(34,197,94,0.1)', border: 'var(--green)', text: 'var(--green)' };
+  if (l === 'non' || l === 'no') return { bg: 'rgba(239,68,68,0.1)', border: 'var(--red)', text: 'var(--red)' };
+  return { bg: 'rgba(139,141,151,0.1)', border: 'var(--text-muted)', text: 'var(--text-muted)' };
+}
+
+var YESNO_STEPS = [10, 18];
+var EMOJI_STEPS = [19, 20];
+var BAR_STEPS = [2, 3, 14]; /* horizontal bar charts */
+var DONUT_STEPS = [1, 6, 7, 8, 16]; /* donut charts */
+
 function renderCharts(sessions) {
   var grid = document.getElementById('chartGrid');
   grid.innerHTML = '';
@@ -1688,54 +1741,94 @@ function renderCharts(sessions) {
     var stepAnswers = rawData.filter(function(r) { return parseInt(r.step) === step; });
     if (stepAnswers.length === 0) return;
 
-    /* ---- CARNATION (step 9) — custom render ---- */
-    if (step === 9) {
-      var card = document.createElement('div');
-      card.className = 'chart-card';
-      card.innerHTML = '<h3>' + qName + '</h3><div class="chart-sub">' + stepAnswers.length + ' réponses — Étape ' + step + '</div>';
-      grid.appendChild(card);
-      renderCarnation(card, stepAnswers);
-      return;
-    }
+    var card = document.createElement('div');
+    card.className = 'chart-card';
+    card.innerHTML = '<h3>' + qName + '</h3><div class="chart-sub">' + stepAnswers.length + ' réponses — Étape ' + step + '</div>';
+    grid.appendChild(card);
 
-    /* ---- ZONES RIDES (step 4) — custom render ---- */
-    if (step === 4) {
-      var card = document.createElement('div');
-      card.className = 'chart-card';
-      card.innerHTML = '<h3>' + qName + '</h3><div class="chart-sub">' + stepAnswers.length + ' réponses — Étape ' + step + '</div>';
-      grid.appendChild(card);
-      renderZones(card, stepAnswers);
-      return;
-    }
+    /* ---- CARNATION (step 9) ---- */
+    if (step === 9) { renderCarnation(card, stepAnswers); return; }
 
-    /* ---- DEFAULT Chart.js render ---- */
+    /* ---- ZONES RIDES (step 4) ---- */
+    if (step === 4) { renderZones(card, stepAnswers); return; }
+
+    /* Count answers */
     var allAnswers = [];
     stepAnswers.forEach(function(r) {
       var parts = r.answer.split(', ');
       parts.forEach(function(p) { if (p.trim()) allAnswers.push(p.trim()); });
     });
-
     var counts = {};
     allAnswers.forEach(function(a) { counts[a] = (counts[a] || 0) + 1; });
     var labels = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
-    var values = labels.map(function(l) { return counts[l]; });
-    var total = values.reduce(function(s, v) { return s + v; }, 0);
+    var total = allAnswers.length;
 
-    var card = document.createElement('div');
-    card.className = 'chart-card';
-    card.innerHTML = '<h3>' + qName + '</h3><div class="chart-sub">' + stepAnswers.length + ' réponses — Étape ' + step + '</div><div class="chart-canvas-wrap"><canvas id="chart_' + step + '"></canvas></div>';
-    grid.appendChild(card);
+    /* ---- YES/NO (steps 10, 18) ---- */
+    if (YESNO_STEPS.indexOf(step) !== -1) {
+      var html = '<div class="yesno-grid">';
+      labels.forEach(function(label) {
+        var c = counts[label];
+        var pct = total > 0 ? Math.round(c / total * 100) : 0;
+        var col = ynColor(label);
+        html += '<div class="yesno-block" style="background:' + col.bg + ';border-color:' + col.border + '">'
+          + '<div class="yn-label" style="color:' + col.text + '">' + label + '</div>'
+          + '<div class="yn-pct" style="color:' + col.text + '">' + pct + '%</div>'
+          + '<div class="yn-count">' + c + ' réponse' + (c > 1 ? 's' : '') + '</div>'
+          + '</div>';
+      });
+      html += '</div>';
+      card.insertAdjacentHTML('beforeend', html);
+      return;
+    }
+
+    /* ---- EMOJI (steps 19, 20) ---- */
+    if (EMOJI_STEPS.indexOf(step) !== -1) {
+      var emojiMap = step === 19 ? EMOJI_MAP_19 : EMOJI_MAP_20;
+      var html = '<div class="emoji-list">';
+      labels.forEach(function(label) {
+        var c = counts[label];
+        var pct = total > 0 ? Math.round(c / total * 100) : 0;
+        /* Find emoji by partial match */
+        var emoji = '📌';
+        Object.keys(emojiMap).forEach(function(k) {
+          if (label.toLowerCase().indexOf(k.toLowerCase().substr(0, 10)) !== -1 || k.toLowerCase().indexOf(label.toLowerCase().substr(0, 10)) !== -1) {
+            emoji = emojiMap[k];
+          }
+        });
+        html += '<div class="emoji-row">'
+          + '<span class="emoji-icon">' + emoji + '</span>'
+          + '<div class="emoji-info"><div class="emoji-label">' + label + '</div>'
+          + '<div class="emoji-stats">' + c + ' réponse' + (c > 1 ? 's' : '') + '</div></div>'
+          + '<span class="emoji-pct">' + pct + '%</span>'
+          + '</div>';
+      });
+      html += '</div>';
+      card.insertAdjacentHTML('beforeend', html);
+      return;
+    }
+
+    /* ---- HORIZONTAL BAR (steps 2, 3, 14) ---- */
+    var chartType, chartAxis;
+    if (BAR_STEPS.indexOf(step) !== -1) {
+      chartType = 'bar'; chartAxis = 'y';
+    } else {
+      /* ---- DONUT (steps 1, 6, 7, 8, 16) ---- */
+      chartType = 'doughnut'; chartAxis = undefined;
+    }
+
+    var values = labels.map(function(l) { return counts[l]; });
+    card.innerHTML += '<div class="chart-canvas-wrap"><canvas id="chart_' + step + '"></canvas></div>';
 
     var ctx = document.getElementById('chart_' + step).getContext('2d');
     chartInstances['c' + step] = new Chart(ctx, {
-      type: labels.length <= 5 ? 'doughnut' : 'bar',
+      type: chartType,
       data: {
-        labels: labels.map(function(l) { return l.length > 22 ? l.substr(0, 20) + '…' : l; }),
+        labels: labels.map(function(l) { return l.length > 28 ? l.substr(0, 26) + '…' : l; }),
         datasets: [{
           data: values,
           backgroundColor: labels.map(function(_, i) { return COLORS[i % COLORS.length]; }),
           borderWidth: 0,
-          borderRadius: labels.length > 5 ? 4 : 0
+          borderRadius: chartType === 'bar' ? 4 : 0
         }]
       },
       options: {
@@ -1743,7 +1836,7 @@ function renderCharts(sessions) {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: labels.length <= 5,
+            display: chartType === 'doughnut',
             position: 'right',
             labels: { color: getChartTextColor(), font: { family: 'DM Sans', size: 12 }, boxWidth: 12, padding: 8 }
           },
@@ -1755,11 +1848,11 @@ function renderCharts(sessions) {
             }
           }
         },
-        scales: labels.length > 5 ? {
+        scales: chartType === 'bar' ? {
           x: { ticks: { color: getChartTextColor(), font: { size: 11 } }, grid: { color: getChartGridColor() } },
-          y: { ticks: { color: getChartTextColor() }, grid: { color: getChartGridColor() } }
+          y: { ticks: { color: getChartTextColor(), font: { size: 11 } }, grid: { display: false } }
         } : {},
-        indexAxis: labels.length > 5 ? 'y' : undefined
+        indexAxis: chartAxis
       }
     });
   });
