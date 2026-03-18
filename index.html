@@ -335,6 +335,10 @@ var DASHBOARD_PASSWORD = 'julie2026';
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
       Funnel
     </div>
+    <div class="nav-item" onclick="scrollToSection('activity')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Heures
+    </div>
     <div class="nav-item" onclick="scrollToSection('questions')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
       Questions
@@ -375,6 +379,16 @@ var DASHBOARD_PASSWORD = 'julie2026';
         <div class="chart-sub" style="margin-bottom:8px">Rétention par étape — largeur proportionnelle au % de personnes restantes</div>
         <div class="funnel-container" id="funnelVisual"></div>
         <div class="funnel-summary" id="funnelSummary"></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY BY HOUR -->
+    <div id="activity" class="section">
+      <h2 class="section-title"><span class="dot"></span> Activité par heure</h2>
+      <div class="chart-card">
+        <h3>Réponses par heure de la journée</h3>
+        <div class="chart-sub" id="activitySub">Heure locale française (UTC+1/+2)</div>
+        <div style="position:relative;height:260px"><canvas id="activityChart"></canvas></div>
       </div>
     </div>
 
@@ -487,6 +501,9 @@ function renderAll() {
   /* FUNNEL */
   renderFunnel(funnelData, totalSessions);
 
+  /* ACTIVITY BY HOUR */
+  renderActivity();
+
   /* CHARTS */
   renderCharts(sessions);
 
@@ -512,6 +529,92 @@ var QMAP = {
 };
 
 var COLORS = ['#6366f1','#ec4899','#06b6d4','#f59e0b','#22c55e','#ef4444','#8b5cf6','#14b8a6','#f97316','#64748b'];
+
+var activityChartInstance = null;
+
+function renderActivity() {
+  /* Count responses per hour (French local time) */
+  var hourCounts = new Array(24);
+  for (var h = 0; h < 24; h++) hourCounts[h] = 0;
+
+  rawData.forEach(function(r) {
+    if (!r.timestamp) return;
+    var d = new Date(r.timestamp);
+    if (isNaN(d.getTime())) return;
+    /* Convert to French local time using Intl */
+    var frHour;
+    try {
+      frHour = parseInt(new Intl.DateTimeFormat('fr-FR', { hour: 'numeric', hour12: false, timeZone: 'Europe/Paris' }).format(d));
+    } catch(e) {
+      frHour = d.getHours(); /* fallback */
+    }
+    if (frHour >= 0 && frHour < 24) hourCounts[frHour]++;
+  });
+
+  /* Find peak hour */
+  var peakHour = 0, peakCount = 0;
+  for (var h = 0; h < 24; h++) {
+    if (hourCounts[h] > peakCount) { peakCount = hourCounts[h]; peakHour = h; }
+  }
+
+  /* Update subtitle */
+  document.getElementById('activitySub').textContent = 'Pic : ' + peakHour + 'h (' + peakCount + ' réponses) — Heure de Paris';
+
+  /* Labels */
+  var labels = [];
+  for (var h = 0; h < 24; h++) labels.push(h + 'h');
+
+  /* Point sizes: bigger for peak */
+  var pointRadii = hourCounts.map(function(c, i) { return i === peakHour ? 7 : 2; });
+  var pointBg = hourCounts.map(function(c, i) { return i === peakHour ? '#f59e0b' : '#6366f1'; });
+
+  /* Destroy previous chart */
+  if (activityChartInstance) { activityChartInstance.destroy(); activityChartInstance = null; }
+
+  var ctx = document.getElementById('activityChart').getContext('2d');
+  activityChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Réponses',
+        data: hourCounts,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.12)',
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2.5,
+        pointRadius: pointRadii,
+        pointBackgroundColor: pointBg,
+        pointBorderColor: pointBg,
+        pointHoverRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return ctx.raw + ' réponses'; }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#8b8d97', font: { size: 11 } },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#8b8d97', font: { size: 11 } },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        }
+      }
+    }
+  });
+}
 
 function renderFunnel(funnelData, total) {
   var container = document.getElementById('funnelVisual');
