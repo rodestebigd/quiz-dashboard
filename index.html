@@ -154,6 +154,26 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .main-header h1 { font-size:24px; font-weight:700; }
 .main-header p { color:var(--text-muted); font-size:14px; margin-top:4px; }
 
+/* Key answers grid */
+.key-answers-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.key-answer-card {
+  background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px;
+}
+.key-answer-card h4 { font-size:13px; font-weight:700; margin-bottom:2px; color:var(--text); }
+.key-answer-card .ka-sub { font-size:11px; color:var(--text-muted); margin-bottom:12px; }
+.key-answer-item {
+  display:flex; align-items:center; justify-content:space-between; padding:8px 0;
+  border-bottom:1px solid var(--border); font-size:13px;
+}
+.key-answer-item:last-child { border-bottom:none; }
+.ka-rank { width:20px; height:20px; line-height:20px; text-align:center; border-radius:50%;
+  background:var(--accent); color:#fff; font-size:10px; font-weight:700; flex-shrink:0; margin-right:10px; }
+.ka-label { flex:1; color:var(--text); font-weight:500; }
+.ka-count { font-size:12px; color:var(--text-muted); margin-left:8px; white-space:nowrap; }
+.ka-count strong { color:var(--accent-light); font-weight:700; }
+
+@media(max-width:768px) { .key-answers-grid { grid-template-columns:1fr; } }
+
 /* Page system */
 .page-content { display:none; animation:pageFadeIn .2s ease; }
 .page-content.active { display:block; }
@@ -480,6 +500,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
       </div>
       <div class="nav-group-items">
         <div class="nav-item active" onclick="scrollInPage('kpis',this)">Vue d'ensemble</div>
+        <div class="nav-item" onclick="scrollInPage('keyAnswers',this)">Réponses clés</div>
         <div class="nav-item" onclick="scrollInPage('funnel',this)">Funnel</div>
         <div class="nav-item" onclick="scrollInPage('activity',this)">Activité par heure</div>
         <div class="nav-item" onclick="scrollInPage('completionTime',this)">Temps de complétion</div>
@@ -550,6 +571,12 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
       <div class="kpi-card"><div class="kpi-label">Taux d'abandon</div><div class="kpi-value" id="kpiDrop">—</div><div class="kpi-sub" id="kpiDropStep"></div></div>
     </div>
 
+    <!-- KEY ANSWERS -->
+    <div id="keyAnswers" class="section">
+      <h2 class="section-title"><span class="dot"></span> Réponses clés</h2>
+      <div class="key-answers-grid" id="keyAnswersGrid"></div>
+    </div>
+
     <!-- FUNNEL -->
     <div id="funnel" class="section">
       <h2 class="section-title"><span class="dot"></span> Funnel de conversion</h2>
@@ -584,12 +611,6 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
         <div class="chart-sub">Nombre de sessions par durée de complétion</div>
         <div style="position:relative;height:220px"><canvas id="ctChart"></canvas></div>
       </div>
-    </div>
-
-    <!-- QUESTIONS -->
-    <div id="questions" class="section">
-      <h2 class="section-title"><span class="dot"></span> Réponses par question</h2>
-      <div class="chart-grid" id="chartGrid"></div>
     </div>
 
     </div><!-- /pageAnalytics -->
@@ -633,6 +654,12 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
         </div>
         <div class="pagination" id="respPagination"></div>
       </div>
+    <!-- QUESTIONS (full charts) -->
+    <div id="questions" class="section">
+      <h2 class="section-title"><span class="dot"></span> Réponses par question</h2>
+      <div class="chart-grid" id="chartGrid"></div>
+    </div>
+
     </div><!-- /pageReponses -->
 
     </div><!-- /main-inner -->
@@ -907,6 +934,9 @@ function renderAll() {
   document.getElementById('kpiDrop').textContent = totalSessions > 0 ? Math.round((1 - completed / totalSessions) * 100) + '%' : '—';
   document.getElementById('kpiDropStep').textContent = maxDropStep > 0 ? 'Plus gros drop : ' + (QMAP[maxDropStep] || 'Étape ' + maxDropStep) : '';
 
+  /* KEY ANSWERS */
+  renderKeyAnswers();
+
   /* FUNNEL */
   renderFunnel(funnelData, totalSessions);
 
@@ -944,6 +974,52 @@ var QMAP = {
 };
 
 var COLORS = ['#6366f1','#ec4899','#06b6d4','#f59e0b','#22c55e','#ef4444','#8b5cf6','#14b8a6','#f97316','#64748b'];
+
+/* ============================================================
+   KEY ANSWERS (compact top-3 for Analytics page)
+   ============================================================ */
+function renderKeyAnswers() {
+  var grid = document.getElementById('keyAnswersGrid');
+  grid.innerHTML = '';
+  var keySteps = [
+    { step: 2, title: 'Préoccupation peau', sub: 'Étape 2 — Ce qui préoccupe le plus' },
+    { step: 4, title: 'Zones à atténuer', sub: 'Étape 4 — Zones de rides ciblées' },
+    { step: 14, title: 'Solutions essayées', sub: 'Étape 14 — Ce qu\'elles ont déjà testé' }
+  ];
+
+  keySteps.forEach(function(ks) {
+    var stepAnswers = rawData.filter(function(r) { return parseInt(r.step) === ks.step; });
+    if (stepAnswers.length === 0) return;
+
+    /* Count answers (handle multi-select with comma split) */
+    var allAnswers = [];
+    stepAnswers.forEach(function(r) {
+      var parts = r.answer.split(', ');
+      parts.forEach(function(p) { if (p.trim()) allAnswers.push(p.trim()); });
+    });
+    var counts = {};
+    allAnswers.forEach(function(a) { counts[a] = (counts[a] || 0) + 1; });
+    var sorted = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
+    var top3 = sorted.slice(0, 3);
+    var total = allAnswers.length;
+
+    var card = document.createElement('div');
+    card.className = 'key-answer-card';
+    var html = '<h4>' + ks.title + '</h4><div class="ka-sub">' + ks.sub + '</div>';
+    top3.forEach(function(label, idx) {
+      var c = counts[label];
+      var pct = total > 0 ? Math.round(c / total * 100) : 0;
+      var truncated = label.length > 30 ? label.substr(0, 28) + '…' : label;
+      html += '<div class="key-answer-item">'
+        + '<span class="ka-rank">' + (idx + 1) + '</span>'
+        + '<span class="ka-label">' + truncated + '</span>'
+        + '<span class="ka-count"><strong>' + c + '</strong> · ' + pct + '%</span>'
+        + '</div>';
+    });
+    card.innerHTML = html;
+    grid.appendChild(card);
+  });
+}
 
 var activityChartInstance = null;
 
