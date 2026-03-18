@@ -45,7 +45,7 @@ function doPost(e) {
    depuis Apps Script (menu Exécuter → initPassword)
    ============================================================ */
 function initPassword() {
-  PropertiesService.getScriptProperties().setProperty('DASHBOARD_PWD', 'julie2026');
+  PropertiesService.getScriptProperties().setProperty('DASHBOARD_PWD', 'julie');
   Logger.log('Mot de passe enregistré dans les propriétés du script.');
 }
 
