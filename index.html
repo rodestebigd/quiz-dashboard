@@ -148,10 +148,20 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
   margin-top:auto; padding-top:12px; display:flex; flex-direction:column; gap:6px;
 }
 
-.main { flex:1; padding:32px; overflow-x:hidden; }
+.main { flex:1; overflow-y:auto; height:100vh; }
+.main-inner { padding:32px; }
 .main-header { margin-bottom:28px; }
 .main-header h1 { font-size:24px; font-weight:700; }
 .main-header p { color:var(--text-muted); font-size:14px; margin-top:4px; }
+
+/* Page system */
+.page-content { display:none; animation:pageFadeIn .2s ease; }
+.page-content.active { display:block; }
+@keyframes pageFadeIn { from { opacity:0; } to { opacity:1; } }
+
+/* Active nav group header */
+.nav-group-header.active-page { color:var(--accent-light); }
+.nav-group-header.active-page svg:first-child { color:var(--accent-light); }
 
 /* KPI CARDS */
 .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px; }
@@ -406,7 +416,8 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
     width:260px; display:block;
   }
   .sidebar.open { transform:translateX(0); }
-  .main { padding:60px 14px 20px; }
+  .main { padding:0; height:100vh; }
+  .main-inner { padding:60px 14px 20px; }
   .main-header { flex-direction:column; gap:12px; }
   .main-header > div:last-child { align-self:flex-start; }
   .kpi-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
@@ -462,42 +473,42 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
 
     <!-- ANALYTICS -->
     <div class="nav-group" id="navAnalytics">
-      <div class="nav-group-header" onclick="toggleNavGroup('navAnalytics')">
+      <div class="nav-group-header active-page" onclick="switchPage('pageAnalytics','navAnalytics')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
         Analytics
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="nav-group-items">
-        <div class="nav-item active" onclick="navTo('kpis',this)">Vue d'ensemble</div>
-        <div class="nav-item" onclick="navTo('funnel',this)">Funnel</div>
-        <div class="nav-item" onclick="navTo('activity',this)">Activité par heure</div>
-        <div class="nav-item" onclick="navTo('completionTime',this)">Temps de complétion</div>
+        <div class="nav-item active" onclick="scrollInPage('kpis',this)">Vue d'ensemble</div>
+        <div class="nav-item" onclick="scrollInPage('funnel',this)">Funnel</div>
+        <div class="nav-item" onclick="scrollInPage('activity',this)">Activité par heure</div>
+        <div class="nav-item" onclick="scrollInPage('completionTime',this)">Temps de complétion</div>
       </div>
     </div>
 
     <!-- PERSONAS -->
     <div class="nav-group" id="navPersonas">
-      <div class="nav-group-header" onclick="toggleNavGroup('navPersonas')">
+      <div class="nav-group-header" onclick="switchPage('pagePersonas','navPersonas')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
         Personas
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="nav-group-items">
-        <div class="nav-item" onclick="navTo('avgProfile',this)">Profil moyen</div>
-        <div class="nav-item" onclick="navTo('personaCards',this)">Personas</div>
+        <div class="nav-item" onclick="scrollInPage('avgProfile',this)">Profil moyen</div>
+        <div class="nav-item" onclick="scrollInPage('personaCards',this)">Personas</div>
       </div>
     </div>
 
     <!-- RÉPONSES -->
     <div class="nav-group" id="navReponses">
-      <div class="nav-group-header" onclick="toggleNavGroup('navReponses')">
+      <div class="nav-group-header" onclick="switchPage('pageReponses','navReponses')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Réponses
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="nav-group-items">
-        <div class="nav-item" onclick="navTo('allResponses',this)">Toutes les réponses</div>
-        <div class="nav-item" onclick="navTo('questions',this)">Par question</div>
+        <div class="nav-item" onclick="scrollInPage('allResponses',this)">Toutes les réponses</div>
+        <div class="nav-item" onclick="scrollInPage('questions',this)">Par question</div>
       </div>
     </div>
 
@@ -518,7 +529,8 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
     </div>
   </aside>
 
-  <main class="main">
+  <main class="main" id="mainArea">
+    <div class="main-inner">
     <div class="main-header" style="display:flex;justify-content:space-between;align-items:flex-start">
       <div>
         <h1>Tableau de bord Quiz</h1>
@@ -526,6 +538,9 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
       </div>
       <button class="refresh-btn" onclick="fetchData()">Rafraîchir</button>
     </div>
+
+    <!-- ========== PAGE: ANALYTICS ========== -->
+    <div id="pageAnalytics" class="page-content active">
 
     <!-- KPIs -->
     <div id="kpis" class="kpi-grid">
@@ -577,6 +592,11 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
       <div class="chart-grid" id="chartGrid"></div>
     </div>
 
+    </div><!-- /pageAnalytics -->
+
+    <!-- ========== PAGE: PERSONAS ========== -->
+    <div id="pagePersonas" class="page-content">
+
     <!-- PERSONAS — PROFIL MOYEN -->
     <div id="avgProfile" class="section">
       <h2 class="section-title"><span class="dot"></span> Profil type</h2>
@@ -588,6 +608,11 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
       <h2 class="section-title"><span class="dot"></span> Personas détaillés</h2>
       <div class="persona-grid" id="personaGrid"></div>
     </div>
+
+    </div><!-- /pagePersonas -->
+
+    <!-- ========== PAGE: RÉPONSES ========== -->
+    <div id="pageReponses" class="page-content">
 
     <!-- ALL RESPONSES TABLE -->
     <div id="allResponses" class="section responses-section">
@@ -608,7 +633,9 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
         </div>
         <div class="pagination" id="respPagination"></div>
       </div>
-    </div>
+    </div><!-- /pageReponses -->
+
+    </div><!-- /main-inner -->
   </main>
 </div>
 
@@ -652,11 +679,61 @@ function doGuestLogin() {
   fetchData();
 }
 
-function navTo(id, el) {
+var currentPage = 'pageAnalytics';
+
+function switchPage(pageId, navGroupId) {
+  if (currentPage === pageId) return; /* already on this page */
+  currentPage = pageId;
+
+  /* Hide all pages, show target */
+  document.querySelectorAll('.page-content').forEach(function(p) { p.classList.remove('active'); });
+  var target = document.getElementById(pageId);
+  if (target) target.classList.add('active');
+
+  /* Update nav headers */
+  document.querySelectorAll('.nav-group-header').forEach(function(h) { h.classList.remove('active-page'); });
+  var group = document.getElementById(navGroupId);
+  if (group) group.querySelector('.nav-group-header').classList.add('active-page');
+
+  /* Open this nav group, keep others as they are */
+  if (group && group.classList.contains('closed')) group.classList.toggle('closed');
+
+  /* Clear sub-item highlights, highlight first sub-item */
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  if (group) {
+    var firstItem = group.querySelector('.nav-item');
+    if (firstItem) firstItem.classList.add('active');
+  }
+
+  /* Scroll main to top */
+  var mainArea = document.getElementById('mainArea');
+  if (mainArea) mainArea.scrollTop = 0;
+
+  /* Close sidebar on mobile */
+  var sb = document.getElementById('sidebar');
+  if (sb && sb.classList.contains('open')) toggleSidebar();
+}
+
+function scrollInPage(sectionId, el) {
+  /* First, make sure we're on the right page */
+  var section = document.getElementById(sectionId);
+  if (!section) return;
+  var page = section.closest('.page-content');
+  if (page && page.id !== currentPage) {
+    /* Find which nav group corresponds */
+    var navMap = { pageAnalytics: 'navAnalytics', pagePersonas: 'navPersonas', pageReponses: 'navReponses' };
+    switchPage(page.id, navMap[page.id] || '');
+  }
+
+  /* Highlight clicked item */
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   if (el) el.classList.add('active');
-  var target = document.getElementById(id);
-  if (target) target.scrollIntoView({ behavior: 'smooth' });
+
+  /* Smooth scroll within main */
+  setTimeout(function() {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+
   /* Close sidebar on mobile */
   var sb = document.getElementById('sidebar');
   if (sb && sb.classList.contains('open')) toggleSidebar();
@@ -667,8 +744,9 @@ function toggleNavGroup(groupId) {
   if (g) g.classList.toggle('closed');
 }
 
-/* Keep old function for compatibility */
-function scrollToSection(id) { navTo(id, null); }
+/* Compat */
+function scrollToSection(id) { scrollInPage(id, null); }
+function navTo(id, el) { scrollInPage(id, el); }
 
 function toggleSidebar() {
   var sb = document.getElementById('sidebar');
