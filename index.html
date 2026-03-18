@@ -115,58 +115,85 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .persona-detail { font-size:13px; color:var(--text-muted); margin-bottom:6px; line-height:1.4; }
 .persona-detail strong { color:var(--text); font-weight:600; }
 
-/* FUNNEL VISUAL — Entonnoir */
+/* FUNNEL VISUAL — Entonnoir trapèze */
 .funnel-container { display:flex; flex-direction:column; align-items:center; padding:20px 0; }
+
+/* Header "X visiteurs" */
+.funnel-header {
+  font-size:15px; font-weight:700; color:var(--text); margin-bottom:12px;
+  display:flex; align-items:center; gap:8px;
+}
+.funnel-header .count { font-size:22px; color:var(--accent-light); }
+
+/* Each funnel row: left label | center trapezoid | right drop */
 .funnel-row {
-  display:grid; grid-template-columns:160px 1fr 160px; align-items:center;
-  width:100%; margin-bottom:3px; min-height:0;
+  display:grid; grid-template-columns:170px 1fr 180px; align-items:center;
+  width:100%; min-height:0;
 }
 .funnel-row-left {
-  text-align:right; padding-right:16px; font-size:12px; font-weight:600; color:var(--text);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  text-align:right; padding-right:20px; font-size:12px; font-weight:500; color:var(--text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.3;
 }
-.funnel-row-left .step-num { color:var(--text-muted); font-weight:400; margin-right:4px; font-size:11px; }
+.funnel-row-left .step-num {
+  display:inline-block; width:20px; height:20px; line-height:20px; text-align:center;
+  background:var(--bg-dark); border-radius:50%; font-size:10px; font-weight:700;
+  color:var(--text-muted); margin-right:6px; vertical-align:middle;
+}
+.funnel-row-left .step-name { font-weight:600; }
 .funnel-row-center { display:flex; justify-content:center; }
+
+/* Trapezoid band */
 .funnel-band {
-  height:36px; border-radius:6px; display:flex; align-items:center; justify-content:center;
-  font-size:13px; font-weight:700; color:#fff; position:relative;
-  transition:all .4s ease; cursor:default; min-width:40px;
-  text-shadow:0 1px 2px rgba(0,0,0,0.3);
+  height:38px; display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:#fff; position:relative;
+  cursor:default; min-width:50px;
+  text-shadow:0 1px 3px rgba(0,0,0,0.4);
+  transition:filter .2s;
 }
-.funnel-band:hover { filter:brightness(1.15); transform:scaleY(1.08); }
-.funnel-band-worst { box-shadow:0 0 0 2px var(--red), 0 0 12px rgba(239,68,68,0.3); }
-.funnel-row-right {
-  padding-left:16px; font-size:12px; color:var(--text-muted); white-space:nowrap;
-}
-.funnel-row-right .drop-count { color:var(--red); font-weight:600; }
-.funnel-row-right .worst-flag {
-  display:inline-block; font-size:11px; margin-left:4px; color:var(--red); font-weight:700;
+.funnel-band:hover { filter:brightness(1.12); }
+.funnel-band-worst {
+  filter:drop-shadow(0 0 8px rgba(239,68,68,0.5));
 }
 
-/* Funnel completed footer */
-.funnel-completed {
-  margin-top:16px; text-align:center; padding:16px 24px;
-  background:var(--bg-dark); border-radius:10px; display:inline-flex;
-  align-items:center; gap:12px;
+/* Right side: drop info */
+.funnel-row-right {
+  padding-left:20px; font-size:12px; color:var(--text-muted); white-space:nowrap;
+  display:flex; align-items:center; gap:6px;
 }
-.funnel-completed-icon { font-size:24px; }
-.funnel-completed-text { font-size:14px; color:var(--text); }
-.funnel-completed-text strong { font-size:20px; font-weight:700; color:var(--green); }
+.funnel-row-right .drop-count { color:var(--red); font-weight:700; font-size:13px; }
+.funnel-row-right .drop-zero { color:var(--green); font-weight:600; }
+.funnel-row-right .worst-flag {
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:10px; color:var(--red); font-weight:700;
+  background:rgba(239,68,68,0.12); padding:2px 6px; border-radius:4px;
+}
+.funnel-row-right .entry-count { color:var(--green); font-weight:700; font-size:13px; }
+
+/* Completed footer */
+.funnel-completed {
+  margin-top:8px; text-align:center; padding:14px 28px;
+  background:linear-gradient(135deg, rgba(34,197,94,0.1), rgba(99,102,241,0.1));
+  border:1px solid rgba(34,197,94,0.2); border-radius:12px;
+  display:inline-flex; align-items:center; gap:12px;
+}
+.funnel-completed-icon { font-size:26px; }
+.funnel-completed-text { font-size:14px; color:var(--text); text-align:left; }
+.funnel-completed-text strong { font-size:22px; font-weight:700; color:var(--green); }
 .funnel-completed-text .sub { display:block; font-size:12px; color:var(--text-muted); margin-top:2px; }
 
-/* Funnel summary strip */
+/* Summary strip */
 .funnel-summary {
   display:flex; gap:24px; margin-top:16px; padding:16px; width:100%;
-  background:var(--bg-dark); border-radius:10px; font-size:13px;
+  background:var(--bg-dark); border-radius:10px; font-size:13px; flex-wrap:wrap;
 }
 .funnel-summary-item { display:flex; flex-direction:column; gap:2px; }
 .funnel-summary-item .label { color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
 .funnel-summary-item .value { font-weight:700; font-size:16px; }
 
 @media(max-width:768px) {
-  .funnel-row { grid-template-columns:100px 1fr 100px; }
-  .funnel-row-left { font-size:11px; padding-right:8px; }
-  .funnel-row-right { font-size:11px; padding-left:8px; }
+  .funnel-row { grid-template-columns:110px 1fr 120px; }
+  .funnel-row-left { font-size:11px; padding-right:10px; }
+  .funnel-row-right { font-size:11px; padding-left:10px; }
   .funnel-band { height:30px; font-size:11px; }
 }
 
@@ -379,9 +406,9 @@ function renderAll() {
   /* KPIs */
   document.getElementById('kpiSessions').textContent = totalSessions;
 
-  /* Completed = sessions that reached step 24 (final redirect) */
+  /* Completed = sessions that reached step 20 (last question: Événement) */
   var completed = sessionIds.filter(function(sid) {
-    return sessions[sid].some(function(r) { return parseInt(r.step) >= 24; });
+    return sessions[sid].some(function(r) { return parseInt(r.step) === 20; });
   }).length;
   document.getElementById('kpiCompleted').textContent = completed;
   document.getElementById('kpiCompletedPct').textContent = totalSessions > 0 ? Math.round(completed / totalSessions * 100) + '% de complétion' : '';
@@ -392,15 +419,20 @@ function renderAll() {
   var ageMode = mostCommon(ageAnswers.map(function(r) { return r.answer; }));
   document.getElementById('kpiAge').textContent = ageMode || '—';
 
-  /* Drop-off */
+  /* Drop-off — cumulative decreasing: count can NEVER go up */
   var questionOrder = [1,2,3,4,6,7,8,9,10,14,16,18,19,20];
   var maxDropStep = 0, maxDropPct = 0;
   var funnelData = [];
   questionOrder.forEach(function(step, idx) {
     var qName = QMAP[step] || 'Étape '+step;
-    var count = sessionIds.filter(function(sid) {
+    var rawCount = sessionIds.filter(function(sid) {
       return sessions[sid].some(function(r) { return parseInt(r.step) === step; });
     }).length;
+    /* Cap: count can never exceed previous step's count */
+    var count = rawCount;
+    if (idx > 0 && count > funnelData[idx-1].count) {
+      count = funnelData[idx-1].count;
+    }
     funnelData.push({ step: step, name: qName, count: count });
     if (idx > 0 && funnelData[idx-1].count > 0) {
       var drop = 1 - count / funnelData[idx-1].count;
@@ -446,15 +478,16 @@ function renderFunnel(funnelData, total) {
   if (max === 0) max = 1;
   var len = funnelData.length;
 
-  /* Color gradient: from accent-green (top) to deep purple-red (bottom) */
-  var gradientColors = [
-    '#22c55e','#34d058','#3bba5c','#4ca65e',
-    '#5b9bd5','#6366f1','#7054e8','#8b5cf6',
-    '#a855f7','#c026d3','#d946a8','#e74580',
-    '#ef4444','#dc2626'
+  /* Gradient: green → blue → purple (normal), red/orange for big drops */
+  var gradientStops = [
+    [34,197,94],[42,200,80],[50,190,90],[60,175,110],
+    [70,160,180],[99,102,241],[110,90,232],[139,92,246],
+    [168,85,247],[192,38,211],[180,60,170],[170,70,140],
+    [160,80,120],[140,90,100]
   ];
+  function rgbStr(arr) { return 'rgb(' + arr[0] + ',' + arr[1] + ',' + arr[2] + ')'; }
 
-  /* Find worst drop */
+  /* Find worst drop index */
   var worstIdx = -1, worstDrop = 0;
   funnelData.forEach(function(f, i) {
     if (i === 0) return;
@@ -464,20 +497,40 @@ function renderFunnel(funnelData, total) {
     if (dropPct > worstDrop) { worstDrop = dropPct; worstIdx = i; }
   });
 
-  /* Count completed (step 24) */
+  /* Completed = step 20 */
   var sessions = groupBy(rawData, 'session_id');
   var sessionIds = Object.keys(sessions);
   var completed = sessionIds.filter(function(sid) {
-    return sessions[sid].some(function(r) { return parseInt(r.step) >= 24; });
+    return sessions[sid].some(function(r) { return parseInt(r.step) === 20; });
   }).length;
 
-  /* Render funnel bands */
+  /* Precompute widths: % relative to first, min 12% */
+  var widths = funnelData.map(function(f) {
+    return Math.max(12, f.count / max * 100);
+  });
+
+  /* Header: total visitors */
+  var header = document.createElement('div');
+  header.className = 'funnel-header';
+  header.innerHTML = '<span class="count">' + max + '</span> visiteurs';
+  container.appendChild(header);
+
+  /* Render trapezoid bands */
   funnelData.forEach(function(f, i) {
     var pctVsFirst = max > 0 ? (f.count / max * 100) : 0;
-    /* Width: min 15%, max 100%, proportional */
-    var widthPct = Math.max(15, pctVsFirst);
-    var colorIdx = Math.min(Math.floor(i / len * gradientColors.length), gradientColors.length - 1);
-    var bandColor = gradientColors[colorIdx];
+    var topW = widths[i];
+    var botW = (i < len - 1) ? widths[i + 1] : Math.max(8, topW * 0.7);
+
+    /* clip-path: trapezoid — top full width, bottom narrower centered */
+    var insetBot = 0;
+    if (topW > 0 && botW < topW) {
+      insetBot = ((topW - botW) / topW) * 50;
+    }
+    var clipPath = 'polygon(0 0, 100% 0, ' + (100 - insetBot).toFixed(1) + '% 100%, ' + insetBot.toFixed(1) + '% 100%)';
+
+    /* Color: gradient position, red if drop > 10% */
+    var colorIdx = Math.min(Math.floor(i / len * gradientStops.length), gradientStops.length - 1);
+    var bandColor = rgbStr(gradientStops[colorIdx]);
     var isWorst = (i === worstIdx);
 
     /* Drop info */
@@ -488,30 +541,40 @@ function renderFunnel(funnelData, total) {
       dropPct = dropCount / funnelData[i - 1].count * 100;
     }
 
-    if (isWorst) bandColor = '#ef4444';
+    /* Override color for high drops */
+    if (dropPct > 15) bandColor = '#ef4444';
+    else if (dropPct > 10) bandColor = '#f97316';
+    if (isWorst) bandColor = '#dc2626';
 
     var row = document.createElement('div');
     row.className = 'funnel-row';
 
-    /* Left — question name */
-    var left = '<div class="funnel-row-left"><span class="step-num">' + f.step + '.</span>' + f.name + '</div>';
+    /* Left — step number + name */
+    var left = '<div class="funnel-row-left">'
+      + '<span class="step-num">' + f.step + '</span>'
+      + '<span class="step-name">' + f.name + '</span>'
+      + '</div>';
 
-    /* Center — band */
+    /* Center — trapezoid band */
     var worstClass = isWorst ? ' funnel-band-worst' : '';
     var center = '<div class="funnel-row-center">'
-      + '<div class="funnel-band' + worstClass + '" style="width:' + widthPct + '%;background:' + bandColor + '" title="' + f.name + ': ' + f.count + ' réponses">'
+      + '<div class="funnel-band' + worstClass + '" style="'
+      + 'width:' + topW + '%;'
+      + 'background:' + bandColor + ';'
+      + 'clip-path:' + clipPath + ';'
+      + '" title="' + f.name + ': ' + f.count + ' (' + pctVsFirst.toFixed(1) + '%)">'
       + pctVsFirst.toFixed(1) + '%'
       + '</div></div>';
 
     /* Right — drop info */
     var right = '<div class="funnel-row-right">';
     if (i === 0) {
-      right += '<span style="color:var(--green);font-weight:600">' + f.count + ' entrées</span>';
+      right += '<span class="entry-count">' + f.count + '</span> entrées';
     } else if (dropCount > 0) {
-      right += '<span class="drop-count">-' + dropCount + '</span> abandon' + (dropCount > 1 ? 's' : '');
-      if (isWorst) right += '<span class="worst-flag">⚠️ Plus gros drop</span>';
+      right += '<span class="drop-count">' + dropCount + '</span> abandon' + (dropCount > 1 ? 's' : '');
+      if (isWorst) right += ' <span class="worst-flag">⚠️ Plus gros drop</span>';
     } else {
-      right += '<span style="color:var(--green)">0 abandon</span>';
+      right += '<span class="drop-zero">0</span> abandon';
     }
     right += '</div>';
 
@@ -523,9 +586,9 @@ function renderFunnel(funnelData, total) {
   var completedPct = max > 0 ? (completed / max * 100).toFixed(1) : 0;
   var footer = document.createElement('div');
   footer.className = 'funnel-completed';
-  footer.innerHTML = '<div class="funnel-completed-icon">🏁</div>'
+  footer.innerHTML = '<div class="funnel-completed-icon">🏆</div>'
     + '<div class="funnel-completed-text"><strong>' + completed + '</strong> quiz complétés'
-    + '<span class="sub">' + completedPct + '% du total — étape 24 atteinte</span></div>';
+    + '<span class="sub">' + completedPct + '% — dernière question atteinte</span></div>';
   container.appendChild(footer);
 
   /* Summary strip */
@@ -538,7 +601,7 @@ function renderFunnel(funnelData, total) {
   summary.innerHTML = ''
     + '<div class="funnel-summary-item"><span class="label">Entrées</span><span class="value">' + firstCount + '</span></div>'
     + '<div class="funnel-summary-item"><span class="label">Dernière étape</span><span class="value">' + lastCount + '</span></div>'
-    + '<div class="funnel-summary-item"><span class="label">Taux global</span><span class="value" style="color:' + (overallRate >= 50 ? 'var(--green)' : overallRate >= 30 ? 'var(--amber)' : 'var(--red)') + '">' + overallRate + '%</span></div>'
+    + '<div class="funnel-summary-item"><span class="label">Taux complétion</span><span class="value" style="color:' + (overallRate >= 50 ? 'var(--green)' : overallRate >= 30 ? 'var(--amber)' : 'var(--red)') + '">' + overallRate + '%</span></div>'
     + '<div class="funnel-summary-item"><span class="label">Pire drop</span><span class="value" style="color:var(--red)">' + worstName + ' (-' + Math.round(worstDrop) + '%)</span></div>'
     + '<div class="funnel-summary-item"><span class="label">Complétés</span><span class="value" style="color:var(--green)">' + completed + '</span></div>';
 }
