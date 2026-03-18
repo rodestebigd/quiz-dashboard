@@ -570,41 +570,68 @@ var COLORS = ['#6366f1','#ec4899','#06b6d4','#f59e0b','#22c55e','#ef4444','#8b5c
 
 var activityChartInstance = null;
 
-function renderActivity() {
-  /* Count responses per hour (French local time) */
-  var hourCounts = new Array(24);
-  for (var h = 0; h < 24; h++) hourCounts[h] = 0;
+function getFrenchHour(timestamp) {
+  var d = new Date(timestamp);
+  if (isNaN(d.getTime())) return -1;
+  try {
+    return parseInt(new Intl.DateTimeFormat('fr-FR', { hour: 'numeric', hour12: false, timeZone: 'Europe/Paris' }).format(d));
+  } catch(e) {
+    return d.getHours();
+  }
+}
 
-  rawData.forEach(function(r) {
-    if (!r.timestamp) return;
-    var d = new Date(r.timestamp);
-    if (isNaN(d.getTime())) return;
-    /* Convert to French local time using Intl */
-    var frHour;
-    try {
-      frHour = parseInt(new Intl.DateTimeFormat('fr-FR', { hour: 'numeric', hour12: false, timeZone: 'Europe/Paris' }).format(d));
-    } catch(e) {
-      frHour = d.getHours(); /* fallback */
-    }
-    if (frHour >= 0 && frHour < 24) hourCounts[frHour]++;
+function renderActivity() {
+  var sessions = groupBy(rawData, 'session_id');
+  var sessionIds = Object.keys(sessions);
+
+  /* For each session: find the hour of its FIRST response, and whether it completed (step 20) */
+  var sessionsPerHour = new Array(24);
+  var completedPerHour = new Array(24);
+  for (var h = 0; h < 24; h++) { sessionsPerHour[h] = 0; completedPerHour[h] = 0; }
+
+  sessionIds.forEach(function(sid) {
+    var responses = sessions[sid];
+    /* Find earliest timestamp in this session */
+    var earliest = null;
+    responses.forEach(function(r) {
+      if (!r.timestamp) return;
+      var d = new Date(r.timestamp);
+      if (isNaN(d.getTime())) return;
+      if (!earliest || d < earliest) earliest = d;
+    });
+    if (!earliest) return;
+
+    var hour = getFrenchHour(earliest.toISOString());
+    if (hour < 0 || hour > 23) return;
+
+    sessionsPerHour[hour]++;
+
+    /* Did this session complete? (has step 20) */
+    var didComplete = responses.some(function(r) { return parseInt(r.step) === 20; });
+    if (didComplete) completedPerHour[hour]++;
   });
 
-  /* Find peak hour */
+  /* Completion rate per hour */
+  var completionRate = sessionsPerHour.map(function(count, h) {
+    return count > 0 ? Math.round(completedPerHour[h] / count * 100) : 0;
+  });
+
+  /* Find peak hour (by unique users) */
   var peakHour = 0, peakCount = 0;
   for (var h = 0; h < 24; h++) {
-    if (hourCounts[h] > peakCount) { peakCount = hourCounts[h]; peakHour = h; }
+    if (sessionsPerHour[h] > peakCount) { peakCount = sessionsPerHour[h]; peakHour = h; }
   }
 
   /* Update subtitle */
-  document.getElementById('activitySub').textContent = 'Pic : ' + peakHour + 'h (' + peakCount + ' réponses) — Heure de Paris';
+  document.getElementById('activitySub').textContent = 'Pic : ' + peakHour + 'h (' + peakCount + ' utilisateurs) — Heure de Paris';
 
   /* Labels */
   var labels = [];
   for (var h = 0; h < 24; h++) labels.push(h + 'h');
 
-  /* Point sizes: bigger for peak */
-  var pointRadii = hourCounts.map(function(c, i) { return i === peakHour ? 7 : 2; });
-  var pointBg = hourCounts.map(function(c, i) { return i === peakHour ? '#f59e0b' : '#6366f1'; });
+  /* Point sizes: bigger for peak on users curve */
+  var pointRadii = sessionsPerHour.map(function(c, i) { return i === peakHour ? 7 : 2; });
+  var pointBg = sessionsPerHour.map(function(c, i) { return i === peakHour ? '#f59e0b' : '#3b82f6'; });
 
   /* Destroy previous chart */
   if (activityChartInstance) { activityChartInstance.destroy(); activityChartInstance = null; }
@@ -614,28 +641,62 @@ function renderActivity() {
     type: 'line',
     data: {
       labels: labels,
-      datasets: [{
-        label: 'Réponses',
-        data: hourCounts,
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99,102,241,0.12)',
-        fill: true,
-        tension: 0.4,
-        borderWidth: 2.5,
-        pointRadius: pointRadii,
-        pointBackgroundColor: pointBg,
-        pointBorderColor: pointBg,
-        pointHoverRadius: 6
-      }]
+      datasets: [
+        {
+          label: 'Utilisateurs uniques',
+          data: sessionsPerHour,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.10)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2.5,
+          pointRadius: pointRadii,
+          pointBackgroundColor: pointBg,
+          pointBorderColor: pointBg,
+          pointHoverRadius: 6,
+          yAxisID: 'yUsers'
+        },
+        {
+          label: 'Taux de complétion',
+          data: completionRate,
+          borderColor: '#22c55e',
+          backgroundColor: 'rgba(34,197,94,0.08)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2,
+          borderDash: [4, 3],
+          pointRadius: 2,
+          pointBackgroundColor: '#22c55e',
+          pointBorderColor: '#22c55e',
+          pointHoverRadius: 5,
+          yAxisID: 'yRate'
+        }
+      ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { display: false },
+        legend: {
+          display: true,
+          position: 'top',
+          align: 'end',
+          labels: {
+            color: '#8b8d97',
+            font: { family: 'DM Sans', size: 12 },
+            boxWidth: 14,
+            padding: 16,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
         tooltip: {
           callbacks: {
-            label: function(ctx) { return ctx.raw + ' réponses'; }
+            label: function(ctx) {
+              if (ctx.datasetIndex === 0) return ctx.raw + ' utilisateur' + (ctx.raw > 1 ? 's' : '');
+              return ctx.raw + '% de complétion';
+            }
           }
         }
       },
@@ -644,10 +705,22 @@ function renderActivity() {
           ticks: { color: '#8b8d97', font: { size: 11 } },
           grid: { color: 'rgba(255,255,255,0.04)' }
         },
-        y: {
+        yUsers: {
+          type: 'linear',
+          position: 'left',
           beginAtZero: true,
-          ticks: { color: '#8b8d97', font: { size: 11 } },
+          title: { display: true, text: 'Utilisateurs', color: '#3b82f6', font: { size: 11, weight: '600' } },
+          ticks: { color: '#3b82f6', font: { size: 11 } },
           grid: { color: 'rgba(255,255,255,0.04)' }
+        },
+        yRate: {
+          type: 'linear',
+          position: 'right',
+          beginAtZero: true,
+          max: 100,
+          title: { display: true, text: '% complétion', color: '#22c55e', font: { size: 11, weight: '600' } },
+          ticks: { color: '#22c55e', font: { size: 11 }, callback: function(v) { return v + '%'; } },
+          grid: { drawOnChartArea: false }
         }
       }
     }
