@@ -369,7 +369,6 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
      ============================================================ -->
 <script>
 var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU488B5sF0NXnI62bXSpcMG0_trHcj0vEUx2UnPHigeL/exec';
-var DASHBOARD_PASSWORD = 'julie2026';
 </script>
 
 <!-- LOGIN SCREEN -->
@@ -380,6 +379,7 @@ var DASHBOARD_PASSWORD = 'julie2026';
     <input type="password" id="pwdInput" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
     <button onclick="doLogin()">Accéder</button>
     <p class="login-error" id="loginError">Mot de passe incorrect</p>
+    <p style="margin-top:16px"><a onclick="doGuestLogin()" style="font-size:13px;color:var(--text-muted);text-decoration:underline;cursor:pointer">Se connecter en tant qu'invité</a></p>
   </div>
 </div>
 
@@ -489,14 +489,38 @@ var DASHBOARD_PASSWORD = 'julie2026';
    ============================================================ */
 function doLogin() {
   var pwd = document.getElementById('pwdInput').value;
-  if (pwd === DASHBOARD_PASSWORD) {
-    document.getElementById('loginOverlay').classList.add('hidden');
-    document.getElementById('app').style.display = 'flex';
-    fetchData();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-    document.getElementById('pwdInput').value = '';
-  }
+  if (!pwd) return;
+  var btn = document.querySelector('.login-box button');
+  btn.textContent = 'Vérification...';
+  btn.disabled = true;
+  document.getElementById('loginError').style.display = 'none';
+
+  fetch(API_URL + '?action=login&pwd=' + encodeURIComponent(pwd))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.status === 'ok') {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('app').style.display = 'flex';
+        fetchData();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('pwdInput').value = '';
+        btn.textContent = 'Accéder';
+        btn.disabled = false;
+      }
+    })
+    .catch(function() {
+      document.getElementById('loginError').textContent = 'Erreur de connexion au serveur';
+      document.getElementById('loginError').style.display = 'block';
+      btn.textContent = 'Accéder';
+      btn.disabled = false;
+    });
+}
+
+function doGuestLogin() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('app').style.display = 'flex';
+  fetchData();
 }
 
 function scrollToSection(id) {

@@ -40,20 +40,42 @@ function doPost(e) {
   }
 }
 
+/* ============================================================
+   INIT PASSWORD — Lancer une seule fois manuellement
+   depuis Apps Script (menu Exécuter → initPassword)
+   ============================================================ */
+function initPassword() {
+  PropertiesService.getScriptProperties().setProperty('DASHBOARD_PWD', 'julie2026');
+  Logger.log('Mot de passe enregistré dans les propriétés du script.');
+}
+
 function doGet(e) {
+  var params = e ? e.parameter : {};
+  var action = params.action || 'data';
+
+  /* ---- LOGIN: verify password server-side ---- */
+  if (action === 'login') {
+    var pwd = params.pwd || '';
+    var stored = PropertiesService.getScriptProperties().getProperty('DASHBOARD_PWD') || '';
+    var status = (pwd === stored && pwd !== '') ? 'ok' : 'denied';
+    return ContentService.createTextOutput(JSON.stringify({ status: status }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  /* ---- DATA or GUEST: return quiz responses ---- */
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('responses');
-  
+
   if (!sheet || sheet.getLastRow() < 2) {
     var output = JSON.stringify({responses: [], sessions: 0});
     return ContentService.createTextOutput(output)
       .setMimeType(ContentService.MimeType.JSON);
   }
-  
+
   var data = sheet.getDataRange().getValues();
   var headers = data[0];
   var rows = [];
-  
+
   for (var i = 1; i < data.length; i++) {
     var row = {};
     for (var j = 0; j < headers.length; j++) {
@@ -61,16 +83,16 @@ function doGet(e) {
     }
     rows.push(row);
   }
-  
+
   // Count unique sessions
   var sessions = {};
   rows.forEach(function(r) { sessions[r.session_id] = true; });
-  
+
   var output = JSON.stringify({
     responses: rows,
     sessions: Object.keys(sessions).length
   });
-  
+
   return ContentService.createTextOutput(output)
     .setMimeType(ContentService.MimeType.JSON);
 }
