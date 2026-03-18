@@ -97,44 +97,39 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .nav-item.active { background:rgba(99,102,241,0.12); color:var(--accent-light); }
 .nav-item svg { width:15px; height:15px; flex-shrink:0; }
 
-/* Responses table */
-.responses-section { margin-bottom:32px; }
-.responses-controls {
-  display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap;
+/* Session list */
+.sess-controls {
+  display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap;
 }
-.responses-controls .sort-btn {
+.sess-controls .sort-btn {
   padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600;
   cursor:pointer; border:1px solid var(--border); background:var(--bg-card);
   color:var(--text-muted); font-family:inherit; transition:all .15s;
 }
-.responses-controls .sort-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
-.responses-controls .sort-btn:hover:not(.active) { border-color:var(--accent); color:var(--text); }
-.responses-controls .page-info { margin-left:auto; font-size:12px; color:var(--text-muted); }
+.sess-controls .sort-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+.sess-controls .sort-btn:hover:not(.active) { border-color:var(--accent); color:var(--text); }
+.sess-controls .page-info { margin-left:auto; font-size:12px; color:var(--text-muted); }
 
-.resp-table-wrap { overflow-x:auto; }
-.resp-table {
-  width:100%; border-collapse:separate; border-spacing:0; font-size:12px;
+.sess-list { display:flex; flex-direction:column; gap:6px; }
+.sess-row {
+  display:flex; align-items:center; gap:12px; padding:12px 16px;
+  background:var(--bg-dark); border-radius:6px; transition:background .15s;
 }
-.resp-table thead th {
-  text-align:left; padding:10px 12px; font-size:11px; font-weight:700;
-  color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px;
-  border-bottom:2px solid var(--border); background:var(--bg-sidebar);
-  position:sticky; top:0; white-space:nowrap;
+.sess-row:hover { background:rgba(99,102,241,0.06); }
+.sess-time { font-size:12px; color:var(--text-muted); min-width:100px; }
+.sess-completion { font-size:13px; font-weight:600; min-width:50px; }
+.sess-status { flex:1; font-size:12px; color:var(--text-muted); }
+.sess-status .completed { color:var(--green); font-weight:600; }
+.sess-status .abandoned { color:var(--amber); }
+.sess-detail-btn {
+  padding:5px 12px; border-radius:6px; font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); background:var(--bg-card);
+  color:var(--text-muted); font-family:inherit; transition:all .15s; white-space:nowrap;
 }
-.resp-table tbody td {
-  padding:8px 12px; border-bottom:1px solid var(--border); border-left:none; border-right:none;
-  color:var(--text); vertical-align:middle; max-width:240px;
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.resp-table tbody tr:nth-child(even) { background:var(--bg-card); }
-.resp-table tbody tr:nth-child(odd) { background:transparent; }
-.resp-table tbody tr:hover { background:rgba(99,102,241,0.06); }
-.resp-table .col-sid { font-family:monospace; font-size:11px; color:var(--text-muted); }
-.resp-table .col-step { font-weight:600; text-align:center; width:50px; }
-.resp-table .col-time { white-space:nowrap; color:var(--text-muted); font-size:11px; }
+.sess-detail-btn:hover { border-color:var(--accent); color:var(--accent-light); }
 
 .pagination {
-  display:flex; gap:6px; align-items:center; justify-content:center; margin-top:12px;
+  display:flex; gap:6px; align-items:center; justify-content:center; margin-top:14px;
 }
 .pagination button {
   padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600;
@@ -144,6 +139,39 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .pagination button:hover { border-color:var(--accent); }
 .pagination button:disabled { opacity:0.4; cursor:default; }
 .pagination .page-num { font-size:12px; color:var(--text-muted); }
+
+/* Session detail overlay */
+.sess-overlay {
+  position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(3px); animation:pageFadeIn .15s ease;
+}
+.sess-modal {
+  background:var(--bg-card); border:1px solid var(--border); border-radius:10px;
+  width:560px; max-width:92vw; max-height:85vh; overflow-y:auto; padding:24px;
+  position:relative;
+}
+.sess-modal-close {
+  position:absolute; top:12px; right:14px; background:none; border:none;
+  color:var(--text-muted); font-size:20px; cursor:pointer; line-height:1;
+  padding:4px; transition:color .15s;
+}
+.sess-modal-close:hover { color:var(--text); }
+.sess-modal-header { margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+.sess-modal-header h3 { font-size:15px; font-weight:700; margin-bottom:6px; }
+.sess-modal-meta { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--text-muted); }
+.sess-modal-meta strong { color:var(--accent-light); font-weight:700; }
+.sess-modal-row {
+  display:flex; align-items:baseline; gap:10px; padding:8px 0;
+  border-bottom:1px solid var(--border); font-size:13px;
+}
+.sess-modal-row:last-child { border-bottom:none; }
+.sess-modal-row:nth-child(even) { background:var(--bg-dark); margin:0 -12px; padding-left:12px; padding-right:12px; border-radius:4px; }
+.sess-modal-step { width:28px; height:28px; line-height:28px; text-align:center; border-radius:50%;
+  background:var(--accent); color:#fff; font-size:10px; font-weight:700; flex-shrink:0; }
+.sess-modal-step.empty { background:var(--border); color:var(--text-muted); }
+.sess-modal-q { font-weight:600; color:var(--text); min-width:120px; flex-shrink:0; }
+.sess-modal-a { color:var(--text-muted); flex:1; }
+.sess-modal-a.no-answer { color:var(--text-muted); opacity:0.5; font-style:italic; }
 
 /* Sidebar bottom actions */
 .sidebar-bottom {
@@ -651,25 +679,20 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
     <!-- ========== PAGE: RÉPONSES ========== -->
     <div id="pageReponses" class="page-content">
 
-    <!-- ALL RESPONSES TABLE -->
-    <div id="allResponses" class="section responses-section">
-      <h2 class="section-title"><span class="dot"></span> Toutes les réponses</h2>
+    <!-- ALL SESSIONS -->
+    <div id="allResponses" class="section">
+      <h2 class="section-title"><span class="dot"></span> Toutes les sessions</h2>
       <div class="chart-card">
-        <div class="responses-controls">
+        <div class="sess-controls">
           <button class="sort-btn active" id="sortNewest" onclick="setResponseSort('desc')">Plus récent</button>
           <button class="sort-btn" id="sortOldest" onclick="setResponseSort('asc')">Plus ancien</button>
           <span class="page-info" id="respPageInfo"></span>
         </div>
-        <div class="resp-table-wrap">
-          <table class="resp-table">
-            <thead><tr>
-              <th>Date/Heure</th><th>Session ID</th><th>Étape</th><th>Question</th><th>Réponse</th>
-            </tr></thead>
-            <tbody id="respTableBody"></tbody>
-          </table>
-        </div>
+        <div class="sess-list" id="sessListBody"></div>
         <div class="pagination" id="respPagination"></div>
       </div>
+    </div>
+    <div id="sessOverlayContainer"></div>
     <!-- QUESTIONS (full charts) -->
     <div id="questions" class="section">
       <h2 class="section-title"><span class="dot"></span> Réponses par question</h2>
@@ -973,7 +996,8 @@ function renderAll() {
   /* PERSONAS */
   renderPersonas(sessions);
 
-  /* ALL RESPONSES TABLE */
+  /* ALL SESSIONS */
+  sessionsCache = [];
   renderResponses();
 }
 
@@ -1860,11 +1884,59 @@ function renderPersonas(sessions) {
 }
 
 /* ============================================================
-   ALL RESPONSES TABLE
+   SESSION LIST (replaces old row-by-row table)
    ============================================================ */
 var respSortOrder = 'desc';
 var respCurrentPage = 1;
-var RESP_PER_PAGE = 50;
+var SESS_PER_PAGE = 5;
+var sessionsCache = []; /* sorted array of session objects */
+var questionOrder = [1,2,3,4,6,7,8,9,10,14,16,18,19,20];
+var TOTAL_QUESTIONS = questionOrder.length; /* 14 */
+
+function timeAgo(date) {
+  var now = new Date();
+  var diff = Math.floor((now - date) / 1000);
+  if (diff < 60) return 'Il y a ' + diff + ' sec';
+  if (diff < 3600) return 'Il y a ' + Math.floor(diff / 60) + ' min';
+  if (diff < 86400) return 'Il y a ' + Math.floor(diff / 3600) + 'h';
+  var days = Math.floor(diff / 86400);
+  return 'Il y a ' + days + ' jour' + (days > 1 ? 's' : '');
+}
+
+function buildSessionsCache() {
+  var sessions = groupBy(rawData, 'session_id');
+  var list = [];
+  Object.keys(sessions).forEach(function(sid) {
+    var responses = sessions[sid];
+    var earliest = null, latest = null;
+    responses.forEach(function(r) {
+      if (!r.timestamp) return;
+      var d = new Date(r.timestamp);
+      if (isNaN(d.getTime())) return;
+      if (!earliest || d < earliest) earliest = d;
+      if (!latest || d > latest) latest = d;
+    });
+    var answeredSteps = {};
+    responses.forEach(function(r) { answeredSteps[parseInt(r.step)] = r; });
+    var answeredCount = 0;
+    var lastAnsweredStep = 0;
+    questionOrder.forEach(function(s) {
+      if (answeredSteps[s]) { answeredCount++; lastAnsweredStep = s; }
+    });
+    var completionPct = Math.round(answeredCount / TOTAL_QUESTIONS * 100);
+    var isComplete = answeredSteps[20] ? true : false;
+    var duration = (earliest && latest) ? Math.round((latest - earliest) / 1000) : 0;
+
+    list.push({
+      sid: sid, earliest: earliest, latest: latest,
+      responses: responses, answeredSteps: answeredSteps,
+      answeredCount: answeredCount, completionPct: completionPct,
+      isComplete: isComplete, lastAnsweredStep: lastAnsweredStep,
+      duration: duration
+    });
+  });
+  sessionsCache = list;
+}
 
 function setResponseSort(order) {
   respSortOrder = order;
@@ -1879,66 +1951,107 @@ function setResponsePage(page) {
   renderResponses();
 }
 
-/* Generate a stable pastel color from session ID for row highlighting */
-function sessionColor(sid) {
-  var hash = 0;
-  for (var i = 0; i < sid.length; i++) hash = sid.charCodeAt(i) + ((hash << 5) - hash);
-  var hue = Math.abs(hash) % 360;
-  return 'hsla(' + hue + ',50%,50%,0.06)';
-}
-
 function renderResponses() {
   if (!rawData || rawData.length === 0) return;
+  if (sessionsCache.length === 0) buildSessionsCache();
 
-  /* Sort */
-  var sorted = rawData.slice().sort(function(a, b) {
-    var tA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
-    var tB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+  var sorted = sessionsCache.slice().sort(function(a, b) {
+    var tA = a.earliest ? a.earliest.getTime() : 0;
+    var tB = b.earliest ? b.earliest.getTime() : 0;
     return respSortOrder === 'desc' ? tB - tA : tA - tB;
   });
 
-  var totalRows = sorted.length;
-  var totalPages = Math.ceil(totalRows / RESP_PER_PAGE);
+  var total = sorted.length;
+  var totalPages = Math.ceil(total / SESS_PER_PAGE);
   if (respCurrentPage > totalPages) respCurrentPage = totalPages;
   if (respCurrentPage < 1) respCurrentPage = 1;
 
-  var start = (respCurrentPage - 1) * RESP_PER_PAGE;
-  var pageRows = sorted.slice(start, start + RESP_PER_PAGE);
+  var start = (respCurrentPage - 1) * SESS_PER_PAGE;
+  var page = sorted.slice(start, start + SESS_PER_PAGE);
 
-  /* Render table */
-  var tbody = document.getElementById('respTableBody');
+  var container = document.getElementById('sessListBody');
   var html = '';
-  pageRows.forEach(function(r) {
-    var ts = r.timestamp ? new Date(r.timestamp) : null;
-    var timeStr = '—';
-    if (ts && !isNaN(ts.getTime())) {
-      try {
-        timeStr = ts.toLocaleString('fr-FR', { timeZone: 'Europe/Paris', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-      } catch(e) { timeStr = ts.toLocaleString('fr-FR'); }
-    }
-    var sid = (r.session_id || '').toString();
-    var sidShort = sid.length > 8 ? sid.substr(0, 8) + '…' : sid;
-    var bg = sessionColor(sid);
-    html += '<tr style="background:' + bg + '">'
-      + '<td class="col-time">' + timeStr + '</td>'
-      + '<td class="col-sid" title="' + sid + '">' + sidShort + '</td>'
-      + '<td class="col-step">' + (r.step || '') + '</td>'
-      + '<td>' + (r.question || '') + '</td>'
-      + '<td>' + (r.answer || '') + '</td>'
-      + '</tr>';
+  page.forEach(function(s, idx) {
+    var globalIdx = start + idx + 1;
+    var ago = s.earliest ? timeAgo(s.earliest) : '—';
+    var pctColor = s.completionPct === 100 ? 'var(--green)' : s.completionPct >= 50 ? 'var(--amber)' : 'var(--red)';
+    var statusHtml = s.isComplete
+      ? '<span class="completed">Quiz complété ✅</span>'
+      : '<span class="abandoned">Abandon : ' + (QMAP[s.lastAnsweredStep] || 'Étape ' + s.lastAnsweredStep) + '</span>';
+
+    html += '<div class="sess-row">'
+      + '<span class="sess-time">' + ago + '</span>'
+      + '<span class="sess-completion" style="color:' + pctColor + '">' + s.completionPct + '%</span>'
+      + '<span class="sess-status">' + statusHtml + '</span>'
+      + '<button class="sess-detail-btn" onclick="openSessionDetail(' + (start + idx) + ')">Voir plus</button>'
+      + '</div>';
   });
-  tbody.innerHTML = html;
+  container.innerHTML = html;
 
-  /* Page info */
-  document.getElementById('respPageInfo').textContent = totalRows + ' réponses — page ' + respCurrentPage + '/' + totalPages;
+  document.getElementById('respPageInfo').textContent = total + ' sessions — page ' + respCurrentPage + '/' + totalPages;
 
-  /* Pagination */
   var pag = document.getElementById('respPagination');
   if (totalPages <= 1) { pag.innerHTML = ''; return; }
-  var pagHtml = '<button ' + (respCurrentPage <= 1 ? 'disabled' : '') + ' onclick="setResponsePage(' + (respCurrentPage - 1) + ')">← Précédent</button>';
-  pagHtml += '<span class="page-num">' + respCurrentPage + ' / ' + totalPages + '</span>';
-  pagHtml += '<button ' + (respCurrentPage >= totalPages ? 'disabled' : '') + ' onclick="setResponsePage(' + (respCurrentPage + 1) + ')">Suivant →</button>';
-  pag.innerHTML = pagHtml;
+  pag.innerHTML = '<button ' + (respCurrentPage <= 1 ? 'disabled' : '') + ' onclick="setResponsePage(' + (respCurrentPage - 1) + ')">← Précédent</button>'
+    + '<span class="page-num">' + respCurrentPage + ' / ' + totalPages + '</span>'
+    + '<button ' + (respCurrentPage >= totalPages ? 'disabled' : '') + ' onclick="setResponsePage(' + (respCurrentPage + 1) + ')">Suivant →</button>';
+}
+
+function openSessionDetail(sortedIdx) {
+  /* Re-sort to get the right session */
+  var sorted = sessionsCache.slice().sort(function(a, b) {
+    var tA = a.earliest ? a.earliest.getTime() : 0;
+    var tB = b.earliest ? b.earliest.getTime() : 0;
+    return respSortOrder === 'desc' ? tB - tA : tA - tB;
+  });
+  var s = sorted[sortedIdx];
+  if (!s) return;
+
+  var dateStr = '—';
+  if (s.earliest) {
+    try { dateStr = s.earliest.toLocaleString('fr-FR', { timeZone: 'Europe/Paris', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+    catch(e) { dateStr = s.earliest.toLocaleString('fr-FR'); }
+  }
+
+  var durationStr = formatDuration(s.duration);
+  var pctColor = s.completionPct === 100 ? 'var(--green)' : s.completionPct >= 50 ? 'var(--amber)' : 'var(--red)';
+
+  var rows = '';
+  questionOrder.forEach(function(step) {
+    var r = s.answeredSteps[step];
+    var qName = QMAP[step] || 'Étape ' + step;
+    if (r) {
+      rows += '<div class="sess-modal-row">'
+        + '<span class="sess-modal-step">' + step + '</span>'
+        + '<span class="sess-modal-q">' + qName + '</span>'
+        + '<span class="sess-modal-a">' + (r.answer || '—') + '</span>'
+        + '</div>';
+    } else {
+      rows += '<div class="sess-modal-row">'
+        + '<span class="sess-modal-step empty">' + step + '</span>'
+        + '<span class="sess-modal-q">' + qName + '</span>'
+        + '<span class="sess-modal-a no-answer">— Pas de réponse</span>'
+        + '</div>';
+    }
+  });
+
+  var overlay = document.getElementById('sessOverlayContainer');
+  overlay.innerHTML = '<div class="sess-overlay" onclick="if(event.target===this)closeSessionDetail()">'
+    + '<div class="sess-modal">'
+    + '<button class="sess-modal-close" onclick="closeSessionDetail()">✕</button>'
+    + '<div class="sess-modal-header">'
+    + '<h3>Détail de la session</h3>'
+    + '<div class="sess-modal-meta">'
+    + '<span>📅 ' + dateStr + '</span>'
+    + '<span>⏱ <strong>' + durationStr + '</strong></span>'
+    + '<span style="color:' + pctColor + '">Complétion : <strong>' + s.completionPct + '%</strong></span>'
+    + '</div></div>'
+    + rows
+    + '</div></div>';
+}
+
+function closeSessionDetail() {
+  document.getElementById('sessOverlayContainer').innerHTML = '';
 }
 
 /* ============================================================
