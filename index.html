@@ -115,47 +115,51 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .persona-detail { font-size:13px; color:var(--text-muted); margin-bottom:6px; line-height:1.4; }
 .persona-detail strong { color:var(--text); font-weight:600; }
 
-/* FUNNEL VISUAL — Entonnoir trapèze */
-.funnel-container { display:flex; flex-direction:column; align-items:center; padding:20px 0; }
+/* FUNNEL — True trapezoid funnel */
+.funnel-container { display:flex; flex-direction:column; align-items:center; padding:20px 0; width:100%; }
 
-/* Header "X visiteurs" */
+/* Header */
 .funnel-header {
-  font-size:15px; font-weight:700; color:var(--text); margin-bottom:12px;
+  font-size:15px; font-weight:700; color:var(--text); margin-bottom:6px;
   display:flex; align-items:center; gap:8px;
 }
 .funnel-header .count { font-size:22px; color:var(--accent-light); }
 
-/* Each funnel row: left label | center trapezoid | right drop */
+/* 3-column layout: label | trapezoid | drop */
 .funnel-row {
   display:grid; grid-template-columns:170px 1fr 180px; align-items:center;
-  width:100%; min-height:0;
+  width:100%;
 }
 .funnel-row-left {
   text-align:right; padding-right:20px; font-size:12px; font-weight:500; color:var(--text);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.3;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2;
 }
 .funnel-row-left .step-num {
-  display:inline-block; width:20px; height:20px; line-height:20px; text-align:center;
-  background:var(--bg-dark); border-radius:50%; font-size:10px; font-weight:700;
-  color:var(--text-muted); margin-right:6px; vertical-align:middle;
+  display:inline-block; width:18px; height:18px; line-height:18px; text-align:center;
+  background:var(--bg-dark); border-radius:50%; font-size:9px; font-weight:700;
+  color:var(--text-muted); margin-right:5px; vertical-align:middle;
 }
 .funnel-row-left .step-name { font-weight:600; }
-.funnel-row-center { display:flex; justify-content:center; }
 
-/* Trapezoid band */
+/* Center column: holds the trapezoid */
+.funnel-row-center {
+  display:flex; justify-content:center; align-items:stretch;
+  /* No vertical gap between rows — the trapezoids touch */
+}
+
+/* The trapezoid band itself */
 .funnel-band {
-  height:38px; display:flex; align-items:center; justify-content:center;
-  font-size:14px; font-weight:700; color:#fff; position:relative;
-  cursor:default; min-width:50px;
-  text-shadow:0 1px 3px rgba(0,0,0,0.4);
-  transition:filter .2s;
+  display:flex; align-items:center; justify-content:center;
+  height:36px;
+  font-size:13px; font-weight:700; color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,0.4);
+  cursor:default; transition:filter .2s;
+  /* clip-path set inline by JS */
 }
-.funnel-band:hover { filter:brightness(1.12); }
-.funnel-band-worst {
-  filter:drop-shadow(0 0 8px rgba(239,68,68,0.5));
-}
+.funnel-band:hover { filter:brightness(1.15); }
+.funnel-band-worst { filter:drop-shadow(0 0 10px rgba(239,68,68,0.6)); }
 
-/* Right side: drop info */
+/* Right: drop info */
 .funnel-row-right {
   padding-left:20px; font-size:12px; color:var(--text-muted); white-space:nowrap;
   display:flex; align-items:center; gap:6px;
@@ -171,7 +175,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 
 /* Completed footer */
 .funnel-completed {
-  margin-top:8px; text-align:center; padding:14px 28px;
+  margin-top:12px; text-align:center; padding:14px 28px;
   background:linear-gradient(135deg, rgba(34,197,94,0.1), rgba(99,102,241,0.1));
   border:1px solid rgba(34,197,94,0.2); border-radius:12px;
   display:inline-flex; align-items:center; gap:12px;
@@ -194,7 +198,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
   .funnel-row { grid-template-columns:110px 1fr 120px; }
   .funnel-row-left { font-size:11px; padding-right:10px; }
   .funnel-row-right { font-size:11px; padding-left:10px; }
-  .funnel-band { height:30px; font-size:11px; }
+  .funnel-band { height:28px; font-size:11px; }
 }
 
 /* CARNATION CUSTOM */
@@ -478,14 +482,20 @@ function renderFunnel(funnelData, total) {
   if (max === 0) max = 1;
   var len = funnelData.length;
 
-  /* Gradient: green → blue → purple (normal), red/orange for big drops */
-  var gradientStops = [
-    [34,197,94],[42,200,80],[50,190,90],[60,175,110],
-    [70,160,180],[99,102,241],[110,90,232],[139,92,246],
-    [168,85,247],[192,38,211],[180,60,170],[170,70,140],
-    [160,80,120],[140,90,100]
-  ];
-  function rgbStr(arr) { return 'rgb(' + arr[0] + ',' + arr[1] + ',' + arr[2] + ')'; }
+  /*
+   * Widths as % of the full container (100% = step 1).
+   * These represent the "edge" of the funnel at each boundary.
+   * Step i top-edge = widths[i], bottom-edge = widths[i+1].
+   * Min 10% so the last band is still visible.
+   */
+  var widths = [100]; /* top edge of first band = 100% */
+  for (var i = 1; i < len; i++) {
+    var w = Math.max(10, funnelData[i].count / max * 100);
+    widths.push(w);
+  }
+  /* Bottom edge of last band: slightly narrower than its top */
+  var lastW = widths[len - 1];
+  widths.push(Math.max(6, lastW * 0.65));
 
   /* Find worst drop index */
   var worstIdx = -1, worstDrop = 0;
@@ -493,8 +503,8 @@ function renderFunnel(funnelData, total) {
     if (i === 0) return;
     var prev = funnelData[i - 1].count;
     if (prev === 0) return;
-    var dropPct = (prev - f.count) / prev * 100;
-    if (dropPct > worstDrop) { worstDrop = dropPct; worstIdx = i; }
+    var d = (prev - f.count) / prev * 100;
+    if (d > worstDrop) { worstDrop = d; worstIdx = i; }
   });
 
   /* Completed = step 20 */
@@ -504,10 +514,26 @@ function renderFunnel(funnelData, total) {
     return sessions[sid].some(function(r) { return parseInt(r.step) === 20; });
   }).length;
 
-  /* Precompute widths: % relative to first, min 12% */
-  var widths = funnelData.map(function(f) {
-    return Math.max(12, f.count / max * 100);
-  });
+  /*
+   * Color gradient: green #22c55e → blue #3b82f6 → purple #6366f1
+   * We interpolate through these 3 stops.
+   */
+  var colorStops = [
+    [34,197,94],   /* #22c55e green  */
+    [59,130,246],  /* #3b82f6 blue   */
+    [99,102,241]   /* #6366f1 purple */
+  ];
+  function lerpColor(t) {
+    /* t from 0 to 1 */
+    var segments = colorStops.length - 1;
+    var seg = Math.min(Math.floor(t * segments), segments - 1);
+    var local = (t * segments) - seg;
+    var a = colorStops[seg], b = colorStops[seg + 1];
+    var r = Math.round(a[0] + (b[0] - a[0]) * local);
+    var g = Math.round(a[1] + (b[1] - a[1]) * local);
+    var bl = Math.round(a[2] + (b[2] - a[2]) * local);
+    return 'rgb(' + r + ',' + g + ',' + bl + ')';
+  }
 
   /* Header: total visitors */
   var header = document.createElement('div');
@@ -515,36 +541,37 @@ function renderFunnel(funnelData, total) {
   header.innerHTML = '<span class="count">' + max + '</span> visiteurs';
   container.appendChild(header);
 
-  /* Render trapezoid bands */
+  /* Render each trapezoid band */
   funnelData.forEach(function(f, i) {
     var pctVsFirst = max > 0 ? (f.count / max * 100) : 0;
-    var topW = widths[i];
-    var botW = (i < len - 1) ? widths[i + 1] : Math.max(8, topW * 0.7);
-
-    /* clip-path: trapezoid — top full width, bottom narrower centered */
-    var insetBot = 0;
-    if (topW > 0 && botW < topW) {
-      insetBot = ((topW - botW) / topW) * 50;
-    }
-    var clipPath = 'polygon(0 0, 100% 0, ' + (100 - insetBot).toFixed(1) + '% 100%, ' + insetBot.toFixed(1) + '% 100%)';
-
-    /* Color: gradient position, red if drop > 10% */
-    var colorIdx = Math.min(Math.floor(i / len * gradientStops.length), gradientStops.length - 1);
-    var bandColor = rgbStr(gradientStops[colorIdx]);
     var isWorst = (i === worstIdx);
 
     /* Drop info */
-    var dropCount = 0;
-    var dropPct = 0;
+    var dropCount = 0, dropPct = 0;
     if (i > 0 && funnelData[i - 1].count > 0) {
       dropCount = funnelData[i - 1].count - f.count;
       dropPct = dropCount / funnelData[i - 1].count * 100;
     }
 
-    /* Override color for high drops */
-    if (dropPct > 15) bandColor = '#ef4444';
-    else if (dropPct > 10) bandColor = '#f97316';
-    if (isWorst) bandColor = '#dc2626';
+    /* Band color: gradient position, override red for worst */
+    var bandColor = isWorst ? '#ef4444' : lerpColor(i / (len - 1 || 1));
+
+    /*
+     * Clip-path trapezoid.
+     * The band div is width:100% of the center column.
+     * We clip it so top-edge = widths[i] and bottom-edge = widths[i+1],
+     * both centered within the 100% width.
+     *
+     * topInset = (100 - widths[i]) / 2
+     * botInset = (100 - widths[i+1]) / 2
+     */
+    var topInset = (100 - widths[i]) / 2;
+    var botInset = (100 - widths[i + 1]) / 2;
+    var clipPath = 'polygon('
+      + topInset.toFixed(2) + '% 0%, '
+      + (100 - topInset).toFixed(2) + '% 0%, '
+      + (100 - botInset).toFixed(2) + '% 100%, '
+      + botInset.toFixed(2) + '% 100%)';
 
     var row = document.createElement('div');
     row.className = 'funnel-row';
@@ -555,11 +582,11 @@ function renderFunnel(funnelData, total) {
       + '<span class="step-name">' + f.name + '</span>'
       + '</div>';
 
-    /* Center — trapezoid band */
+    /* Center — full-width div clipped to trapezoid */
     var worstClass = isWorst ? ' funnel-band-worst' : '';
     var center = '<div class="funnel-row-center">'
       + '<div class="funnel-band' + worstClass + '" style="'
-      + 'width:' + topW + '%;'
+      + 'width:100%;'
       + 'background:' + bandColor + ';'
       + 'clip-path:' + clipPath + ';'
       + '" title="' + f.name + ': ' + f.count + ' (' + pctVsFirst.toFixed(1) + '%)">'
