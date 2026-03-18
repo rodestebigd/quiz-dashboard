@@ -623,6 +623,9 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
         <h3>Répartition par tranche de temps</h3>
         <div class="chart-sub">Nombre de sessions par durée de complétion</div>
         <div style="position:relative;height:220px"><canvas id="ctChart"></canvas></div>
+        <h3 style="margin-top:24px">Temps moyen par question</h3>
+        <div class="chart-sub">Identifiez les questions qui font hésiter vos visiteurs</div>
+        <div style="position:relative;height:300px"><canvas id="ctPerQuestionChart"></canvas></div>
       </div>
     </div>
 
@@ -1199,6 +1202,7 @@ function renderActivity() {
 }
 
 var ctChartInstance = null;
+var ctPerQChartInstance = null;
 
 function formatDuration(seconds) {
   var m = Math.floor(seconds / 60);
@@ -1311,6 +1315,103 @@ function renderCompletionTime() {
       }
     }
   });
+
+  /* ---- Per-question time chart ---- */
+  var questionOrder = [1,2,3,4,6,7,8,9,10,14,16,18,19,20];
+
+  /* For each session, build sorted list of (step, timestamp) */
+  var perQTimes = {}; /* step -> array of durations in seconds */
+  questionOrder.forEach(function(s) { perQTimes[s] = []; });
+
+  sessionIds.forEach(function(sid) {
+    var responses = sessions[sid];
+    /* Get one entry per step with timestamp, sorted by step order */
+    var stepTimes = [];
+    questionOrder.forEach(function(step) {
+      var match = null;
+      responses.forEach(function(r) {
+        if (parseInt(r.step) === step && r.timestamp) {
+          var d = new Date(r.timestamp);
+          if (!isNaN(d.getTime())) {
+            if (!match || d < match) match = d;
+          }
+        }
+      });
+      if (match) stepTimes.push({ step: step, time: match });
+    });
+
+    /* Calculate delta between consecutive steps */
+    for (var j = 1; j < stepTimes.length; j++) {
+      var delta = (stepTimes[j].time.getTime() - stepTimes[j-1].time.getTime()) / 1000;
+      if (delta >= 0 && delta < 600) { /* cap at 10 min per question */
+        perQTimes[stepTimes[j].step].push(delta);
+      }
+    }
+  });
+
+  /* Compute averages and sort by longest first */
+  var perQData = [];
+  questionOrder.forEach(function(step) {
+    if (step === 1) return; /* skip first question — no delta */
+    var arr = perQTimes[step];
+    if (arr.length === 0) return;
+    var avg = arr.reduce(function(a, b) { return a + b; }, 0) / arr.length;
+    perQData.push({ step: step, name: QMAP[step] || 'Étape ' + step, avg: Math.round(avg) });
+  });
+  perQData.sort(function(a, b) { return b.avg - a.avg; });
+
+  var pqLabels = perQData.map(function(d) { return d.name; });
+  var pqValues = perQData.map(function(d) { return d.avg; });
+  var pqColors = pqValues.map(function(v) {
+    if (v > 60) return '#ef4444';
+    if (v > 30) return '#f59e0b';
+    if (v > 10) return '#3b82f6';
+    return '#22c55e';
+  });
+
+  if (ctPerQChartInstance) { ctPerQChartInstance.destroy(); ctPerQChartInstance = null; }
+
+  if (pqLabels.length > 0) {
+    var pqCtx = document.getElementById('ctPerQuestionChart').getContext('2d');
+    ctPerQChartInstance = new Chart(pqCtx, {
+      type: 'bar',
+      data: {
+        labels: pqLabels,
+        datasets: [{
+          label: 'Temps moyen (sec)',
+          data: pqValues,
+          backgroundColor: pqColors,
+          borderWidth: 0,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) { return ctx.raw + ' sec en moyenne'; }
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            title: { display: true, text: 'Secondes', color: getChartTextColor(), font: { size: 11 } },
+            ticks: { color: getChartTextColor(), font: { size: 11 } },
+            grid: { color: getChartGridColor() }
+          },
+          y: {
+            ticks: { color: getChartTextColor(), font: { size: 11 } },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
 }
 
 function renderFunnel(funnelData, total) {
