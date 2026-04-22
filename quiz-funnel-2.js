@@ -22,19 +22,17 @@ var sessionId = (function() {
 var QUESTION_MAP = {
   1: 'Âge',
   2: 'Préoccupation peau',
-  3: 'Profondeur rides',
-  4: 'Zones à atténuer',
+  3: 'Zones à effacer',
+  4: 'Sévérité rides',
   6: 'Exposition soleil',
   7: 'Heures de sommeil',
   8: 'Niveau de stress',
   9: 'Carnation',
   10: 'Peau sensible',
-  14: 'Solutions déjà essayées',
-  16: 'Temps routine beauté',
-  18: 'Peau vieillit intérieurement',
-  19: 'Miroir rajeuni',
-  20: 'Événement important',
-  21: 'Date événement'
+  13: 'Solutions déjà essayées',
+  14: 'Expérience produits',
+  16: 'Traitements professionnels',
+  17: 'Routine actuelle'
 };
 
 function trackAnswer(step, answer) {
@@ -84,9 +82,9 @@ function goToStep(step, addToHistory) {
   updateProgressBar(step);
   window.scrollTo({top:0,behavior:'smooth'});
   if (addToHistory !== false) { stepHistory.push(step); history.pushState({step:step},'','#step-'+step); }
-  if (step===12) startLoading(12,2200,13);
-  if (step===13) setTimeout(lvlAnimate,400);
-  if (step===17) startLoading(17,4700,18);
+  if (step===11) startLoading(11,2200,12);
+  if (step===12) setTimeout(lvlAnimate,400);
+  if (step===18) startLoading(18,4700,19);
   if (step===22) startLoading(22,2200,23);
   if (step===23) updateResultsPage();
   if (step===24) startLoadingRedirect(24,2200);
@@ -114,6 +112,22 @@ function toggleMulti(btn,step,value){
 }
 
 function toggleImageOption(el,step,value){
+  if(!multiSelections[step])multiSelections[step]=[];
+  el.classList.toggle('selected');
+  var i=multiSelections[step].indexOf(value);
+  if(i>-1)multiSelections[step].splice(i,1);else multiSelections[step].push(value);
+  answers[step]=multiSelections[step];
+}
+
+function toggleZone(el,step,value){
+  if(!multiSelections[step])multiSelections[step]=[];
+  el.classList.toggle('selected');
+  var i=multiSelections[step].indexOf(value);
+  if(i>-1)multiSelections[step].splice(i,1);else multiSelections[step].push(value);
+  answers[step]=multiSelections[step];
+}
+
+function toggleSeverity(el,step,value){
   if(!multiSelections[step])multiSelections[step]=[];
   el.classList.toggle('selected');
   var i=multiSelections[step].indexOf(value);
