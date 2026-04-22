@@ -522,6 +522,48 @@ header.quiz-header,
 .info-card p strong { color: #1a1a1a; }
 .info-card .info-image { width: 100%; max-width: 400px; margin: 0 auto 16px; display: block; border-radius: 12px; }
 
+/* REVIEW CARDS */
+.review-section { margin-bottom: 20px; }
+.review-quote-title { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 16px; color: #1a1a1a; }
+.review-card {
+  background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06); border-left: 4px solid #00b67a;
+}
+.review-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.review-avatar { width: 44px; height: 44px; border-radius: 50%; background: #e0e5ea; flex-shrink: 0; overflow: hidden; }
+.review-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.review-name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.review-meta { font-size: 12px; color: #888; }
+.review-date { font-size: 12px; color: #888; margin-left: auto; white-space: nowrap; }
+.review-stars { display: flex; gap: 2px; margin-bottom: 10px; }
+.review-star { width: 22px; height: 22px; background: #00b67a; display: flex; align-items: center; justify-content: center; }
+.review-star svg { width: 14px; height: 14px; fill: #fff; }
+.review-text { font-size: 14px; color: #444; line-height: 1.6; }
+
+/* CIRCLE PROGRESS — loading final */
+.circle-progress-wrap { text-align: center; margin: 30px 0 20px; }
+.circle-progress-container { position: relative; width: 180px; height: 180px; margin: 0 auto; }
+.circle-progress-bg { fill: none; stroke: #dde1e6; stroke-width: 6; }
+.circle-progress-fg {
+  fill: none; stroke: #0c233f; stroke-width: 6; stroke-linecap: round;
+  transform: rotate(-90deg); transform-origin: center;
+  transition: stroke-dashoffset 0.3s ease;
+}
+.circle-progress-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 42px; font-weight: 800; color: #1a1a1a;
+}
+.final-review-card {
+  background: #fff; border-radius: 14px; padding: 16px; margin-top: 20px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06); display: flex; gap: 14px; align-items: center;
+}
+.final-review-img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+.final-review-body { flex: 1; }
+.final-review-stars { color: #f5a623; font-size: 16px; margin-bottom: 4px; }
+.final-review-text { font-size: 13px; color: #444; line-height: 1.5; }
+.final-review-author { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-top: 6px; }
+.final-review-badge { display: inline-block; background: #27ae60; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+
 /* GREEN CANDIDATE CARD */
 .candidate-card {
   background: #f0faf0; border: 2px solid #27ae60; border-radius: 14px; padding: 20px;
@@ -888,52 +930,92 @@ header.quiz-header,
     </div>
 
     <!-- ================================================================
-         STEP 18 — Loading (placeholder pour la suite)
+         STEP 18 — Page avis / reviews (scroll, pas carousel)
          ================================================================ -->
     <div class="quiz-step" data-step="18">
-      <div class="loading-screen">
-        <h2 class="loading-headline">Un emploi du temps chargé ne doit pas vous empêcher de paraître plus jeune...</h2>
-        <p class="loading-desc">Avec notre Système Micro-Infusion, vous pouvez <strong>visiblement rajeunir votre peau</strong> depuis chez vous, <u>en seulement 5 minutes une fois toutes les 2 semaines...</u></p>
-        <div class="loading-icon"><div class="spinner-ring" id="spinner17"></div><div class="check-icon" id="check17"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div></div>
-        <p class="loading-text">Chargement de la question suivante...</p>
+      <h2 class="quiz-question" style="margin-bottom:24px">Remplacez toute votre routine beauté par le sérum Julie Cosmétique</h2>
+
+      <p class="review-quote-title">« De meilleurs résultats pour beaucoup moins cher et moins de temps »</p>
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quiz2-avatar-martine.webp" alt="Martine D."></div>
+          <div><div class="review-name">Martine D.</div><div class="review-meta">FR · 1 avis</div></div>
+          <div class="review-date">il y a 5 jours</div>
+        </div>
+        <div class="review-stars">
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+        </div>
+        <p class="review-text">J'avais l'habitude de passer 20 minutes par jour sur une routine en 6 étapes : rétinol, vitamine C, peptides, et j'en passe. Ça me coûtait plus de 150 € par mois juste pour laisser mes rides intactes.<br><br>Alors j'ai décidé de passer au sérum Julie Cosmétique, et ça a payé. Il a remplacé toute ma routine coûteuse et offre de meilleurs résultats pour beaucoup moins cher et moins de temps.</p>
       </div>
+
+      <p class="review-quote-title">« J'ai jeté toutes mes crèmes !! »</p>
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quiz2-avatar-francoise.webp" alt="Françoise M."></div>
+          <div><div class="review-name">Françoise M.</div><div class="review-meta">FR · 1 avis</div></div>
+        </div>
+        <div class="review-stars">
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <span class="review-star"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+        </div>
+        <p class="review-text">J'ai jeté un tiroir entier de crèmes. J'ai dépensé des milliers d'euros au fil des années et elles n'ont jamais fonctionné. Avec le sérum Julie Cosmétique, je vois enfin des résultats. Mes rides d'amertume s'estompent et j'économise des centaines d'euros chaque mois.</p>
+      </div>
+
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(19)">Continuer <span class="arrow">→</span></button></div>
     </div>
 
-    <!-- STEP 18-20 -->
-    <div class="quiz-step" data-step="18">
+    <!-- ================================================================
+         STEP 19 — Peau vieillit intérieurement
+         ================================================================ -->
+    <div class="quiz-step" data-step="19">
       <h2 class="quiz-question">Avez-vous déjà eu l'impression que votre peau vous vieillit par rapport à ce que vous ressentez intérieurement ? 🤔</h2>
       <div class="options-list" style="margin-top:24px">
-        <button class="option-btn" onclick="selectSingle(18,'Oui')"><span class="option-text">Oui</span></button>
-        <button class="option-btn" onclick="selectSingle(18,'Non')"><span class="option-text">Non</span></button>
-        <button class="option-btn" onclick="selectSingle(18,'Parfois')"><span class="option-text">Parfois</span></button>
+        <button class="option-btn" onclick="selectSingle(19,'Oui')"><span class="option-text">Oui</span></button>
+        <button class="option-btn" onclick="selectSingle(19,'Non')"><span class="option-text">Non</span></button>
+        <button class="option-btn" onclick="selectSingle(19,'Parfois')"><span class="option-text">Parfois</span></button>
       </div>
     </div>
 
-    <div class="quiz-step" data-step="19">
-      <h2 class="quiz-question">Qu'est-ce que ça vous ferait de retrouver dans le miroir un visage éclatant et rajeuni ?</h2>
-      <div class="options-list" style="margin-top:24px">
-        <button class="option-btn" onclick="selectSingle(19,'Confiance en moi')"><span class="emoji">👑</span><span class="option-text">Je retrouverais une vraie confiance en moi</span></button>
-        <button class="option-btn" onclick="selectSingle(19,'Fière de moi')"><span class="emoji">👍</span><span class="option-text">Je serais fière de moi</span></button>
-        <button class="option-btn" onclick="selectSingle(19,'Plus désirable')"><span class="emoji">💋</span><span class="option-text">Je me sentirais plus désirable</span></button>
-        <button class="option-btn" onclick="selectSingle(19,'Tout ça à la fois')"><span class="emoji">💍</span><span class="option-text">Tout ça à la fois</span></button>
-      </div>
-    </div>
-
+    <!-- ================================================================
+         STEP 20 — Miroir rajeuni
+         ================================================================ -->
     <div class="quiz-step" data-step="20">
+      <h2 class="quiz-question">Qu'est-ce que ça vous ferait de revoir dans le miroir une version plus jeune et rayonnante de vous-même ?</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(20,'Confiance en moi')"><span class="emoji">👑</span><span class="option-text">Je ressentirais un élan de confiance en moi</span></button>
+        <button class="option-btn" onclick="selectSingle(20,'Fière de moi')"><span class="emoji">👍</span><span class="option-text">Je serais fière de moi</span></button>
+        <button class="option-btn" onclick="selectSingle(20,'Plus désirable')"><span class="emoji">💋</span><span class="option-text">Je me sentirais plus désirable</span></button>
+        <button class="option-btn" onclick="selectSingle(20,'Tout ça à la fois')"><span class="emoji">💍</span><span class="option-text">Tout ça à la fois</span></button>
+      </div>
+    </div>
+
+    <!-- ================================================================
+         STEP 21 — Événement important
+         ================================================================ -->
+    <div class="quiz-step" data-step="21">
       <h2 class="quiz-question">Avez-vous un événement important qui approche ?</h2>
       <p class="quiz-subtitle" style="font-style:normal">Avoir un bel événement en vue, c'est la meilleure motivation pour atteindre votre objectif</p>
       <div class="options-list">
-        <button class="option-btn" onclick="selectSingle(20,'Anniversaire')"><span class="emoji">🎁</span><span class="option-text">Anniversaire</span></button>
-        <button class="option-btn" onclick="selectSingle(20,'Vacances')"><span class="emoji">🏖️</span><span class="option-text">Vacances</span></button>
-        <button class="option-btn" onclick="selectSingle(20,'Retrouvailles')"><span class="emoji">👫</span><span class="option-text">Retrouvailles</span></button>
-        <button class="option-btn" onclick="selectSingle(20,'Événement sportif')"><span class="emoji">🥇</span><span class="option-text">Événement sportif</span></button>
-        <button class="option-btn" onclick="selectSingle(20,'Autre')"><span class="emoji">⭐</span><span class="option-text">Autre</span></button>
-        <button class="option-btn" onclick="selectSingle(20,'Rien de prévu')"><span class="emoji">❌</span><span class="option-text">Rien de prévu prochainement</span></button>
+        <button class="option-btn" onclick="selectSingle(21,'Anniversaire')"><span class="emoji">🎁</span><span class="option-text">Anniversaire</span></button>
+        <button class="option-btn" onclick="selectSingle(21,'Vacances')"><span class="emoji">🏖️</span><span class="option-text">Vacances</span></button>
+        <button class="option-btn" onclick="selectSingle(21,'Retrouvailles')"><span class="emoji">👫</span><span class="option-text">Retrouvailles</span></button>
+        <button class="option-btn" onclick="selectSingle(21,'Événement sportif')"><span class="emoji">🥇</span><span class="option-text">Événement sportif</span></button>
+        <button class="option-btn" onclick="selectSingle(21,'Autre')"><span class="emoji">⭐</span><span class="option-text">Autre</span></button>
+        <button class="option-btn" onclick="selectSingle(21,'Rien de prévu')"><span class="emoji">❌</span><span class="option-text">Rien de prévu prochainement</span></button>
       </div>
     </div>
 
-    <!-- STEP 21 — Date picker -->
-    <div class="quiz-step" data-step="21">
+    <!-- ================================================================
+         STEP 22 — Date picker
+         ================================================================ -->
+    <div class="quiz-step" data-step="22">
       <h2 class="quiz-question">Quand a lieu votre événement ?</h2>
       <p class="quiz-subtitle" style="font-style:normal">Nous en tiendrons compte pour votre programme de soin.</p>
       <div class="datepicker-input-wrapper" onclick="toggleDatePicker()">
@@ -944,78 +1026,37 @@ header.quiz-header,
         <div class="dp-weekdays"><span class="dp-weekday">Lun</span><span class="dp-weekday">Mar</span><span class="dp-weekday">Mer</span><span class="dp-weekday">Jeu</span><span class="dp-weekday">Ven</span><span class="dp-weekday">Sam</span><span class="dp-weekday">Dim</span></div>
         <div class="dp-days" id="dpDays"></div>
       </div>
-      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(22)">Continuer <span class="arrow">→</span></button></div>
-      <a class="btn-skip" onclick="goToStep(22)">Passer cette étape</a>
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(23)">Continuer <span class="arrow">→</span></button></div>
+      <a class="btn-skip" onclick="goToStep(23)">Passer cette étape</a>
     </div>
 
-    <!-- STEP 22 — Loading -->
-    <div class="quiz-step" data-step="22">
-      <div class="loading-screen">
-        <div class="loading-icon"><div class="spinner-ring" id="spinner22"></div><div class="check-icon" id="check22"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div></div>
-        <p class="loading-text">Calcul des résultats possibles pour votre type de peau...</p>
-      </div>
-    </div>
-
-    <!-- STEP 23 — Results -->
+    <!-- ================================================================
+         STEP 23 — Results (Now vs Goal)
+         ================================================================ -->
     <div class="quiz-step" data-step="23">
       <p class="results-top-text">D'après vos réponses :</p>
       <h2 class="results-headline">Dans 3 mois seulement, votre peau peut être totalement régénérée !</h2>
       <p class="results-sub">Voici ce que vous pouvez espérer :</p>
       <div class="results-checks">
-        <p class="results-check"><span class="check">✅</span> Réduction visible des rides et ridules dès les premières semaines</p>
-        <p class="results-check"><span class="check">✅</span> Rides atténuées et peau visiblement raffermie d'ici le <span id="resultDate">17/06/2026</span></p>
+        <p class="results-check"><span class="check">✅</span> Premiers résultats visibles dès la première utilisation</p>
+        <p class="results-check"><span class="check">✅</span> Rides atténuées et peau visiblement raffermie d'ici le <span id="resultDate">22/07/2026</span></p>
       </div>
 
       <div class="results-comparison">
-        <!-- NOW -->
         <div class="result-card">
           <span class="result-card-badge badge-now">Aujourd'hui</span>
           <img class="result-card-photo" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/resultsquizlp-2.webp?v=1773535447" alt="Aujourd'hui">
-          <div class="result-stat">
-            <div class="result-stat-label">Élasticité de la peau</div>
-            <div class="result-stat-value val-red">Faible</div>
-            <div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill"></span><span class="stat-pill"></span></div>
-          </div>
-          <div class="result-stat">
-            <div class="result-stat-label">Rides et ridules</div>
-            <div class="result-stat-value val-red">Modérées à profondes</div>
-            <div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill fill-red"></span><span class="stat-pill"></span></div>
-          </div>
-          <div class="result-stat">
-            <div class="result-stat-label">Niveau de collagène</div>
-            <div class="result-stat-value val-red">Inférieur à la moyenne</div>
-            <div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill"></span><span class="stat-pill"></span></div>
-          </div>
+          <div class="result-stat"><div class="result-stat-label">Élasticité de la peau</div><div class="result-stat-value val-red">Faible</div><div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill"></span><span class="stat-pill"></span></div></div>
+          <div class="result-stat"><div class="result-stat-label">Rides et ridules</div><div class="result-stat-value val-red">Modérées à profondes</div><div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill fill-red"></span><span class="stat-pill"></span></div></div>
+          <div class="result-stat"><div class="result-stat-label">Niveau de collagène</div><div class="result-stat-value val-red">Inférieur à la moyenne</div><div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill"></span><span class="stat-pill"></span></div></div>
         </div>
-
-        <!-- GREEN CHEVRON -->
-        <div class="result-arrow-container">
-          <div class="result-chevron">
-            <svg viewBox="0 0 50 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 5 L42 30 L8 55Z" fill="#6ab04c"/>
-            </svg>
-          </div>
-        </div>
-
-        <!-- GOAL -->
+        <div class="result-arrow-container"><div class="result-chevron"><svg viewBox="0 0 50 60" fill="none"><path d="M8 5 L42 30 L8 55Z" fill="#6ab04c"/></svg></div></div>
         <div class="result-card">
           <span class="result-card-badge badge-goal">Votre objectif</span>
           <img class="result-card-photo" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/resultsquizlp-1.webp?v=1773535447" alt="Votre objectif">
-          <div class="result-stat">
-            <div class="result-stat-label">Élasticité de la peau</div>
-            <div class="result-stat-value val-green">Raffermie</div>
-            <div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div>
-          </div>
-          <div class="result-stat">
-            <div class="result-stat-label">Rides et ridules</div>
-            <div class="result-stat-value val-green">Visiblement estompées</div>
-            <div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div>
-          </div>
-          <div class="result-stat">
-            <div class="result-stat-label">Niveau de collagène</div>
-            <div class="result-stat-value val-green">Élevé</div>
-            <div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div>
-          </div>
+          <div class="result-stat"><div class="result-stat-label">Élasticité de la peau</div><div class="result-stat-value val-green">Raffermie</div><div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div></div>
+          <div class="result-stat"><div class="result-stat-label">Rides et ridules</div><div class="result-stat-value val-green">Visiblement estompées</div><div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div></div>
+          <div class="result-stat"><div class="result-stat-label">Niveau de collagène</div><div class="result-stat-value val-green">Élevé</div><div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div></div>
         </div>
       </div>
 
@@ -1027,11 +1068,31 @@ header.quiz-header,
       </div>
     </div>
 
-    <!-- STEP 24 — Loading redirect -->
+    <!-- ================================================================
+         STEP 24 — Circle progress + review + redirect
+         ================================================================ -->
     <div class="quiz-step" data-step="24">
-      <div class="loading-screen">
-        <div class="loading-icon"><div class="spinner-ring" id="spinner24"></div><div class="check-icon" id="check24"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div></div>
-        <p class="loading-text">Application de votre remise exceptionnelle...</p>
+      <h2 class="quiz-question" style="margin-bottom:8px">Vous pouvez utiliser le sérum Julie Cosmétique en seulement 5 minutes depuis chez vous</h2>
+      <p class="intermediate-text">Pas besoin d'une routine compliquée en 17 étapes.<br>Appliquez le sérum Julie Cosmétique en 5 minutes, matin et soir, et laissez-le faire le travail.</p>
+
+      <div class="circle-progress-wrap">
+        <div class="circle-progress-container">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle class="circle-progress-bg" cx="90" cy="90" r="82"/>
+            <circle class="circle-progress-fg" id="circleProgress" cx="90" cy="90" r="82" stroke-dasharray="515" stroke-dashoffset="515"/>
+          </svg>
+          <div class="circle-progress-text" id="circleText">0%</div>
+        </div>
+        <p class="loading-text" style="margin-top:12px">Application de votre réduction exclusive...</p>
+      </div>
+
+      <div class="final-review-card">
+        <img class="final-review-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quiz2-review-final.webp" alt="Avis client">
+        <div class="final-review-body">
+          <div class="final-review-stars">★★★★★</div>
+          <p class="final-review-text">Je ne laisse jamais d'avis d'habitude, mais après avoir essayé toutes les crèmes du marché, il fallait que je le fasse. Mon cou, ma bouche et mes bajoues ont l'air d'avoir rajeuni de 15 ans.</p>
+          <div class="final-review-author">Judith B. <span class="final-review-badge">✓ Cliente vérifiée</span></div>
+        </div>
       </div>
     </div>
 
@@ -1047,7 +1108,7 @@ if (typeof goToStep === 'undefined') {
 var QUIZ_ID='quiz_2';
 var TOTAL_STEPS=24,currentStep=1,stepHistory=[1],answers={},multiSelections={};
 function updateProgressBar(s){var b=document.getElementById('progressBar');if(!b)return;b.style.width=Math.round(((s-1)/(TOTAL_STEPS-1))*100)+'%';}
-function goToStep(s,h){var c=document.querySelector('.quiz-step.active');if(c)c.classList.remove('active');currentStep=s;var n=document.querySelector('[data-step="'+s+'"]');if(n){void n.offsetWidth;n.classList.add('active');}updateProgressBar(s);window.scrollTo({top:0,behavior:'smooth'});if(h!==false){stepHistory.push(s);history.pushState({step:s},'','#step-'+s);}if(s===11)startLoading(11,2200,12);if(s===12)setTimeout(lvlAnimate,400);if(s===18)startLoading(18,4700,19);if(s===22)startLoading(22,2200,23);if(s===23)updateResultsPage();if(s===24)startLoadingRedirect(24,2200);}
+function goToStep(s,h){var c=document.querySelector('.quiz-step.active');if(c)c.classList.remove('active');currentStep=s;var n=document.querySelector('[data-step="'+s+'"]');if(n){void n.offsetWidth;n.classList.add('active');}updateProgressBar(s);window.scrollTo({top:0,behavior:'smooth'});if(h!==false){stepHistory.push(s);history.pushState({step:s},'','#step-'+s);}if(s===11)startLoading(11,2200,12);if(s===12)setTimeout(lvlAnimate,400);if(s===23)updateResultsPage();if(s===24)startCircleRedirect();}
 window.addEventListener('popstate',function(){if(stepHistory.length>1){stepHistory.pop();goToStep(stepHistory[stepHistory.length-1],false);}});
 function selectSingle(s,v){answers[s]=v;var el=document.querySelector('[data-step="'+s+'"]');el.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected');});event.currentTarget.classList.add('selected');setTimeout(function(){goToStep(s+1);},350);}
 function toggleMulti(b,s,v){if(!multiSelections[s])multiSelections[s]=[];b.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
@@ -1056,6 +1117,7 @@ function toggleZone(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.clas
 function toggleSeverity(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
 function startLoading(s,d,nx){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){goToStep(nx);},800);},d);}
 function startLoadingRedirect(s,d){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},800);},d);}
+function startCircleRedirect(){var circle=document.getElementById('circleProgress'),txt=document.getElementById('circleText');if(!circle||!txt)return;var total=515,dur=3000,start=null;function frame(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1);var pct=Math.round(p*100);circle.style.strokeDashoffset=total-(total*p);txt.textContent=pct+'%';if(p<1)requestAnimationFrame(frame);else setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},5000);}requestAnimationFrame(frame);}
 var lvlTarget=82,lvlDuration=3500,lvlStarted=false;
 function lvlEase(t){return 1-Math.pow(1-t,3);}
 function lvlAnimate(){if(lvlStarted)return;var dot=document.getElementById('lvlIndicator'),tip=document.getElementById('lvlTooltip');if(!dot||!tip)return;lvlStarted=true;tip.style.opacity='1';var st=null;function frame(ts){if(!st)st=ts;var p=Math.min((ts-st)/lvlDuration,1),e=lvlEase(p),v=e*lvlTarget;dot.style.left=v+'%';tip.style.left=v+'%';if(p<1)requestAnimationFrame(frame);}requestAnimationFrame(frame);}

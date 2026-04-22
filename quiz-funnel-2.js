@@ -84,10 +84,8 @@ function goToStep(step, addToHistory) {
   if (addToHistory !== false) { stepHistory.push(step); history.pushState({step:step},'','#step-'+step); }
   if (step===11) startLoading(11,2200,12);
   if (step===12) setTimeout(lvlAnimate,400);
-  if (step===18) startLoading(18,4700,19);
-  if (step===22) startLoading(22,2200,23);
   if (step===23) updateResultsPage();
-  if (step===24) startLoadingRedirect(24,2200);
+  if (step===24) startCircleRedirect();
 }
 
 window.addEventListener('popstate',function(){
@@ -156,7 +154,29 @@ function startLoadingRedirect(step,dur){
 }
 
 /* ============================================================
-   LEVEL BAR (étape 13)
+   CIRCLE PROGRESS + REDIRECT (étape 24)
+   ============================================================ */
+function startCircleRedirect() {
+  var circle = document.getElementById('circleProgress');
+  var txt = document.getElementById('circleText');
+  if (!circle || !txt) return;
+  var totalDash = 515, dur = 3000, startTime = null;
+  function frame(ts) {
+    if (!startTime) startTime = ts;
+    var p = Math.min((ts - startTime) / dur, 1);
+    var pct = Math.round(p * 100);
+    circle.style.strokeDashoffset = totalDash - (totalDash * p);
+    txt.textContent = pct + '%';
+    if (p < 1) requestAnimationFrame(frame);
+    else setTimeout(function() {
+      window.location.href = 'https://juliecosmetique.fr/products/serum-liftant-julie';
+    }, 5000);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ============================================================
+   LEVEL BAR (étape 12)
    ============================================================ */
 var lvlTarget = 82;
 var lvlDuration = 3500;
