@@ -1,0 +1,885 @@
+<!--
+  QUIZ 2 LANDING PAGE - Julie Cosmetique (Variante A/B Test)
+  Template Shopify : page.quiz2.liquid
+-->
+
+<style>
+/* HIDE SHOPIFY HEADER, FOOTER & ANNOUNCEMENT BAR */
+/* Hide Shopify's own header — but NOT our .quiz-header */
+.shopify-section-group-header-group,
+.shopify-section-group-footer-group,
+header:not(.quiz-header),
+.header:not(.quiz-header),
+.header-wrapper,
+#shopify-section-header,
+.section-header,
+.site-header,
+nav.header__inline-menu,
+footer, .footer, #shopify-section-footer, #footer, .site-footer,
+.announcement-bar, #shopify-section-announcement-bar, .announcement-bar-section {
+  display: none !important;
+}
+
+/* RESET */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.quiz-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #EDF1F5;
+  min-height: 100vh;
+  color: #1a1a1a;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* HEADER + PROGRESS — forcé avec !important pour Shopify */
+header.quiz-header,
+.quiz-header {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: #fff !important;
+  padding: 14px 20px 0 !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+.quiz-logo { text-align: center; padding-bottom: 12px; }
+.quiz-logo img { height: 32px; width: auto; display: inline-block !important; visibility: visible !important; }
+.progress-bar-container { width: 100% !important; height: 5px !important; background: #ddd !important; border-radius: 3px; display: block !important; visibility: visible !important; }
+.progress-bar {
+  height: 100% !important;
+  background: #0c233f !important;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  width: 0%;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* QUIZ BODY */
+.quiz-body {
+  padding: 30px 20px 40px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Mobile: add bottom padding for sticky button */
+@media (max-width: 767px) {
+  .quiz-body { padding-bottom: 100px; }
+}
+
+.quiz-step { display: none; }
+.quiz-step.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* Animation SANS transform — évite de casser position:fixed des boutons sticky sur mobile */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* TITLES — uniform */
+.quiz-question {
+  font-size: 24px; font-weight: 800; text-align: center; line-height: 1.3; margin-bottom: 8px;
+}
+.quiz-subtitle { font-size: 14px; color: #666; text-align: center; margin-bottom: 24px; font-style: italic; }
+.quiz-promo { color: #c0392b; font-weight: 800; font-size: 14px; text-align: center; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.quiz-headline { font-size: 24px; font-weight: 800; text-align: center; line-height: 1.3; margin-bottom: 28px; }
+.quiz-headline u { text-underline-offset: 3px; }
+
+/* OPTIONS */
+.options-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.option-btn {
+  display: flex; align-items: center; gap: 14px; background: #fff; border: 2px solid #1a1a1a;
+  border-radius: 12px; padding: 16px 20px; font-size: 16px; font-weight: 500; cursor: pointer;
+  transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; user-select: none;
+  text-align: left; width: 100%;
+}
+.option-btn:hover { background: #f8f9fa; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.option-btn:active { transform: scale(0.98); }
+.option-btn.selected { background: #0c233f; color: #fff; border-color: #0c233f; }
+.option-btn .emoji { font-size: 24px; flex-shrink: 0; }
+.option-btn .option-text { flex: 1; }
+.option-btn .option-desc { font-size: 13px; color: #888; margin-top: 2px; }
+.option-btn.selected .option-desc { color: rgba(255,255,255,0.7); }
+.skin-circle { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; border: 2px solid #ddd; }
+.option-btn.selected .skin-circle { border-color: #fff; }
+
+/* IMAGE OPTIONS + CHECKMARK */
+.image-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.image-option {
+  position: relative; border: 2px solid #1a1a1a; border-radius: 12px; overflow: hidden;
+  cursor: pointer; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
+}
+.image-option img { width: 100%; height: 140px; object-fit: cover; display: block; }
+.image-option .image-label { text-align: center; padding: 10px 6px; font-size: 13px; font-weight: 600; background: #fff; }
+.image-option.selected { border-color: #0c233f; background: #0c233f; }
+.image-option.selected .image-label { background: #0c233f; color: #fff; }
+.image-option .check-badge {
+  position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; background: #0c233f;
+  border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 3;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.image-option .check-badge svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 3; fill: none; }
+.image-option.selected .check-badge { display: flex; }
+
+/* CONTINUE BUTTON */
+.btn-continue {
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+  padding: 18px 32px; background: #0c233f; color: #fff; border: none; border-radius: 50px;
+  font-size: 17px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent; margin-top: 8px;
+}
+.btn-continue:hover { background: #091b30; transform: translateY(-1px); }
+.btn-continue:active { transform: scale(0.98); }
+.btn-continue .arrow { font-size: 20px; transition: transform 0.2s ease; }
+.btn-continue:hover .arrow { transform: translateX(3px); }
+
+/* STICKY BUTTON ON MOBILE */
+@media (max-width: 767px) {
+  .sticky-mobile-btn {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    padding: 12px 20px 20px;
+    background: linear-gradient(transparent, #EDF1F5 30%);
+  }
+  .sticky-mobile-btn .btn-continue,
+  .sticky-mobile-btn .btn-claim {
+    margin-top: 0;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+  }
+}
+
+.btn-skip { display: block; text-align: center; margin-top: 16px; font-size: 14px; color: #888; cursor: pointer; text-decoration: none; font-weight: 500; }
+.btn-skip:hover { color: #555; }
+
+/* ============================================================
+   CAROUSEL (etape 5) — FIXED
+   ============================================================ */
+/* CAROUSEL — simple show/hide (fonctionne mobile + desktop) */
+.carousel-wrapper {
+  position: relative;
+  margin: 20px auto;
+  max-width: 100%;
+}
+.carousel-viewport {
+  position: relative;
+  width: 100%;
+}
+.carousel-slide {
+  display: none;
+  width: 100%;
+}
+.carousel-slide.active {
+  display: block;
+}
+.carousel-slide img {
+  width: 100%;
+  max-height: 400px;
+  display: block;
+  border-radius: 12px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.carousel-arrow {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: #0c233f;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.carousel-arrow:hover { background: #091b30; }
+.carousel-arrow.hidden { opacity: 0; pointer-events: none; }
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+}
+.carousel-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: #ccc;
+  border: none; cursor: pointer; transition: background 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.carousel-dot.active { background: #0c233f; }
+
+/* LOADING */
+.loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; text-align: center; }
+.loading-icon { width: 80px; height: 80px; position: relative; margin-bottom: 20px; }
+.spinner-ring { width: 80px; height: 80px; border: 3px solid #ddd; border-top-color: #0c233f; border-radius: 50%; animation: spin 1s linear infinite; position: absolute; top: 0; left: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.check-icon { width: 80px; height: 80px; border: 3px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.5); transition: all 0.4s ease; position: absolute; top: 0; left: 0; }
+.check-icon.visible { opacity: 1; transform: scale(1); }
+.check-icon svg { width: 36px; height: 36px; stroke: #999; stroke-width: 2.5; fill: none; }
+.loading-text { font-size: 16px; color: #666; font-style: italic; }
+.loading-headline { font-size: 24px; font-weight: 800; line-height: 1.3; margin-bottom: 16px; text-align: center; }
+.loading-desc { font-size: 16px; color: #555; text-align: center; margin-bottom: 30px; line-height: 1.5; }
+.loading-desc u { text-underline-offset: 3px; }
+
+/* ============================================================
+   LEVEL BAR (etape 13) — VISIBLE CURSOR
+   ============================================================ */
+.lvl-wrapper {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 30px 30px;
+}
+.lvl-bar-track {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+.lvl-bar-fill {
+  width: 100%;
+  height: 18px;
+  border-radius: 30px;
+  background: linear-gradient(to right,
+    #a8e4f0 0%, #7edbb5 18%, #b8e67a 30%, #d4e05a 42%,
+    #f0d94e 52%, #f0c03e 60%, #f0a030 68%, #ef8030 75%,
+    #ee5a3a 85%, #e63e3e 100%
+  );
+}
+.lvl-dot {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 34px;
+  height: 34px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 0 0 2px rgba(0,0,0,0.04);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  pointer-events: none;
+}
+.lvl-tip {
+  position: absolute;
+  top: -38px;
+  left: 0%;
+  transform: translateX(-50%);
+  background: #3a3f47;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 7px 16px;
+  border-radius: 8px;
+  white-space: nowrap;
+  z-index: 3;
+  opacity: 0;
+  letter-spacing: 0.2px;
+  pointer-events: none;
+}
+.lvl-tip::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #3a3f47;
+}
+.lvl-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 15px;
+  color: #777;
+  font-weight: 400;
+}
+.lvl-labels span:last-child {
+  color: #e64b4b;
+  font-weight: 600;
+}
+@media (max-width: 600px) {
+  .lvl-wrapper { padding: 50px 16px 20px; }
+  .lvl-bar-track { height: 34px; }
+  .lvl-bar-fill { height: 14px; }
+  .lvl-dot { width: 28px; height: 28px; }
+  .lvl-tip { top: -34px; font-size: 12px; padding: 6px 12px; border-radius: 7px; }
+  .lvl-tip::after { bottom: -5px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid #3a3f47; }
+  .lvl-labels { font-size: 13px; margin-top: 10px; }
+}
+
+/* PROFILE CARD */
+.profile-card { background: #fff; border-radius: 16px; padding: 24px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px; overflow: visible !important; }
+.profile-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+.profile-title { font-size: 16px; font-weight: 700; }
+.profile-badge { background: #ffe0e0; color: #d63031; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+.profile-image { width: 100%; max-width: 200px; margin: 0 auto 10px; display: block; border-radius: 12px; }
+.profile-alert { background: #fff5f5; border-radius: 10px; padding: 14px 16px; margin-top: 16px; }
+.profile-alert-title { font-size: 14px; font-weight: 700; color: #d63031; margin-bottom: 4px; }
+.profile-alert-title .dot { display: inline-block; width: 10px; height: 10px; background: #d63031; border-radius: 50%; margin-right: 6px; }
+.profile-alert-text { font-size: 13px; color: #666; line-height: 1.4; }
+
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.stat-card { background: #fff; border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+.stat-icon { width: 36px; height: 36px; background: #f0f4f8; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.stat-label { color: #888; font-size: 12px; line-height: 1.3; }
+.stat-value { font-weight: 700; font-size: 14px; color: #1a1a1a; }
+
+/* INTERMEDIATE */
+.intermediate-text { font-size: 15px; color: #555; text-align: center; line-height: 1.5; margin-bottom: 20px; }
+.intermediate-image { width: 100%; max-width: 400px; margin: 0 auto 20px; display: block; border-radius: 12px; }
+.community-image { width: 100%; max-width: 350px; margin: 20px auto 0; display: block; }
+
+/* ============================================================
+   RESULTS PAGE (etape 23) — Big cards + chevron + segmented bars
+   ============================================================ */
+.results-top-text { font-size: 13px; color: #888; text-align: center; margin-bottom: 4px; }
+.results-headline { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; line-height: 1.3; }
+.results-sub { font-size: 13px; color: #555; text-align: center; margin-bottom: 14px; }
+.results-checks { margin-bottom: 20px; }
+.results-check { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #444; margin-bottom: 6px; justify-content: center; text-align: center; }
+.results-check .check { color: #27ae60; font-weight: bold; flex-shrink: 0; }
+
+.results-comparison {
+  display: grid;
+  grid-template-columns: 1fr 44px 1fr;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.result-card {
+  background: #fff; border-radius: 16px; padding: 16px 12px 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06); text-align: center;
+}
+.result-card-badge { display: inline-block; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+.badge-now { background: #ffe0e0; color: #d63031; }
+.badge-goal { background: #d4f5d4; color: #27ae60; }
+
+/* Photo in rounded frame */
+.result-card-photo {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 14px;
+  border: 1px solid #eee;
+}
+
+.result-stat { margin-bottom: 12px; text-align: left; }
+.result-stat-label { font-size: 12px; font-weight: 700; color: #1a1a1a; margin-bottom: 2px; }
+.result-stat-value { font-size: 12px; font-weight: 600; margin-bottom: 5px; }
+.result-stat-value.val-red { color: #e84118; }
+.result-stat-value.val-green { color: #27ae60; }
+
+.stat-pills { display: flex; gap: 4px; }
+.stat-pill { flex: 1; height: 8px; border-radius: 4px; background: #e8e8e8; }
+.stat-pill.fill-red { background: #e84118; }
+.stat-pill.fill-green { background: #6ab04c; }
+
+/* Big green chevron */
+.result-arrow-container { display: flex; align-items: center; justify-content: center; }
+.result-chevron svg { width: 38px; height: 48px; display: block; }
+
+/* Claim button */
+.btn-claim {
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+  padding: 18px 32px; background: #0c233f; color: #fff; border: none; border-radius: 50px;
+  font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase;
+  transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
+}
+.btn-claim:hover { background: #091b30; transform: translateY(-1px); }
+.btn-claim .btn-arrow svg { width: 20px; height: 20px; display: block; }
+
+/* DATE PICKER */
+.datepicker-input-wrapper { display: flex; align-items: center; background: #e8ecef; border-radius: 10px; padding: 14px 16px; cursor: pointer; margin-bottom: 16px; gap: 12px; }
+.datepicker-input-wrapper .cal-icon { font-size: 20px; color: #888; }
+.datepicker-input-wrapper input { border: none; background: transparent; font-size: 16px; color: #333; outline: none; width: 100%; cursor: pointer; }
+.datepicker-dropdown { background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); padding: 16px; margin-bottom: 16px; display: none; }
+.datepicker-dropdown.open { display: block; }
+.dp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.dp-header-title { font-size: 16px; font-weight: 700; }
+.dp-nav { background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px 8px; color: #333; }
+.dp-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 6px; }
+.dp-weekday { text-align: center; font-size: 12px; color: #999; font-weight: 600; padding: 4px 0; }
+.dp-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.dp-day { text-align: center; padding: 10px 0; font-size: 14px; cursor: pointer; border-radius: 8px; border: none; background: none; color: #333; transition: all 0.15s ease; }
+.dp-day:hover { background: #f0f0f0; }
+.dp-day.other-month { color: #ccc; }
+.dp-day.selected { background: #0c233f; color: #fff; font-weight: 700; }
+.dp-day.today { font-weight: 700; border: 2px solid #0c233f; }
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  .quiz-logo img { height: 36px; }
+  .quiz-body { padding: 50px 20px 60px; }
+  .quiz-question, .quiz-headline, .loading-headline, .results-headline { font-size: 28px; }
+  .option-btn { padding: 18px 24px; font-size: 17px; }
+  .image-options { grid-template-columns: repeat(4, 1fr); }
+  .image-option img { height: 180px; }
+  .carousel-slide img { max-height: 420px; }
+  .result-chevron svg { width: 46px; height: 56px; }
+  .results-comparison { grid-template-columns: 1fr 54px 1fr; gap: 10px; }
+}
+@media (min-width: 1024px) { .quiz-body { max-width: 650px; } }
+</style>
+
+<div class="quiz-container">
+  <header class="quiz-header">
+    <div class="quiz-logo">
+      <img src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/2.png?v=1760645077" alt="Julie Cosmetique">
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </header>
+
+  <div class="quiz-body">
+
+    <!-- STEP 1 — Age -->
+    <div class="quiz-step active" data-step="1">
+      <p class="quiz-promo">OFFRE SPÉCIALE DE PRINTEMPS</p>
+      <h1 class="quiz-headline">Répondez à ce quiz d'1 minute pour <u>obtenir votre réduction de 190 € !</u></h1>
+      <h2 class="quiz-question">Quel est votre âge ?🤔</h2>
+      <div class="options-list" style="margin-top:20px">
+        <button class="option-btn" onclick="selectSingle(1,'Moins de 30 ans')"><span class="option-text">Moins de 30 ans</span></button>
+        <button class="option-btn" onclick="selectSingle(1,'30-39')"><span class="option-text">30-39 ans</span></button>
+        <button class="option-btn" onclick="selectSingle(1,'40-49')"><span class="option-text">40-49 ans</span></button>
+        <button class="option-btn" onclick="selectSingle(1,'50-59')"><span class="option-text">50-59 ans</span></button>
+        <button class="option-btn" onclick="selectSingle(1,'Plus de 60 ans')"><span class="option-text">Plus de 60 ans</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="quiz-step" data-step="2">
+      <h2 class="quiz-question">Quelle est votre préoccupation n°1 pour votre peau ?🧖‍♀️</h2>
+      <p class="quiz-subtitle">(Cochez autant de réponses que vous le souhaitez)</p>
+      <div class="options-list">
+        <button class="option-btn" onclick="toggleMulti(this,2,'Rides')"><span class="option-text">Rides</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,2,'Ridules')"><span class="option-text">Ridules</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,2,'Peau relâchée')"><span class="option-text">Peau relâchée</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,2,'Peau fripée')"><span class="option-text">Peau fripée</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,2,'Taches brunes')"><span class="option-text">Taches brunes</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,2,'Teint irrégulier')"><span class="option-text">Teint irrégulier</span></button>
+      </div>
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(3)">Continuer <span class="arrow">→</span></button></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="quiz-step" data-step="3">
+      <h2 class="quiz-question">Vos rides sont-elles profondes ?</h2>
+      <p class="quiz-subtitle">(Cochez autant de réponses que vous le souhaitez)</p>
+      <div class="options-list">
+        <button class="option-btn" onclick="toggleMulti(this,3,'À peine visibles')"><span class="option-text">À peine visibles</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,3,'Bien visibles')"><span class="option-text">Bien visibles</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,3,'Rides profondes')"><span class="option-text">Rides profondes</span></button>
+      </div>
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(4)">Continuer <span class="arrow">→</span></button></div>
+    </div>
+
+    <!-- STEP 4 — Image options -->
+    <div class="quiz-step" data-step="4">
+      <h2 class="quiz-question">Lesquelles souhaitez-vous visiblement atténuer ?</h2>
+      <p class="quiz-subtitle">(Cochez tout ce qui vous concerne)</p>
+      <div class="image-options">
+        <div class="image-option" onclick="toggleImageOption(this,4,'Rides bouche')">
+          <div class="check-badge"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/part4-imgquizlp1.avif?v=1773534136" alt="Rides autour de la bouche">
+          <div class="image-label">Rides autour de la bouche</div>
+        </div>
+        <div class="image-option" onclick="toggleImageOption(this,4,'Rides front')">
+          <div class="check-badge"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/part4-imgquizlp2.avif?v=1773534135" alt="Rides du front">
+          <div class="image-label">Rides du front</div>
+        </div>
+        <div class="image-option" onclick="toggleImageOption(this,4,'Rides yeux')">
+          <div class="check-badge"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/part4-imgquizlp3.avif?v=1773534135" alt="Rides contour des yeux">
+          <div class="image-label">Rides du contour des yeux / Pattes d'oie</div>
+        </div>
+        <div class="image-option" onclick="toggleImageOption(this,4,'Cou relâché')">
+          <div class="check-badge"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/part4-imgquizlp4.avif?v=1773534135" alt="Cou relâché">
+          <div class="image-label">Cou relâché</div>
+        </div>
+      </div>
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(5)">Continuer <span class="arrow">→</span></button></div>
+    </div>
+
+    <!-- STEP 5 — Carousel FIXED -->
+    <div class="quiz-step" data-step="5">
+      <h2 class="quiz-question">Vous êtes au bon endroit !💪</h2>
+      <p class="intermediate-text">
+        Des milliers de femmes ont visiblement réduit leurs rides autour de la <u>bouche</u>, du <u>front</u>,
+        des <u>yeux</u> et du <u>cou</u> grâce à la <strong>Solution Liquide Julie Cosmétique !</strong>
+      </p>
+      <div class="carousel-wrapper" id="carousel">
+        <div class="carousel-viewport">
+          <div class="carousel-slide active"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres1.webp?v=1773535121" alt="Avant Après 1"></div>
+          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres2.webp?v=1773535120" alt="Avant Après 2"></div>
+          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres3.webp?v=1773535121" alt="Avant Après 3"></div>
+          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres4.webp?v=1773535120" alt="Avant Après 4"></div>
+          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres5.webp?v=1773535120" alt="Avant Après 5"></div>
+          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres6.webp?v=1773535121" alt="Avant Après 6"></div>
+        </div>
+        <div class="carousel-nav">
+          <button class="carousel-arrow prev hidden" id="carouselPrevBtn" onclick="carouselPrev()">‹</button>
+          <div class="carousel-dots">
+            <button class="carousel-dot active" onclick="carouselGoTo(0)"></button>
+            <button class="carousel-dot" onclick="carouselGoTo(1)"></button>
+            <button class="carousel-dot" onclick="carouselGoTo(2)"></button>
+            <button class="carousel-dot" onclick="carouselGoTo(3)"></button>
+            <button class="carousel-dot" onclick="carouselGoTo(4)"></button>
+            <button class="carousel-dot" onclick="carouselGoTo(5)"></button>
+          </div>
+          <button class="carousel-arrow next" id="carouselNextBtn" onclick="carouselNext()">›</button>
+        </div>
+      </div>
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(6)">Continuer <span class="arrow">→</span></button></div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="quiz-step" data-step="6">
+      <h2 class="quiz-question">À quelle fréquence votre peau est-elle exposée au soleil ?</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(6,'En permanence')"><span class="emoji">☀️</span><span class="option-text">En permanence</span></button>
+        <button class="option-btn" onclick="selectSingle(6,'De temps en temps')"><span class="emoji">🌤️</span><span class="option-text">De temps en temps</span></button>
+        <button class="option-btn" onclick="selectSingle(6,'Rarement')"><span class="emoji">⛅</span><span class="option-text">Rarement</span></button>
+        <button class="option-btn" onclick="selectSingle(6,'Presque jamais')"><span class="emoji">☁️</span><span class="option-text">Presque jamais</span></button>
+        <button class="option-btn" onclick="selectSingle(6,'Je ne sais pas trop')"><span class="emoji">🤷‍♀️</span><span class="option-text">Je ne sais pas trop</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 7 -->
+    <div class="quiz-step" data-step="7">
+      <h2 class="quiz-question">Combien d'heures dormez-vous en général ?💤</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(7,'Plus de 8 heures')"><span class="emoji">😴</span><span class="option-text">Plus de 8 heures</span></button>
+        <button class="option-btn" onclick="selectSingle(7,'7-8 heures')"><span class="emoji">👍</span><span class="option-text">7 à 8 heures</span></button>
+        <button class="option-btn" onclick="selectSingle(7,'Moins de 6 heures')"><span class="emoji">😭</span><span class="option-text">Moins de 6 heures</span></button>
+        <button class="option-btn" onclick="selectSingle(7,'Sommeil irrégulier')"><span class="emoji">😩</span><span class="option-text">Mon sommeil est irrégulier</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 8 -->
+    <div class="quiz-step" data-step="8">
+      <h2 class="quiz-question">Je ressens la pression du stress...</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(8,'Tous les jours')"><span class="emoji">😰</span><span class="option-text">Tous les jours, en permanence</span></button>
+        <button class="option-btn" onclick="selectSingle(8,'La plupart du temps')"><span class="emoji">😬</span><span class="option-text">La plupart du temps, surtout au travail</span></button>
+        <button class="option-btn" onclick="selectSingle(8,'Périodes chargées')"><span class="emoji">😐</span><span class="option-text">Surtout pendant les périodes chargées</span></button>
+        <button class="option-btn" onclick="selectSingle(8,'Rarement stressée')"><span class="emoji">😎</span><span class="option-text">Je suis rarement stressée</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 9 -->
+    <div class="quiz-step" data-step="9">
+      <h2 class="quiz-question">Quelle est votre carnation ?</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(9,'Claire')"><span class="skin-circle" style="background:#F5D6C3"></span><span class="option-text">Claire</span></button>
+        <button class="option-btn" onclick="selectSingle(9,'Légèrement hâlée')"><span class="skin-circle" style="background:#F0C8A0"></span><span class="option-text">Légèrement hâlée</span></button>
+        <button class="option-btn" onclick="selectSingle(9,'Médium')"><span class="skin-circle" style="background:#C68642"></span><span class="option-text">Médium</span></button>
+        <button class="option-btn" onclick="selectSingle(9,'Foncée')"><span class="skin-circle" style="background:#8D5524"></span><span class="option-text">Foncée</span></button>
+        <button class="option-btn" onclick="selectSingle(9,'Très foncée')"><span class="skin-circle" style="background:#5C3310"></span><span class="option-text">Très foncée</span></button>
+        <button class="option-btn" onclick="selectSingle(9,'Je ne sais pas')"><span class="emoji" style="color:#d63031;font-weight:bold;font-size:28px">?</span><span class="option-text">Je ne sais pas</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 10 -->
+    <div class="quiz-step" data-step="10">
+      <h2 class="quiz-question">Avez-vous la peau sensible ?🤔</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(10,'Oui')"><span class="option-text">Oui</span></button>
+        <button class="option-btn" onclick="selectSingle(10,'Non')"><span class="option-text">Non</span></button>
+        <button class="option-btn" onclick="selectSingle(10,'Je ne suis pas sûre')"><span class="option-text">Je ne suis pas sûre</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 11 -->
+    <div class="quiz-step" data-step="11">
+      <p style="font-weight:600;color:#444;text-align:center;font-size:14px;margin-bottom:4px">Félicitations, notre soin pourrait vous convenir parfaitement !✅</p>
+      <h2 class="quiz-question">Notre Système Micro-Infusion est sûr et indolore pour votre type de peau !</h2>
+      <div class="sticky-mobile-btn"><button class="btn-continue" style="margin-top:20px" onclick="goToStep(12)">Continuer <span class="arrow">→</span></button></div>
+      <img class="community-image" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/tablet.avif?v=1773535238" alt="Community">
+    </div>
+
+    <!-- STEP 12 — Loading -->
+    <div class="quiz-step" data-step="12">
+      <div class="loading-screen">
+        <div class="loading-icon"><div class="spinner-ring" id="spinner12"></div><div class="check-icon" id="check12"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div></div>
+        <p class="loading-text">Création de votre profil de peau...</p>
+      </div>
+    </div>
+
+    <!-- STEP 13 — Skin Profile -->
+    <div class="quiz-step" data-step="13">
+      <h2 class="quiz-question" style="margin-bottom:20px">Bilan de votre profil de peau</h2>
+      <div class="profile-card">
+        <div class="profile-header"><span class="profile-title">Perte naturelle de collagène</span><span class="profile-badge">Élevée</span></div>
+        <img class="profile-image" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/femmepart13-quilp.webp?v=1773535302" alt="Profil de peau">
+        <!-- LEVEL BAR — inline styles + !important pour forcer sur Shopify -->
+        <div id="lvlWrapper" style="width:100% !important;margin:0 auto !important;padding:50px 20px 10px !important;overflow:visible !important;">
+          <div style="position:relative !important;width:100% !important;height:40px !important;overflow:visible !important;">
+            <!-- Barre gradient -->
+            <div style="position:absolute !important;top:50% !important;left:0 !important;right:0 !important;height:18px !important;transform:translateY(-50%) !important;border-radius:30px !important;background:linear-gradient(to right,#a8e4f0 0%,#7edbb5 18%,#b8e67a 30%,#d4e05a 42%,#f0d94e 52%,#f0c03e 60%,#f0a030 68%,#ef8030 75%,#ee5a3a 85%,#e63e3e 100%) !important;display:block !important;visibility:visible !important;opacity:1 !important;"></div>
+            <!-- Tooltip "Votre niveau" -->
+            <div id="lvlTooltip" style="position:absolute !important;top:-20px !important;left:0% !important;transform:translateX(-50%) !important;background:#3a3f47 !important;color:#fff !important;font-size:14px !important;font-weight:500 !important;padding:7px 16px !important;border-radius:8px !important;white-space:nowrap !important;z-index:3 !important;opacity:0;letter-spacing:0.2px !important;pointer-events:none !important;">Votre niveau<span style="position:absolute !important;bottom:-6px !important;left:50% !important;transform:translateX(-50%) !important;width:0 !important;height:0 !important;border-left:7px solid transparent !important;border-right:7px solid transparent !important;border-top:7px solid #3a3f47 !important;"></span></div>
+            <!-- Rond blanc curseur -->
+            <div id="lvlIndicator" style="position:absolute !important;top:50% !important;left:0% !important;width:34px !important;height:34px !important;background:#fff !important;border-radius:50% !important;box-shadow:0 2px 8px rgba(0,0,0,0.18),0 0 0 2px rgba(0,0,0,0.04) !important;transform:translate(-50%,-50%) !important;z-index:2 !important;pointer-events:none !important;display:block !important;visibility:visible !important;opacity:1 !important;"></div>
+          </div>
+          <div style="display:flex !important;justify-content:space-between !important;margin-top:12px !important;font-size:15px !important;color:#777 !important;font-weight:400 !important;">
+            <span>Faible</span>
+            <span>Normal</span>
+            <span style="color:#e64b4b !important;font-weight:600 !important;">Élevé</span>
+          </div>
+        </div>
+        <div class="profile-alert">
+          <p class="profile-alert-title"><span class="dot"></span> Niveau ÉLEVÉ</p>
+          <p class="profile-alert-text">Un niveau élevé de perte de collagène peut entraîner des rides profondes, un relâchement cutané et un teint irrégulier — ce qui vous fait paraître bien plus âgée que vous ne l'êtes vraiment.</p>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-card"><div class="stat-icon">📊</div><div><div class="stat-label">Impact sur l'apparence :</div><div class="stat-value">Visible</div></div></div>
+        <div class="stat-card"><div class="stat-icon">📈</div><div><div class="stat-label">Marge d'amélioration :</div><div class="stat-value">Élevée</div></div></div>
+        <div class="stat-card"><div class="stat-icon">💧</div><div><div class="stat-label">Élasticité de la peau :</div><div class="stat-value">Faible</div></div></div>
+        <div class="stat-card"><div class="stat-icon">🧬</div><div><div class="stat-label">Niveau de collagène naturel :</div><div class="stat-value">Inférieur à la moyenne</div></div></div>
+      </div>
+      <div class="sticky-mobile-btn"><button class="btn-continue" style="margin-top:24px" onclick="goToStep(14)">Continuer <span class="arrow">→</span></button></div>
+    </div>
+
+    <!-- STEP 14 -->
+    <div class="quiz-step" data-step="14">
+      <h2 class="quiz-question">Quelles solutions avez-vous déjà essayées ?</h2>
+      <p class="quiz-subtitle">(Cochez tout ce qui vous concerne)</p>
+      <div class="options-list">
+        <button class="option-btn" onclick="toggleMulti(this,14,'Soins en cabinet')"><span class="emoji">💉</span><span class="option-text">Soins en cabinet<br><span class="option-desc">Botox, Injections, Microneedling, Laser</span></span></button>
+        <button class="option-btn" onclick="toggleMulti(this,14,'Produits anti-âge')"><span class="emoji">🧴</span><span class="option-text">Produits anti-âge<br><span class="option-desc">Rétinol, Sérums, Crèmes, Vitamine C</span></span></button>
+        <button class="option-btn" onclick="toggleMulti(this,14,'Compléments alimentaires')"><span class="emoji">💊</span><span class="option-text">Compléments alimentaires ou poudres</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,14,'Remèdes naturels')"><span class="emoji">🌿</span><span class="option-text">Remèdes naturels / faits maison</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,14,'Autres')"><span class="emoji">❌</span><span class="option-text">Autres</span></button>
+        <button class="option-btn" onclick="toggleMulti(this,14,'Rien pour l instant')"><span class="emoji">🤷‍♀️</span><span class="option-text">Rien pour l'instant</span></button>
+      </div>
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(15)">Continuer <span class="arrow">→</span></button></div>
+    </div>
+
+    <!-- STEP 15 -->
+    <div class="quiz-step" data-step="15">
+      <h2 class="quiz-question">Pourquoi la plupart des solutions échouent</h2>
+      <p class="intermediate-text" style="margin-top:12px">La plupart des soins ne pénètrent pas assez en profondeur pour donner des résultats visibles.<br><br>Julie Cosmétique utilise un système puissant pour <strong>acheminer les actifs anti-âge là où votre peau en a vraiment besoin — en seulement 5 minutes, chez vous.</strong></p>
+      <img class="intermediate-image" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/adv2-creme-32.webp?v=1768770362" alt="Avant Après">
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(16)">Continuer <span class="arrow">→</span></button></div>
+    </div>
+
+    <!-- STEP 16 -->
+    <div class="quiz-step" data-step="16">
+      <h2 class="quiz-question">Combien de temps consacrez-vous à votre routine beauté chaque jour ?⏱️</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(16,'Pas le temps chaque jour')"><span class="option-text">Je n'ai pas le temps chaque jour</span></button>
+        <button class="option-btn" onclick="selectSingle(16,'5 minutes')"><span class="option-text">5 minutes</span></button>
+        <button class="option-btn" onclick="selectSingle(16,'10 minutes')"><span class="option-text">10 minutes</span></button>
+        <button class="option-btn" onclick="selectSingle(16,'15 minutes')"><span class="option-text">15 minutes</span></button>
+        <button class="option-btn" onclick="selectSingle(16,'20 minutes')"><span class="option-text">20 minutes</span></button>
+        <button class="option-btn" onclick="selectSingle(16,'Je ne sais pas')"><span class="option-text">Je ne sais pas</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 17 — Loading 5.5s -->
+    <div class="quiz-step" data-step="17">
+      <div class="loading-screen">
+        <h2 class="loading-headline">Un emploi du temps chargé ne doit pas vous empêcher de paraître plus jeune...</h2>
+        <p class="loading-desc">Avec notre Système Micro-Infusion, vous pouvez <strong>visiblement rajeunir votre peau</strong> depuis chez vous, <u>en seulement 5 minutes une fois toutes les 2 semaines...</u></p>
+        <div class="loading-icon"><div class="spinner-ring" id="spinner17"></div><div class="check-icon" id="check17"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div></div>
+        <p class="loading-text">Chargement de la question suivante...</p>
+      </div>
+    </div>
+
+    <!-- STEP 18-20 -->
+    <div class="quiz-step" data-step="18">
+      <h2 class="quiz-question">Avez-vous déjà eu l'impression que votre peau vous vieillit par rapport à ce que vous ressentez intérieurement ? 🤔</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(18,'Oui')"><span class="option-text">Oui</span></button>
+        <button class="option-btn" onclick="selectSingle(18,'Non')"><span class="option-text">Non</span></button>
+        <button class="option-btn" onclick="selectSingle(18,'Parfois')"><span class="option-text">Parfois</span></button>
+      </div>
+    </div>
+
+    <div class="quiz-step" data-step="19">
+      <h2 class="quiz-question">Qu'est-ce que ça vous ferait de retrouver dans le miroir un visage éclatant et rajeuni ?</h2>
+      <div class="options-list" style="margin-top:24px">
+        <button class="option-btn" onclick="selectSingle(19,'Confiance en moi')"><span class="emoji">👑</span><span class="option-text">Je retrouverais une vraie confiance en moi</span></button>
+        <button class="option-btn" onclick="selectSingle(19,'Fière de moi')"><span class="emoji">👍</span><span class="option-text">Je serais fière de moi</span></button>
+        <button class="option-btn" onclick="selectSingle(19,'Plus désirable')"><span class="emoji">💋</span><span class="option-text">Je me sentirais plus désirable</span></button>
+        <button class="option-btn" onclick="selectSingle(19,'Tout ça à la fois')"><span class="emoji">💍</span><span class="option-text">Tout ça à la fois</span></button>
+      </div>
+    </div>
+
+    <div class="quiz-step" data-step="20">
+      <h2 class="quiz-question">Avez-vous un événement important qui approche ?</h2>
+      <p class="quiz-subtitle" style="font-style:normal">Avoir un bel événement en vue, c'est la meilleure motivation pour atteindre votre objectif</p>
+      <div class="options-list">
+        <button class="option-btn" onclick="selectSingle(20,'Anniversaire')"><span class="emoji">🎁</span><span class="option-text">Anniversaire</span></button>
+        <button class="option-btn" onclick="selectSingle(20,'Vacances')"><span class="emoji">🏖️</span><span class="option-text">Vacances</span></button>
+        <button class="option-btn" onclick="selectSingle(20,'Retrouvailles')"><span class="emoji">👫</span><span class="option-text">Retrouvailles</span></button>
+        <button class="option-btn" onclick="selectSingle(20,'Événement sportif')"><span class="emoji">🥇</span><span class="option-text">Événement sportif</span></button>
+        <button class="option-btn" onclick="selectSingle(20,'Autre')"><span class="emoji">⭐</span><span class="option-text">Autre</span></button>
+        <button class="option-btn" onclick="selectSingle(20,'Rien de prévu')"><span class="emoji">❌</span><span class="option-text">Rien de prévu prochainement</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 21 — Date picker -->
+    <div class="quiz-step" data-step="21">
+      <h2 class="quiz-question">Quand a lieu votre événement ?</h2>
+      <p class="quiz-subtitle" style="font-style:normal">Nous en tiendrons compte pour votre programme de soin.</p>
+      <div class="datepicker-input-wrapper" onclick="toggleDatePicker()">
+        <span class="cal-icon">📅</span><input type="text" id="dateInput" placeholder="Choisissez une date" readonly>
+      </div>
+      <div class="datepicker-dropdown" id="datepickerDropdown">
+        <div class="dp-header"><button class="dp-nav" onclick="dpPrevMonth(event)">‹</button><span class="dp-header-title" id="dpMonthYear"></span><button class="dp-nav" onclick="dpNextMonth(event)">›</button></div>
+        <div class="dp-weekdays"><span class="dp-weekday">Lun</span><span class="dp-weekday">Mar</span><span class="dp-weekday">Mer</span><span class="dp-weekday">Jeu</span><span class="dp-weekday">Ven</span><span class="dp-weekday">Sam</span><span class="dp-weekday">Dim</span></div>
+        <div class="dp-days" id="dpDays"></div>
+      </div>
+      <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(22)">Continuer <span class="arrow">→</span></button></div>
+      <a class="btn-skip" onclick="goToStep(22)">Passer cette étape</a>
+    </div>
+
+    <!-- STEP 22 — Loading -->
+    <div class="quiz-step" data-step="22">
+      <div class="loading-screen">
+        <div class="loading-icon"><div class="spinner-ring" id="spinner22"></div><div class="check-icon" id="check22"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div></div>
+        <p class="loading-text">Calcul des résultats possibles pour votre type de peau...</p>
+      </div>
+    </div>
+
+    <!-- STEP 23 — Results -->
+    <div class="quiz-step" data-step="23">
+      <p class="results-top-text">D'après vos réponses :</p>
+      <h2 class="results-headline">Dans 3 mois seulement, votre peau peut être totalement régénérée !</h2>
+      <p class="results-sub">Voici ce que vous pouvez espérer :</p>
+      <div class="results-checks">
+        <p class="results-check"><span class="check">✅</span> Réduction visible des rides et ridules dès les premières semaines</p>
+        <p class="results-check"><span class="check">✅</span> Rides atténuées et peau visiblement raffermie d'ici le <span id="resultDate">17/06/2026</span></p>
+      </div>
+
+      <div class="results-comparison">
+        <!-- NOW -->
+        <div class="result-card">
+          <span class="result-card-badge badge-now">Aujourd'hui</span>
+          <img class="result-card-photo" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/resultsquizlp-2.webp?v=1773535447" alt="Aujourd'hui">
+          <div class="result-stat">
+            <div class="result-stat-label">Élasticité de la peau</div>
+            <div class="result-stat-value val-red">Faible</div>
+            <div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill"></span><span class="stat-pill"></span></div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-label">Rides et ridules</div>
+            <div class="result-stat-value val-red">Modérées à profondes</div>
+            <div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill fill-red"></span><span class="stat-pill"></span></div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-label">Niveau de collagène</div>
+            <div class="result-stat-value val-red">Inférieur à la moyenne</div>
+            <div class="stat-pills"><span class="stat-pill fill-red"></span><span class="stat-pill"></span><span class="stat-pill"></span></div>
+          </div>
+        </div>
+
+        <!-- GREEN CHEVRON -->
+        <div class="result-arrow-container">
+          <div class="result-chevron">
+            <svg viewBox="0 0 50 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5 L42 30 L8 55Z" fill="#6ab04c"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- GOAL -->
+        <div class="result-card">
+          <span class="result-card-badge badge-goal">Votre objectif</span>
+          <img class="result-card-photo" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/resultsquizlp-1.webp?v=1773535447" alt="Votre objectif">
+          <div class="result-stat">
+            <div class="result-stat-label">Élasticité de la peau</div>
+            <div class="result-stat-value val-green">Raffermie</div>
+            <div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-label">Rides et ridules</div>
+            <div class="result-stat-value val-green">Visiblement estompées</div>
+            <div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-label">Niveau de collagène</div>
+            <div class="result-stat-value val-green">Élevé</div>
+            <div class="stat-pills"><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span><span class="stat-pill fill-green"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sticky-mobile-btn">
+        <button class="btn-claim" onclick="goToStep(24)">
+          PROFITEZ DE VOTRE RÉDUCTION
+          <span class="btn-arrow"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 24 — Loading redirect -->
+    <div class="quiz-step" data-step="24">
+      <div class="loading-screen">
+        <div class="loading-icon"><div class="spinner-ring" id="spinner24"></div><div class="check-icon" id="check24"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div></div>
+        <p class="loading-text">Application de votre remise exceptionnelle...</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- JS EXTERNE : uploader quiz-funnel-2.js dans Shopify (Settings > Files ou thème Assets) -->
+<script src="{{ 'quiz-funnel-2.js' | asset_url }}" defer></script>
+
+<!-- JS INLINE BACKUP — Quiz 2 — fonctionne même en local sans Shopify -->
+<script>
+if (typeof goToStep === 'undefined') {
+var QUIZ_ID='quiz_2';
+var TOTAL_STEPS=24,currentStep=1,stepHistory=[1],answers={},multiSelections={};
+function updateProgressBar(s){var b=document.getElementById('progressBar');if(!b)return;b.style.width=Math.round(((s-1)/(TOTAL_STEPS-1))*100)+'%';}
+function goToStep(s,h){var c=document.querySelector('.quiz-step.active');if(c)c.classList.remove('active');currentStep=s;var n=document.querySelector('[data-step="'+s+'"]');if(n){void n.offsetWidth;n.classList.add('active');}updateProgressBar(s);window.scrollTo({top:0,behavior:'smooth'});if(h!==false){stepHistory.push(s);history.pushState({step:s},'','#step-'+s);}if(s===12)startLoading(12,2200,13);if(s===13)setTimeout(lvlAnimate,400);if(s===17)startLoading(17,4700,18);if(s===22)startLoading(22,2200,23);if(s===23)updateResultsPage();if(s===24)startLoadingRedirect(24,2200);}
+window.addEventListener('popstate',function(){if(stepHistory.length>1){stepHistory.pop();goToStep(stepHistory[stepHistory.length-1],false);}});
+function selectSingle(s,v){answers[s]=v;var el=document.querySelector('[data-step="'+s+'"]');el.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected');});event.currentTarget.classList.add('selected');setTimeout(function(){goToStep(s+1);},350);}
+function toggleMulti(b,s,v){if(!multiSelections[s])multiSelections[s]=[];b.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
+function toggleImageOption(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
+function startLoading(s,d,nx){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){goToStep(nx);},800);},d);}
+function startLoadingRedirect(s,d){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},800);},d);}
+var lvlTarget=82,lvlDuration=3500,lvlStarted=false;
+function lvlEase(t){return 1-Math.pow(1-t,3);}
+function lvlAnimate(){if(lvlStarted)return;var dot=document.getElementById('lvlIndicator'),tip=document.getElementById('lvlTooltip');if(!dot||!tip)return;lvlStarted=true;tip.style.opacity='1';var st=null;function frame(ts){if(!st)st=ts;var p=Math.min((ts-st)/lvlDuration,1),e=lvlEase(p),v=e*lvlTarget;dot.style.left=v+'%';tip.style.left=v+'%';if(p<1)requestAnimationFrame(frame);}requestAnimationFrame(frame);}
+var cIdx=0,cTotal=6,touchX=0;
+function updateCarousel(){document.querySelectorAll('.carousel-slide').forEach(function(s,i){s.classList.toggle('active',i===cIdx);});document.querySelectorAll('.carousel-dot').forEach(function(d,i){d.classList.toggle('active',i===cIdx);});var p=document.getElementById('carouselPrevBtn'),n=document.getElementById('carouselNextBtn');if(p)p.classList.toggle('hidden',cIdx===0);if(n)n.classList.toggle('hidden',cIdx===cTotal-1);}
+function carouselNext(){if(cIdx<cTotal-1){cIdx++;updateCarousel();}}
+function carouselPrev(){if(cIdx>0){cIdx--;updateCarousel();}}
+function carouselGoTo(i){cIdx=i;updateCarousel();}
+var dpY,dpM,dpSel=null;
+function initDP(){var n=new Date();dpY=n.getFullYear();dpM=n.getMonth();renderDP();}
+function toggleDatePicker(){var d=document.getElementById('datepickerDropdown');if(d){d.classList.toggle('open');if(d.classList.contains('open'))initDP();}}
+function dpPrevMonth(e){e.stopPropagation();dpM--;if(dpM<0){dpM=11;dpY--;}renderDP();}
+function dpNextMonth(e){e.stopPropagation();dpM++;if(dpM>11){dpM=0;dpY++;}renderDP();}
+function renderDP(){var ms=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];var t=document.getElementById('dpMonthYear');if(t)t.textContent=ms[dpM]+'    '+dpY;var dc=document.getElementById('dpDays');if(!dc)return;dc.innerHTML='';var fd=new Date(dpY,dpM,1).getDay();fd=fd===0?6:fd-1;var dim=new Date(dpY,dpM+1,0).getDate(),dipm=new Date(dpY,dpM,0).getDate(),today=new Date();for(var i=fd-1;i>=0;i--){var b=document.createElement('button');b.className='dp-day other-month';b.textContent=dipm-i;dc.appendChild(b);}for(var d=1;d<=dim;d++){var b=document.createElement('button');b.className='dp-day';b.textContent=d;if(d===today.getDate()&&dpM===today.getMonth()&&dpY===today.getFullYear())b.classList.add('today');if(dpSel&&d===dpSel.getDate()&&dpM===dpSel.getMonth()&&dpY===dpSel.getFullYear())b.classList.add('selected');(function(day){b.addEventListener('click',function(e){e.stopPropagation();dpSel=new Date(dpY,dpM,day);var f=String(day).padStart(2,'0')+'/'+String(dpM+1).padStart(2,'0')+'/'+dpY;document.getElementById('dateInput').value=f;answers[21]=f;renderDP();setTimeout(function(){document.getElementById('datepickerDropdown').classList.remove('open');},200);});})(d);dc.appendChild(b);}var tc=fd+dim,rem=(7-(tc%7))%7;for(var i=1;i<=rem;i++){var b=document.createElement('button');b.className='dp-day other-month';b.textContent=i;dc.appendChild(b);}}
+function updateResultsPage(){var e=document.getElementById('eventName');if(e&&answers[20])e.textContent=answers[20];var t=new Date();t.setMonth(t.getMonth()+3);var d=document.getElementById('resultDate');if(d)d.textContent=String(t.getDate()).padStart(2,'0')+'/'+String(t.getMonth()+1).padStart(2,'0')+'/'+t.getFullYear();}
+document.addEventListener('DOMContentLoaded',function(){updateProgressBar(1);history.replaceState({step:1},'','#step-1');var t=document.querySelector('.carousel-viewport');if(t){t.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX;},{passive:true});t.addEventListener('touchend',function(e){var d=touchX-e.changedTouches[0].clientX;if(Math.abs(d)>50){if(d>0)carouselNext();else carouselPrev();}},{passive:true});}});
+}
+</script>

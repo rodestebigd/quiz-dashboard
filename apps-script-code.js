@@ -20,11 +20,19 @@ function doPost(e) {
     var sheet = ss.getSheetByName('responses');
     if (!sheet) {
       sheet = ss.insertSheet('responses');
-      sheet.appendRow(['timestamp', 'session_id', 'step', 'question', 'answer', 'user_agent']);
+      sheet.appendRow(['timestamp', 'quiz_id', 'session_id', 'step', 'question', 'answer', 'user_agent']);
     }
-    
+
+    // Si la colonne quiz_id n'existe pas encore (ancien sheet), l'ajouter
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    if (headers.indexOf('quiz_id') === -1) {
+      sheet.insertColumnBefore(2);
+      sheet.getRange(1, 2).setValue('quiz_id');
+    }
+
     sheet.appendRow([
       new Date().toISOString(),
+      data.quiz_id || 'quiz_1',
       data.session_id || '',
       data.step || '',
       data.question || '',
