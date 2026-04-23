@@ -508,6 +508,7 @@ header.quiz-header,
   position: relative; background: #fff; border: 2px solid #dde1e6; border-radius: 14px;
   cursor: pointer; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
   overflow: hidden; user-select: none;
+  display: flex; flex-direction: column;
 }
 .severity-option:hover { border-color: #b0b5bd; transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .severity-option.selected { border-color: #0c233f; }
@@ -520,15 +521,22 @@ header.quiz-header,
 .severity-option.selected .severity-check { background: #0c233f; }
 .severity-option .severity-check svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 3; fill: none; opacity: 0; transition: opacity 0.2s; }
 .severity-option.selected .severity-check svg { opacity: 1; }
-.severity-option img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
+.severity-option img {
+  width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top center; display: block;
+}
 .severity-label {
   padding: 10px 8px; font-size: 12px; font-weight: 600; color: #1a1a1a; line-height: 1.3;
-  text-align: center; background: #fff; transition: all 0.2s;
+  text-align: center; background: #fff; transition: all 0.2s; margin-top: auto;
 }
 
+/* Mobile: 2x2 compact — all 4 cards visible without scroll */
 @media (max-width: 767px) {
-  .severity-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .severity-label { font-size: 11px; padding: 8px 6px; }
+  .severity-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px; }
+  .severity-option { border-radius: 10px; border-width: 2px; }
+  .severity-option img { aspect-ratio: 1 / 1; object-position: 50% 20%; }
+  .severity-option .severity-check { width: 20px; height: 20px; top: 6px; right: 6px; }
+  .severity-option .severity-check svg { width: 11px; height: 11px; }
+  .severity-label { font-size: 10.5px; padding: 6px 4px; line-height: 1.2; }
 }
 
 /* INFO CARD — educational page */
@@ -882,7 +890,7 @@ header.quiz-header,
         </div>
         <div class="severity-option" onclick="toggleSeverity(this,4,'Rides modérées')">
           <div class="severity-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
-          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/pdpfemme-3.jpg?v=1776948447" alt="Rides modérées">
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Mild_Wrinkles_Minimal_Sagging.avif?v=1776948509" alt="Rides modérées">
           <div class="severity-label">Rides modérées &amp; léger relâchement</div>
         </div>
         <div class="severity-option" onclick="toggleSeverity(this,4,'Rides profondes')">
