@@ -1414,6 +1414,63 @@ header.quiz-header,
   </div>
 </div>
 
+<!-- PRELOAD MEDIA — charge toutes les images + vidéo dès le premier affichage -->
+<script>
+(function preloadQuizMedia() {
+  var urls = [
+    // Step 3 — zones (8 images)
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Mouth_Wrinkles.avif?v=1776943891',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Smokers_Lip_Lines.avif?v=1776943891',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Nasolabial_Fold.avif?v=1776943891',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Marionette_Lines.avif?v=1776943891',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Turkey_Neck.avif?v=1776943891',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Sagging_Jowls.avif?v=1776943891',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Eye_Wrinkles.avif?v=1776943891',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Forehead_Wrinkles.avif?v=1776943891',
+    // Step 4 — severity (4 photos)
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Mild_Wrinkles_Minimal_Sagging.avif?v=1776948509',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Moderate_Wrinkles_Some_Sagging.avif?v=1776948508',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Deep_Wrinkles_Pronounced_Sagging.avif?v=1776948508',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Very_Deep_Wrinkles_Severe_Sagging.avif?v=1776948508',
+    // Step 5 — 6 reviews avant/après
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis1.webp?v=1776948079',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis2.webp?v=1776948079',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis3.webp?v=1776948079',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis4.webp?v=1776948079',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis5.webp?v=1776948079',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis6.webp?v=1776948079',
+    // Step 12 — skin profile
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/femmepart13-quilp.webp?v=1773535302',
+    // Step 18 + 24 — avatars reviews
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/pdpfemme-1.jpg?v=1776948334',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/pdpfemme-2.jpg?v=1776948334',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/pdpfemme-3.jpg?v=1776948447',
+    // Step 23 — résultats Now vs Goal
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/resultsquizlp-2.webp?v=1773535447',
+    'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/resultsquizlp-1.webp?v=1773535447'
+  ];
+
+  // Préchargement des images (pas besoin de DOM)
+  urls.forEach(function(url) { var img = new Image(); img.src = url; });
+
+  // Préchargement de la vidéo (step 15) via élément caché
+  function preloadVideo() {
+    var v = document.createElement('video');
+    v.preload = 'auto';
+    v.muted = true;
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    v.src = 'https://cdn.shopify.com/videos/c/o/v/febaf277f23042cbb456880561be1d4e.webm';
+    v.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;top:-9999px;left:-9999px';
+    v.setAttribute('aria-hidden', 'true');
+    if (document.body) document.body.appendChild(v);
+    v.load();
+  }
+  if (document.body) preloadVideo();
+  else document.addEventListener('DOMContentLoaded', preloadVideo);
+})();
+</script>
+
 <!-- JS EXTERNE : uploader quiz-funnel-2.js dans Shopify (Settings > Files ou thème Assets) -->
 <script src="{{ 'quiz-funnel-2.js' | asset_url }}" defer></script>
 
