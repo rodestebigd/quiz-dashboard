@@ -32,7 +32,11 @@ var QUESTION_MAP = {
   13: 'Solutions déjà essayées',
   14: 'Expérience produits',
   16: 'Traitements professionnels',
-  17: 'Routine actuelle'
+  17: 'Routine actuelle',
+  19: 'Peau vieillit',
+  20: 'Miroir rajeuni',
+  21: 'Événement important',
+  22: 'Date événement'
 };
 
 function trackAnswer(step, answer) {

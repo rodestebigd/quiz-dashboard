@@ -184,6 +184,77 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg-dark); color:var(--
 .main-header h1 { font-size:24px; font-weight:700; }
 .main-header p { color:var(--text-muted); font-size:14px; margin-top:4px; }
 
+/* QUIZ SWITCHER */
+.quiz-switcher {
+  display:inline-flex; align-items:center; gap:0;
+  background:var(--bg-dark); border:1px solid var(--border);
+  border-radius:8px; padding:3px; margin-bottom:20px;
+}
+.quiz-switcher-btn {
+  background:transparent; border:none; cursor:pointer;
+  color:var(--text-muted); font-family:inherit; font-size:13px; font-weight:600;
+  padding:8px 16px; border-radius:6px; transition:all .15s;
+  display:inline-flex; align-items:center; gap:6px;
+  white-space:nowrap;
+}
+.quiz-switcher-btn:hover { color:var(--text); }
+.quiz-switcher-btn.active {
+  background:var(--bg-card); color:var(--text);
+  box-shadow:0 1px 3px rgba(0,0,0,0.15);
+}
+.quiz-switcher-btn .qs-dot {
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+}
+.quiz-switcher-btn[data-filter="all"] .qs-dot { background:linear-gradient(135deg, #6366f1 0%, #ec4899 100%); }
+.quiz-switcher-btn[data-filter="quiz_1"] .qs-dot { background:#6366f1; }
+.quiz-switcher-btn[data-filter="quiz_2"] .qs-dot { background:#ec4899; }
+.quiz-switcher-btn .qs-count {
+  font-size:11px; color:var(--text-muted); font-weight:500;
+  margin-left:2px;
+}
+.quiz-switcher-btn.active .qs-count { color:var(--accent-light); }
+
+/* Mode indicator bar (petit bandeau sous le header) */
+.quiz-mode-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(99,102,241,0.08); color:var(--accent-light);
+  padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.5px;
+  margin-left:10px;
+}
+.quiz-mode-badge.q1 { background:rgba(99,102,241,0.12); color:#818cf8; }
+.quiz-mode-badge.q2 { background:rgba(236,72,153,0.12); color:#f472b6; }
+.quiz-mode-badge.all { background:linear-gradient(135deg, rgba(99,102,241,0.12), rgba(236,72,153,0.12)); color:var(--text); }
+
+/* Quiz tag (inline) — pour tableau responses + badges par question */
+.quiz-tag {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px;
+  text-transform:uppercase; letter-spacing:0.3px; white-space:nowrap;
+}
+.quiz-tag-q1 { background:rgba(99,102,241,0.15); color:#a5b4fc; }
+.quiz-tag-q2 { background:rgba(236,72,153,0.15); color:#f9a8d4; }
+.quiz-tag::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+}
+.quiz-tag-q1::before { background:#6366f1; }
+.quiz-tag-q2::before { background:#ec4899; }
+
+/* Dual funnel layout (vue générale) */
+.funnel-dual {
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+}
+.funnel-dual-col h4 {
+  font-size:13px; font-weight:700; margin-bottom:12px;
+  padding:6px 12px; border-radius:6px;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.funnel-dual-col.q1 h4 { background:rgba(99,102,241,0.12); color:#a5b4fc; }
+.funnel-dual-col.q2 h4 { background:rgba(236,72,153,0.12); color:#f9a8d4; }
+@media (max-width:900px) {
+  .funnel-dual { grid-template-columns:1fr; gap:24px; }
+}
+
 /* Key answers grid */
 .key-answers-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 .key-answer-card {
@@ -616,12 +687,25 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
 
   <main class="main" id="mainArea">
     <div class="main-inner">
-    <div class="main-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div class="main-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
       <div>
-        <h1>Tableau de bord Quiz</h1>
+        <h1>Tableau de bord Quiz <span id="quizModeBadge" class="quiz-mode-badge all">Vue générale</span></h1>
         <p id="lastUpdate">Chargement des données...</p>
       </div>
       <button class="refresh-btn" onclick="fetchData()">Rafraîchir</button>
+    </div>
+
+    <!-- QUIZ SWITCHER -->
+    <div class="quiz-switcher" role="tablist">
+      <button class="quiz-switcher-btn active" data-filter="all" onclick="setQuizFilter('all')">
+        <span class="qs-dot"></span> Vue générale <span class="qs-count" id="qsCountAll"></span>
+      </button>
+      <button class="quiz-switcher-btn" data-filter="quiz_1" onclick="setQuizFilter('quiz_1')">
+        <span class="qs-dot"></span> Quiz Original <span class="qs-count" id="qsCountQ1"></span>
+      </button>
+      <button class="quiz-switcher-btn" data-filter="quiz_2" onclick="setQuizFilter('quiz_2')">
+        <span class="qs-dot"></span> Quiz Variante <span class="qs-count" id="qsCountQ2"></span>
+      </button>
     </div>
 
     <!-- ========== PAGE: ANALYTICS ========== -->
@@ -644,7 +728,23 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbw2_CMrfFuLkd5mAPDTgqdHEU
     <!-- FUNNEL -->
     <div id="funnel" class="section">
       <h2 class="section-title"><span class="dot"></span> Funnel de conversion</h2>
-      <div class="chart-card">
+      <!-- Mode "all" : 2 funnels côte à côte -->
+      <div id="funnelDualContainer" class="funnel-dual" style="display:none">
+        <div class="chart-card funnel-dual-col q1">
+          <h4><span class="qs-dot" style="background:#6366f1"></span> Quiz Original</h4>
+          <div class="chart-sub" style="margin-bottom:8px">Rétention par étape</div>
+          <div class="funnel-container" id="funnelVisualQ1"></div>
+          <div class="funnel-summary" id="funnelSummaryQ1"></div>
+        </div>
+        <div class="chart-card funnel-dual-col q2">
+          <h4><span class="qs-dot" style="background:#ec4899"></span> Quiz Variante</h4>
+          <div class="chart-sub" style="margin-bottom:8px">Rétention par étape</div>
+          <div class="funnel-container" id="funnelVisualQ2"></div>
+          <div class="funnel-summary" id="funnelSummaryQ2"></div>
+        </div>
+      </div>
+      <!-- Mode "quiz_1" / "quiz_2" : 1 funnel -->
+      <div id="funnelSingleContainer" class="chart-card">
         <h3 style="margin-bottom:4px">Entonnoir de conversion</h3>
         <div class="chart-sub" style="margin-bottom:8px">Rétention par étape — largeur proportionnelle au % de personnes restantes</div>
         <div class="funnel-container" id="funnelVisual"></div>
@@ -952,37 +1052,88 @@ function exportCSV() {
 /* ============================================================
    RENDER
    ============================================================ */
+/* ============================================================
+   HELPERS multi-quiz
+   ============================================================ */
+function getSessionQuizId(sessionRows) {
+  // Retourne 'quiz_1' ou 'quiz_2' basé sur la première row de la session
+  if (!sessionRows || sessionRows.length === 0) return 'quiz_1';
+  return sessionRows[0].quiz_id || 'quiz_1';
+}
+
+function isSessionCompleted(sessionRows) {
+  // Quiz 1 : last question = step 20 (Événement)
+  // Quiz 2 : last question = step 21 (Événement important) ou 22 (Date événement)
+  var qid = getSessionQuizId(sessionRows);
+  var completionSteps = qid === 'quiz_2' ? [21, 22] : [20];
+  return sessionRows.some(function(r) {
+    var s = parseInt(r.step);
+    return completionSteps.indexOf(s) >= 0;
+  });
+}
+
+function updateQuizModeBadge() {
+  var badge = document.getElementById('quizModeBadge');
+  if (!badge) return;
+  badge.className = 'quiz-mode-badge';
+  if (currentQuizFilter === 'all') { badge.classList.add('all'); badge.textContent = 'Vue générale'; }
+  else if (currentQuizFilter === 'quiz_1') { badge.classList.add('q1'); badge.textContent = 'Quiz Original'; }
+  else if (currentQuizFilter === 'quiz_2') { badge.classList.add('q2'); badge.textContent = 'Quiz Variante'; }
+}
+
+function updateQuizCounts() {
+  // Compte sessions uniques par quiz pour afficher dans le switcher
+  var sAll = {}, s1 = {}, s2 = {};
+  rawData.forEach(function(r) {
+    var sid = r.session_id;
+    var qid = r.quiz_id || 'quiz_1';
+    sAll[sid] = true;
+    if (qid === 'quiz_1') s1[sid] = true;
+    else if (qid === 'quiz_2') s2[sid] = true;
+  });
+  var fmt = function(n) { return n > 0 ? '(' + n + ')' : ''; };
+  var e = document.getElementById('qsCountAll'); if (e) e.textContent = fmt(Object.keys(sAll).length);
+  e = document.getElementById('qsCountQ1'); if (e) e.textContent = fmt(Object.keys(s1).length);
+  e = document.getElementById('qsCountQ2'); if (e) e.textContent = fmt(Object.keys(s2).length);
+}
+
+/* ============================================================
+   RENDER ALL
+   ============================================================ */
 function renderAll() {
-  var sessions = groupBy(rawData, 'session_id');
+  updateQuizModeBadge();
+  updateQuizCounts();
+
+  var data = getFilteredData();
+  var sessions = groupBy(data, 'session_id');
   var sessionIds = Object.keys(sessions);
   var totalSessions = sessionIds.length;
 
   /* KPIs */
   document.getElementById('kpiSessions').textContent = totalSessions;
 
-  /* Completed = sessions that reached step 20 (last question: Événement) */
+  /* Completed = détection adaptée par quiz (step 20 pour Q1, 21/22 pour Q2) */
   var completed = sessionIds.filter(function(sid) {
-    return sessions[sid].some(function(r) { return parseInt(r.step) === 20; });
+    return isSessionCompleted(sessions[sid]);
   }).length;
   document.getElementById('kpiCompleted').textContent = completed;
   document.getElementById('kpiCompletedPct').textContent = totalSessions > 0 ? Math.round(completed / totalSessions * 100) + '% de complétion' : '';
 
   /* Average age */
-  var ageMap = { 'Moins de 30 ans': 25, '30-39 ans': 35, '30-39': 35, '40-49 ans': 45, '40-49': 45, '50-59 ans': 55, '50-59': 55, 'Plus de 60 ans': 65, 'Under 30': 25, 'Over 60': 65 };
-  var ageAnswers = rawData.filter(function(r) { return r.question === 'Âge'; });
+  var ageAnswers = data.filter(function(r) { return r.question === 'Âge'; });
   var ageMode = mostCommon(ageAnswers.map(function(r) { return r.answer; }));
   document.getElementById('kpiAge').textContent = ageMode || '—';
 
-  /* Drop-off — cumulative decreasing: count can NEVER go up */
-  var questionOrder = [1,2,3,4,6,7,8,9,10,14,16,18,19,20];
+  /* Drop-off — utilise le funnel order du quiz actuel */
+  var questionOrder = getCurrentFunnelOrder();
+  var qmap = getCurrentQMAP();
   var maxDropStep = 0, maxDropPct = 0;
   var funnelData = [];
   questionOrder.forEach(function(step, idx) {
-    var qName = QMAP[step] || 'Étape '+step;
+    var qName = qmap[step] || 'Étape '+step;
     var rawCount = sessionIds.filter(function(sid) {
       return sessions[sid].some(function(r) { return parseInt(r.step) === step; });
     }).length;
-    /* Cap: count can never exceed previous step's count */
     var count = rawCount;
     if (idx > 0 && count > funnelData[idx-1].count) {
       count = funnelData[idx-1].count;
@@ -993,19 +1144,24 @@ function renderAll() {
       if (drop > maxDropPct) { maxDropPct = drop; maxDropStep = step; }
     }
   });
+
   /* Completion rate KPI */
   var completionPct = totalSessions > 0 ? Math.round(completed / totalSessions * 100) : 0;
   var abandonPct = totalSessions > 0 ? 100 - completionPct : 0;
   var completionEl = document.getElementById('kpiCompletion');
   completionEl.textContent = totalSessions > 0 ? completionPct + '%' : '—';
   completionEl.style.color = completionPct > 60 ? 'var(--green)' : completionPct >= 30 ? 'var(--amber)' : 'var(--red)';
-  document.getElementById('kpiDropSub').textContent = totalSessions > 0 ? abandonPct + '% d\'abandon' + (maxDropStep > 0 ? ' · pire drop : ' + (QMAP[maxDropStep] || 'Ét. ' + maxDropStep) : '') : '';
+  document.getElementById('kpiDropSub').textContent = totalSessions > 0 ? abandonPct + '% d\'abandon' + (maxDropStep > 0 ? ' · pire drop : ' + (qmap[maxDropStep] || 'Ét. ' + maxDropStep) : '') : '';
 
   /* KEY ANSWERS */
   renderKeyAnswers();
 
-  /* FUNNEL */
-  renderFunnel(funnelData, totalSessions);
+  /* FUNNEL — vue dual en mode "all", simple sinon */
+  if (currentQuizFilter === 'all') {
+    renderDualFunnel();
+  } else {
+    renderFunnel(funnelData, totalSessions);
+  }
 
   /* ACTIVITY BY HOUR */
   renderActivity();
@@ -1013,7 +1169,7 @@ function renderAll() {
   /* COMPLETION TIME */
   renderCompletionTime();
 
-  /* CHARTS */
+  /* CHARTS (par question) */
   renderCharts(sessions);
 
   /* PERSONAS */
@@ -1024,7 +1180,10 @@ function renderAll() {
   renderResponses();
 }
 
-var QMAP = {
+/* ============================================================
+   QUIZ CONFIG — 2 quiz avec mapping différent
+   ============================================================ */
+var QMAP_V1 = {
   1: 'Âge',
   2: 'Préoccupation peau',
   3: 'Profondeur rides',
@@ -1041,6 +1200,89 @@ var QMAP = {
   20: 'Événement'
 };
 
+var QMAP_V2 = {
+  1: 'Âge',
+  2: 'Préoccupation peau',
+  3: 'Zones à effacer',
+  4: 'Sévérité rides',
+  6: 'Exposition soleil',
+  7: 'Heures de sommeil',
+  8: 'Niveau de stress',
+  9: 'Carnation',
+  10: 'Peau sensible',
+  13: 'Solutions déjà essayées',
+  14: 'Expérience produits',
+  16: 'Traitements professionnels',
+  17: 'Routine actuelle',
+  19: 'Peau vieillit',
+  20: 'Miroir rajeuni',
+  21: 'Événement important',
+  22: 'Date événement'
+};
+
+/* Ordre des questions pour le funnel (par quiz) */
+var FUNNEL_ORDER_V1 = [1,2,3,4,6,7,8,9,10,14,16,18,19,20];
+var FUNNEL_ORDER_V2 = [1,2,3,4,6,7,8,9,10,13,14,16,17,19,20,21];
+
+/* Quiz metadata */
+var QUIZZES = {
+  'quiz_1': { id: 'quiz_1', name: 'Quiz Original', short: 'Q1', color: '#6366f1', qmap: QMAP_V1, funnelOrder: FUNNEL_ORDER_V1 },
+  'quiz_2': { id: 'quiz_2', name: 'Quiz Variante', short: 'Q2', color: '#ec4899', qmap: QMAP_V2, funnelOrder: FUNNEL_ORDER_V2 }
+};
+
+/* Alias pour fusionner les questions similaires entre les 2 quiz */
+var QUESTION_ALIASES = {
+  'Profondeur rides': 'Profondeur / Sévérité des rides',
+  'Sévérité rides': 'Profondeur / Sévérité des rides',
+  'Zones à atténuer': 'Zones à traiter',
+  'Zones à effacer': 'Zones à traiter',
+  'Solutions essayées': 'Solutions déjà essayées',
+  'Événement': 'Événement important'
+};
+
+function normalizeQuestion(q) {
+  return QUESTION_ALIASES[q] || q;
+}
+
+/* Quiz filter state */
+var currentQuizFilter = 'all'; // 'all', 'quiz_1', 'quiz_2'
+
+function getFilteredData() {
+  if (currentQuizFilter === 'all') return rawData;
+  return rawData.filter(function(r) {
+    var qid = r.quiz_id || 'quiz_1'; // legacy data sans quiz_id = quiz 1
+    return qid === currentQuizFilter;
+  });
+}
+
+function getCurrentQMAP() {
+  if (currentQuizFilter === 'quiz_2') return QMAP_V2;
+  if (currentQuizFilter === 'quiz_1') return QMAP_V1;
+  // Mode "all" — merge des 2 QMAP (utile pour résolution par step, mais on privilégie le nom)
+  var merged = {};
+  Object.keys(QMAP_V1).forEach(function(k) { merged[k] = QMAP_V1[k]; });
+  Object.keys(QMAP_V2).forEach(function(k) { if (!merged[k]) merged[k] = QMAP_V2[k]; });
+  return merged;
+}
+
+function getCurrentFunnelOrder() {
+  if (currentQuizFilter === 'quiz_2') return FUNNEL_ORDER_V2;
+  return FUNNEL_ORDER_V1;
+}
+
+function setQuizFilter(filter) {
+  currentQuizFilter = filter;
+  // Update UI buttons
+  document.querySelectorAll('.quiz-switcher-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-filter') === filter);
+  });
+  // Re-render tout
+  if (rawData.length > 0) renderAll();
+}
+
+/* Legacy alias pour rétro-compatibilité dans le code existant */
+var QMAP = QMAP_V1;
+
 var COLORS = ['#6366f1','#ec4899','#06b6d4','#f59e0b','#22c55e','#ef4444','#8b5cf6','#14b8a6','#f97316','#64748b'];
 
 /* ============================================================
@@ -1056,7 +1298,7 @@ function renderKeyAnswers() {
   ];
 
   keySteps.forEach(function(ks) {
-    var stepAnswers = rawData.filter(function(r) { return parseInt(r.step) === ks.step; });
+    var stepAnswers = getFilteredData().filter(function(r) { return parseInt(r.step) === ks.step; });
     if (stepAnswers.length === 0) return;
 
     /* Count answers (handle multi-select with comma split) */
@@ -1102,7 +1344,7 @@ function getFrenchHour(timestamp) {
 }
 
 function renderActivity() {
-  var sessions = groupBy(rawData, 'session_id');
+  var sessions = groupBy(getFilteredData(), 'session_id');
   var sessionIds = Object.keys(sessions);
 
   /* For each session: find the hour of its FIRST response, and whether it completed (step 20) */
@@ -1258,7 +1500,7 @@ function formatDuration(seconds) {
 }
 
 function renderCompletionTime() {
-  var sessions = groupBy(rawData, 'session_id');
+  var sessions = groupBy(getFilteredData(), 'session_id');
   var sessionIds = Object.keys(sessions);
 
   /* Calculate duration for each session */
@@ -1363,8 +1605,8 @@ function renderCompletionTime() {
     }
   });
 
-  /* ---- Per-question time chart ---- */
-  var questionOrder = [1,2,3,4,6,7,8,9,10,14,16,18,19,20];
+  /* ---- Per-question time chart ---- (utilise le bon order par session) */
+  var questionOrder = getCurrentFunnelOrder();
 
   /* For each session, build sorted list of (step, timestamp) */
   var perQTimes = {}; /* step -> array of durations in seconds */
@@ -1403,7 +1645,7 @@ function renderCompletionTime() {
     var arr = perQTimes[step];
     if (arr.length === 0) return;
     var avg = arr.reduce(function(a, b) { return a + b; }, 0) / arr.length;
-    perQData.push({ step: step, name: QMAP[step] || 'Étape ' + step, avg: Math.round(avg) });
+    perQData.push({ step: step, name: getCurrentQMAP()[step] || 'Étape ' + step, avg: Math.round(avg) });
   });
   perQData.sort(function(a, b) { return b.avg - a.avg; });
 
@@ -1461,8 +1703,27 @@ function renderCompletionTime() {
   }
 }
 
-function renderFunnel(funnelData, total) {
-  var container = document.getElementById('funnelVisual');
+/* ============================================================
+   FUNNEL — accepte options pour dual view
+   opts = { visualId, summaryId, data, completionSteps, hideDual }
+   ============================================================ */
+function renderFunnel(funnelData, total, opts) {
+  opts = opts || {};
+  var visualId = opts.visualId || 'funnelVisual';
+  var summaryId = opts.summaryId || 'funnelSummary';
+  var completionSteps = opts.completionSteps || [20];
+  var data = opts.data || getFilteredData();
+
+  // Toggle container single/dual selon le mode
+  if (!opts.isDualSub) {
+    var dual = document.getElementById('funnelDualContainer');
+    var single = document.getElementById('funnelSingleContainer');
+    if (dual) dual.style.display = 'none';
+    if (single) single.style.display = 'block';
+  }
+
+  var container = document.getElementById(visualId);
+  if (!container) return;
   container.innerHTML = '';
   var max = funnelData.length > 0 ? funnelData[0].count : 1;
   if (max === 0) max = 1;
@@ -1493,11 +1754,13 @@ function renderFunnel(funnelData, total) {
     if (d > worstDrop) { worstDrop = d; worstIdx = i; }
   });
 
-  /* Completed = step 20 */
-  var sessions = groupBy(rawData, 'session_id');
+  /* Completed = quiz-specific steps (passé en opts) */
+  var sessions = groupBy(data, 'session_id');
   var sessionIds = Object.keys(sessions);
   var completed = sessionIds.filter(function(sid) {
-    return sessions[sid].some(function(r) { return parseInt(r.step) === 20; });
+    return sessions[sid].some(function(r) {
+      return completionSteps.indexOf(parseInt(r.step)) >= 0;
+    });
   }).length;
 
   /*
@@ -1605,7 +1868,8 @@ function renderFunnel(funnelData, total) {
   container.appendChild(footer);
 
   /* Summary strip */
-  var summary = document.getElementById('funnelSummary');
+  var summary = document.getElementById(summaryId);
+  if (!summary) return;
   var firstCount = funnelData.length > 0 ? funnelData[0].count : 0;
   var lastCount = funnelData.length > 0 ? funnelData[funnelData.length - 1].count : 0;
   var overallRate = firstCount > 0 ? Math.round(lastCount / firstCount * 100) : 0;
@@ -1617,6 +1881,62 @@ function renderFunnel(funnelData, total) {
     + '<div class="funnel-summary-item"><span class="label">Taux complétion</span><span class="value" style="color:' + (overallRate >= 50 ? 'var(--green)' : overallRate >= 30 ? 'var(--amber)' : 'var(--red)') + '">' + overallRate + '%</span></div>'
     + '<div class="funnel-summary-item"><span class="label">Pire drop</span><span class="value" style="color:var(--red)">' + worstName + ' (-' + Math.round(worstDrop) + '%)</span></div>'
     + '<div class="funnel-summary-item"><span class="label">Complétés</span><span class="value" style="color:var(--green)">' + completed + '</span></div>';
+}
+
+/* ============================================================
+   DUAL FUNNEL — pour la vue "Vue générale" : 2 funnels côte à côte
+   ============================================================ */
+function computeFunnelDataForQuiz(sessions, order, qmap) {
+  var sessionIds = Object.keys(sessions);
+  var funnelData = [];
+  order.forEach(function(step, idx) {
+    var qName = qmap[step] || 'Étape ' + step;
+    var rawCount = sessionIds.filter(function(sid) {
+      return sessions[sid].some(function(r) { return parseInt(r.step) === step; });
+    }).length;
+    var count = rawCount;
+    if (idx > 0 && count > funnelData[idx-1].count) {
+      count = funnelData[idx-1].count;
+    }
+    funnelData.push({ step: step, name: qName, count: count });
+  });
+  return funnelData;
+}
+
+function renderDualFunnel() {
+  // Toggle containers
+  var dual = document.getElementById('funnelDualContainer');
+  var single = document.getElementById('funnelSingleContainer');
+  if (dual) dual.style.display = 'grid';
+  if (single) single.style.display = 'none';
+
+  // Quiz 1 data
+  var data1 = rawData.filter(function(r) { return (r.quiz_id || 'quiz_1') === 'quiz_1'; });
+  var sessions1 = groupBy(data1, 'session_id');
+  var funnelData1 = computeFunnelDataForQuiz(sessions1, FUNNEL_ORDER_V1, QMAP_V1);
+  var total1 = Object.keys(sessions1).length;
+
+  // Quiz 2 data
+  var data2 = rawData.filter(function(r) { return r.quiz_id === 'quiz_2'; });
+  var sessions2 = groupBy(data2, 'session_id');
+  var funnelData2 = computeFunnelDataForQuiz(sessions2, FUNNEL_ORDER_V2, QMAP_V2);
+  var total2 = Object.keys(sessions2).length;
+
+  renderFunnel(funnelData1, total1, {
+    visualId: 'funnelVisualQ1',
+    summaryId: 'funnelSummaryQ1',
+    data: data1,
+    completionSteps: [20],
+    isDualSub: true
+  });
+
+  renderFunnel(funnelData2, total2, {
+    visualId: 'funnelVisualQ2',
+    summaryId: 'funnelSummaryQ2',
+    data: data2,
+    completionSteps: [21, 22],
+    isDualSub: true
+  });
 }
 
 /* ============================================================
@@ -1724,10 +2044,69 @@ function ynColor(label) {
   return { bg: 'rgba(139,141,151,0.1)', border: 'var(--text-muted)', text: 'var(--text-muted)' };
 }
 
-var YESNO_STEPS = [10, 18];
-var EMOJI_STEPS = [19, 20];
-var BAR_STEPS = [2, 3, 14]; /* horizontal bar charts */
-var DONUT_STEPS = [1, 6, 7, 8, 16]; /* donut charts */
+/* Chart type mapping by NORMALIZED question name (pas par step) */
+var CHART_TYPE_BY_QUESTION = {
+  'Âge': 'donut',
+  'Exposition soleil': 'donut',
+  'Heures de sommeil': 'donut',
+  'Niveau de stress': 'donut',
+  'Temps routine': 'donut',
+  'Peau sensible': 'yesno',
+  'Peau vieillit': 'yesno',
+  'Traitements professionnels': 'yesno',
+  'Miroir rajeuni': 'emoji',
+  'Événement important': 'emoji',
+  'Préoccupation peau': 'bar',
+  'Profondeur / Sévérité des rides': 'bar',
+  'Solutions déjà essayées': 'bar',
+  'Zones à traiter': 'zones',
+  'Expérience produits': 'bar',
+  'Routine actuelle': 'bar',
+  'Carnation': 'carnation',
+  'Date événement': 'bar'
+};
+
+/* Retourne la liste des questions à afficher selon le mode */
+function getQuestionsToShow() {
+  var questions = [];
+  var seen = {};
+
+  function addFromMap(order, qmap, quizId) {
+    order.forEach(function(s) {
+      var name = qmap[s];
+      if (!name) return;
+      var norm = normalizeQuestion(name);
+      if (seen[norm]) return;
+      seen[norm] = true;
+      questions.push({ name: norm, originalName: name, step: s, quizId: quizId });
+    });
+  }
+
+  if (currentQuizFilter === 'quiz_1') {
+    addFromMap(FUNNEL_ORDER_V1, QMAP_V1, 'quiz_1');
+  } else if (currentQuizFilter === 'quiz_2') {
+    addFromMap(FUNNEL_ORDER_V2, QMAP_V2, 'quiz_2');
+  } else {
+    // Vue générale — fusionne les questions des 2 quiz par nom normalisé
+    addFromMap(FUNNEL_ORDER_V1, QMAP_V1, 'quiz_1');
+    addFromMap(FUNNEL_ORDER_V2, QMAP_V2, 'quiz_2');
+  }
+  return questions;
+}
+
+/* Récupère les réponses d'une question (par nom normalisé) depuis la data filtrée */
+function getAnswersForQuestion(normalizedName) {
+  return getFilteredData().filter(function(r) {
+    return normalizeQuestion(r.question) === normalizedName;
+  });
+}
+
+/* Retourne les quiz_id présents dans un ensemble de réponses */
+function getQuizIdsInAnswers(answers) {
+  var set = {};
+  answers.forEach(function(r) { set[r.quiz_id || 'quiz_1'] = true; });
+  return Object.keys(set);
+}
 
 function renderCharts(sessions) {
   var grid = document.getElementById('chartGrid');
@@ -1735,22 +2114,37 @@ function renderCharts(sessions) {
   Object.keys(chartInstances).forEach(function(k) { chartInstances[k].destroy(); });
   chartInstances = {};
 
-  var questionSteps = [1,2,3,4,6,7,8,9,10,14,16,18,19,20];
-  questionSteps.forEach(function(step) {
-    var qName = QMAP[step] || 'Étape ' + step;
-    var stepAnswers = rawData.filter(function(r) { return parseInt(r.step) === step; });
+  var questionsToShow = getQuestionsToShow();
+  questionsToShow.forEach(function(q) {
+    var qName = q.name;
+    var stepAnswers = getAnswersForQuestion(qName);
     if (stepAnswers.length === 0) return;
+
+    // Badges quiz (si mode "all" et la question vient d'un seul quiz)
+    var quizIdsInData = getQuizIdsInAnswers(stepAnswers);
+    var badgeHtml = '';
+    if (currentQuizFilter === 'all' && quizIdsInData.length === 1) {
+      var tag = quizIdsInData[0] === 'quiz_2' ? 'q2' : 'q1';
+      var tagText = quizIdsInData[0] === 'quiz_2' ? 'Quiz 2 uniquement' : 'Quiz 1 uniquement';
+      badgeHtml = ' <span class="quiz-tag quiz-tag-' + tag + '">' + tagText + '</span>';
+    }
 
     var card = document.createElement('div');
     card.className = 'chart-card';
-    card.innerHTML = '<h3>' + qName + '</h3><div class="chart-sub">' + stepAnswers.length + ' réponses — Étape ' + step + '</div>';
+    card.innerHTML = '<h3>' + qName + badgeHtml + '</h3><div class="chart-sub">' + stepAnswers.length + ' réponses</div>';
     grid.appendChild(card);
 
-    /* ---- CARNATION (step 9) ---- */
-    if (step === 9) { renderCarnation(card, stepAnswers); return; }
+    // Détermine type de rendu
+    var chartKind = CHART_TYPE_BY_QUESTION[qName] || 'donut';
 
-    /* ---- ZONES RIDES (step 4) ---- */
-    if (step === 4) { renderZones(card, stepAnswers); return; }
+    /* ---- CARNATION ---- */
+    if (chartKind === 'carnation') { renderCarnation(card, stepAnswers); return; }
+
+    /* ---- ZONES RIDES ---- */
+    if (chartKind === 'zones') { renderZones(card, stepAnswers); return; }
+
+    // Variables utilisées par les autres types — keep hardcoded step for legacy chart id
+    var step = q.step;
 
     /* Count answers */
     var allAnswers = [];
@@ -1763,8 +2157,8 @@ function renderCharts(sessions) {
     var labels = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
     var total = allAnswers.length;
 
-    /* ---- YES/NO (steps 10, 18) ---- */
-    if (YESNO_STEPS.indexOf(step) !== -1) {
+    /* ---- YES/NO (peau sensible, peau vieillit, traitements) ---- */
+    if (chartKind === 'yesno') {
       var html = '<div class="yesno-grid">';
       labels.forEach(function(label) {
         var c = counts[label];
@@ -1781,9 +2175,9 @@ function renderCharts(sessions) {
       return;
     }
 
-    /* ---- EMOJI (steps 19, 20) ---- */
-    if (EMOJI_STEPS.indexOf(step) !== -1) {
-      var emojiMap = step === 19 ? EMOJI_MAP_19 : EMOJI_MAP_20;
+    /* ---- EMOJI (Miroir rajeuni, Événement important) ---- */
+    if (chartKind === 'emoji') {
+      var emojiMap = (qName === 'Miroir rajeuni') ? EMOJI_MAP_19 : EMOJI_MAP_20;
       var html = '<div class="emoji-list">';
       labels.forEach(function(label) {
         var c = counts[label];
@@ -1807,20 +2201,21 @@ function renderCharts(sessions) {
       return;
     }
 
-    /* ---- HORIZONTAL BAR (steps 2, 3, 14) ---- */
+    /* ---- HORIZONTAL BAR vs DONUT ---- */
     var chartType, chartAxis;
-    if (BAR_STEPS.indexOf(step) !== -1) {
+    if (chartKind === 'bar') {
       chartType = 'bar'; chartAxis = 'y';
     } else {
-      /* ---- DONUT (steps 1, 6, 7, 8, 16) ---- */
       chartType = 'doughnut'; chartAxis = undefined;
     }
 
     var values = labels.map(function(l) { return counts[l]; });
-    card.innerHTML += '<div class="chart-canvas-wrap"><canvas id="chart_' + step + '"></canvas></div>';
+    // Chart ID basé sur une clé unique (nom question) pour éviter collisions
+    var chartId = 'chart_' + qName.replace(/[^a-z0-9]/gi, '_');
+    card.innerHTML += '<div class="chart-canvas-wrap"><canvas id="' + chartId + '"></canvas></div>';
 
-    var ctx = document.getElementById('chart_' + step).getContext('2d');
-    chartInstances['c' + step] = new Chart(ctx, {
+    var ctx = document.getElementById(chartId).getContext('2d');
+    chartInstances[chartId] = new Chart(ctx, {
       type: chartType,
       data: {
         labels: labels.map(function(l) { return l.length > 28 ? l.substr(0, 26) + '…' : l; }),
@@ -1983,8 +2378,21 @@ var respSortOrder = 'desc';
 var respCurrentPage = 1;
 var SESS_PER_PAGE = 5;
 var sessionsCache = []; /* sorted array of session objects */
-var questionOrder = [1,2,3,4,6,7,8,9,10,14,16,18,19,20];
-var TOTAL_QUESTIONS = questionOrder.length; /* 14 */
+/* Legacy — ne pas utiliser directement : utiliser getSessionQuestionOrder(quizId) */
+var questionOrder = FUNNEL_ORDER_V1;
+
+function getSessionQuestionOrder(quizId) {
+  return quizId === 'quiz_2' ? FUNNEL_ORDER_V2 : FUNNEL_ORDER_V1;
+}
+function getSessionQMAP(quizId) {
+  return quizId === 'quiz_2' ? QMAP_V2 : QMAP_V1;
+}
+function getSessionCompletionSteps(quizId) {
+  return quizId === 'quiz_2' ? [21, 22] : [20];
+}
+function getSessionTotalQuestions(quizId) {
+  return getSessionQuestionOrder(quizId).length;
+}
 
 function timeAgo(date) {
   var now = new Date();
@@ -1997,10 +2405,15 @@ function timeAgo(date) {
 }
 
 function buildSessionsCache() {
-  var sessions = groupBy(rawData, 'session_id');
+  var sessions = groupBy(getFilteredData(), 'session_id');
   var list = [];
   Object.keys(sessions).forEach(function(sid) {
     var responses = sessions[sid];
+    var quizId = getSessionQuizId(responses);
+    var order = getSessionQuestionOrder(quizId);
+    var totalQ = getSessionTotalQuestions(quizId);
+    var completionSteps = getSessionCompletionSteps(quizId);
+
     var earliest = null, latest = null;
     responses.forEach(function(r) {
       if (!r.timestamp) return;
@@ -2013,11 +2426,11 @@ function buildSessionsCache() {
     responses.forEach(function(r) { answeredSteps[parseInt(r.step)] = r; });
     var answeredCount = 0;
     var lastAnsweredStep = 0;
-    questionOrder.forEach(function(s) {
+    order.forEach(function(s) {
       if (answeredSteps[s]) { answeredCount++; lastAnsweredStep = s; }
     });
-    var completionPct = Math.round(answeredCount / TOTAL_QUESTIONS * 100);
-    var isComplete = answeredSteps[20] ? true : false;
+    var completionPct = Math.round(answeredCount / totalQ * 100);
+    var isComplete = completionSteps.some(function(cs) { return !!answeredSteps[cs]; });
     var duration = (earliest && latest) ? Math.round((latest - earliest) / 1000) : 0;
 
     list.push({
@@ -2025,7 +2438,8 @@ function buildSessionsCache() {
       responses: responses, answeredSteps: answeredSteps,
       answeredCount: answeredCount, completionPct: completionPct,
       isComplete: isComplete, lastAnsweredStep: lastAnsweredStep,
-      duration: duration
+      duration: duration,
+      quizId: quizId
     });
   });
   sessionsCache = list;
@@ -2068,12 +2482,16 @@ function renderResponses() {
     var globalIdx = start + idx + 1;
     var ago = s.earliest ? timeAgo(s.earliest) : '—';
     var pctColor = s.completionPct === 100 ? 'var(--green)' : s.completionPct >= 50 ? 'var(--amber)' : 'var(--red)';
+    var qmapForSession = getSessionQMAP(s.quizId);
     var statusHtml = s.isComplete
       ? '<span class="completed">Quiz complété ✅</span>'
-      : '<span class="abandoned">Abandon : ' + (QMAP[s.lastAnsweredStep] || 'Étape ' + s.lastAnsweredStep) + '</span>';
+      : '<span class="abandoned">Abandon : ' + (qmapForSession[s.lastAnsweredStep] || 'Étape ' + s.lastAnsweredStep) + '</span>';
+    var quizTag = s.quizId === 'quiz_2'
+      ? '<span class="quiz-tag quiz-tag-q2">Q2</span>'
+      : '<span class="quiz-tag quiz-tag-q1">Q1</span>';
 
     html += '<div class="sess-row">'
-      + '<span class="sess-time">' + ago + '</span>'
+      + '<span class="sess-time">' + ago + ' ' + quizTag + '</span>'
       + '<span class="sess-completion" style="color:' + pctColor + '">' + s.completionPct + '%</span>'
       + '<span class="sess-status">' + statusHtml + '</span>'
       + '<button class="sess-detail-btn" onclick="openSessionDetail(' + (start + idx) + ')">Voir plus</button>'
@@ -2109,10 +2527,15 @@ function openSessionDetail(sortedIdx) {
   var durationStr = formatDuration(s.duration);
   var pctColor = s.completionPct === 100 ? 'var(--green)' : s.completionPct >= 50 ? 'var(--amber)' : 'var(--red)';
 
+  var orderForSession = getSessionQuestionOrder(s.quizId);
+  var qmapForSession = getSessionQMAP(s.quizId);
+  var quizTagHtml = s.quizId === 'quiz_2'
+    ? '<span class="quiz-tag quiz-tag-q2">Quiz 2</span>'
+    : '<span class="quiz-tag quiz-tag-q1">Quiz 1</span>';
   var rows = '';
-  questionOrder.forEach(function(step) {
+  orderForSession.forEach(function(step) {
     var r = s.answeredSteps[step];
-    var qName = QMAP[step] || 'Étape ' + step;
+    var qName = qmapForSession[step] || 'Étape ' + step;
     if (r) {
       rows += '<div class="sess-modal-row">'
         + '<span class="sess-modal-step">' + step + '</span>'
@@ -2133,7 +2556,7 @@ function openSessionDetail(sortedIdx) {
     + '<div class="sess-modal">'
     + '<button class="sess-modal-close" onclick="closeSessionDetail()">✕</button>'
     + '<div class="sess-modal-header">'
-    + '<h3>Détail de la session</h3>'
+    + '<h3>Détail de la session ' + quizTagHtml + '</h3>'
     + '<div class="sess-modal-meta">'
     + '<span>📅 ' + dateStr + '</span>'
     + '<span>⏱ <strong>' + durationStr + '</strong></span>'
