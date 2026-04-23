@@ -539,15 +539,22 @@ header.quiz-header,
   .severity-label { font-size: 10.5px; padding: 6px 4px; line-height: 1.2; }
 }
 
-/* INFO CARD — educational page */
+/* INFO CARD — educational page (compact pour tenir sur 1 écran mobile) */
 .info-card {
-  background: #fff; border-radius: 16px; padding: 28px 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  margin-bottom: 20px;
+  background: #fff; border-radius: 14px; padding: 18px 16px 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 12px;
 }
-.info-card h2 { font-size: 20px; font-weight: 800; text-align: center; line-height: 1.3; margin-bottom: 16px; }
-.info-card p { font-size: 15px; color: #444; line-height: 1.6; margin-bottom: 16px; text-align: center; }
-.info-card p strong { color: #1a1a1a; }
-.info-card .info-image { width: 100%; max-width: 400px; margin: 0 auto 16px; display: block; border-radius: 12px; }
+.info-card h2 {
+  font-size: 19px; font-weight: 800; text-align: center;
+  line-height: 1.25; margin-bottom: 10px; color: #1a1a1a;
+}
+.info-card p {
+  font-size: 14px; color: #444; line-height: 1.45;
+  margin-bottom: 10px; text-align: center;
+}
+.info-card p:last-child { margin-bottom: 0; }
+.info-card p strong { color: #1a1a1a; font-weight: 700; }
+.info-card .info-image { width: 100%; max-width: 280px; margin: 4px auto 10px; display: block; border-radius: 12px; }
 
 /* REVIEW CARDS */
 .review-section { margin-bottom: 20px; }
@@ -775,10 +782,14 @@ header.quiz-header,
 }
 .profile-alert-green-text { font-size: 13px; color: #3a3a3a; line-height: 1.5; }
 
-/* INFO VIDEO — step 15 */
+/* INFO VIDEO — step 15 (taille contrôlée pour tenir sur 1 écran) */
 .info-video {
-  width: 100%; max-width: 400px; margin: 0 auto 16px; display: block;
+  width: 100%; max-width: 280px; margin: 4px auto 10px; display: block;
   border-radius: 12px; background: #000;
+  aspect-ratio: 1 / 1; object-fit: cover;
+}
+@media (min-width: 768px) {
+  .info-video { max-width: 360px; }
 }
 
 /* GREEN CANDIDATE CARD */
@@ -1197,14 +1208,12 @@ header.quiz-header,
          ================================================================ -->
     <div class="quiz-step" data-step="15">
       <div class="info-card">
-        <h2>Pourquoi rien ne fonctionne contre les rides profondes et le relâchement cutané ?</h2>
-        <p>Les crèmes anti-âge et le rétinol hydratent en surface… mais les rides profondes, elles, se forment par les <strong>contractions musculaires répétées</strong> de votre visage.</p>
-        <p>C'est pour ça que malgré des mois de crèmes, vos rides autour de la bouche et du front ne bougent pas.</p>
-        <!-- Vidéo explicative -->
+        <h2>Pourquoi rien ne fonctionne sur les rides profondes et la peau relâchée ?</h2>
+        <p>Les crèmes anti-âge, les sérums classiques et le rétinol <strong>ne fonctionnent pas</strong> parce qu'ils ne pénètrent pas <strong>assez profondément</strong> pour offrir de vrais résultats…</p>
         <video class="info-video" autoplay muted loop playsinline>
           <source src="https://cdn.shopify.com/videos/c/o/v/febaf277f23042cbb456880561be1d4e.webm" type="video/webm">
         </video>
-        <p>Le sérum Julie Cosmétique agit différemment : grâce à <strong>l'argireline</strong>, un peptide qui détend les micro-contractions musculaires à l'origine des rides — <strong>sans injection, sans aiguille.</strong></p>
+        <p>Si vous voulez une peau visiblement plus jeune, vous devez aider les bons ingrédients à pénétrer en profondeur avec le <strong>sérum Julie Cosmétique !</strong></p>
       </div>
       <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(16)">Continuer <span class="arrow">→</span></button></div>
     </div>
