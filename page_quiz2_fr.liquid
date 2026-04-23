@@ -364,9 +364,17 @@ header.quiz-header,
 .results-top-text { font-size: 13px; color: #555; text-align: center; margin-bottom: 4px; font-weight: 700; }
 .results-headline { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; line-height: 1.3; }
 .results-sub { font-size: 13px; color: #555; text-align: center; margin-bottom: 14px; }
-.results-checks { margin-bottom: 20px; }
-.results-check { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #444; margin-bottom: 6px; justify-content: center; text-align: center; }
-.results-check .check { color: #27ae60; font-weight: bold; flex-shrink: 0; }
+.results-checks { margin-bottom: 20px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.results-check {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 14px; color: #333; line-height: 1.5;
+  margin-bottom: 8px; text-align: left;
+}
+.results-check .check {
+  color: #27ae60; font-weight: bold; flex-shrink: 0;
+  font-size: 15px; line-height: 1.5;
+}
+.results-check span:last-child { flex: 1; }
 
 .results-comparison {
   display: grid;
@@ -1384,8 +1392,8 @@ header.quiz-header,
       <h2 class="results-headline">Dans 3 mois seulement, votre peau peut être totalement régénérée !</h2>
       <p class="results-sub">Voici ce que vous pouvez espérer :</p>
       <div class="results-checks">
-        <p class="results-check"><span class="check">✅</span> Premiers résultats visibles dès la première utilisation</p>
-        <p class="results-check"><span class="check">✅</span> Rides atténuées et peau visiblement raffermie d'ici le <span id="resultDate">22/07/2026</span></p>
+        <p class="results-check"><span class="check">✅</span><span>Premiers résultats visibles dès la première utilisation</span></p>
+        <p class="results-check"><span class="check">✅</span><span>Rides atténuées et peau visiblement raffermie d'ici le <span id="resultDate">22/07/2026</span></span></p>
       </div>
 
       <div class="results-comparison">
