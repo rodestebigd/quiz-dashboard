@@ -154,8 +154,20 @@ header.quiz-header,
   }
 }
 
-.btn-skip { display: block; text-align: center; margin-top: 16px; font-size: 14px; color: #888; cursor: pointer; text-decoration: none; font-weight: 500; }
-.btn-skip:hover { color: #555; }
+.btn-skip {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 14px 32px;
+  background: #0c233f; color: #fff;
+  border: none; border-radius: 50px;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  margin-top: 12px;
+  text-align: center; text-decoration: none;
+  font-family: inherit; box-sizing: border-box;
+}
+.btn-skip:hover { background: #091b30; color: #fff; transform: translateY(-1px); }
+.btn-skip:active { transform: scale(0.98); }
 
 /* ============================================================
    CAROUSEL (etape 5) — FIXED
