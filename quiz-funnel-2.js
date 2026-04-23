@@ -276,10 +276,22 @@ document.addEventListener('DOMContentLoaded', function() {
   updateReviews();
   var t = document.getElementById('reviewsCarousel');
   if (t) {
-    t.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, { passive: true });
+    var tX = 0, tY = 0, tLocked = false;
+    t.addEventListener('touchstart', function(e) {
+      tX = e.touches[0].clientX;
+      tY = e.touches[0].clientY;
+      tLocked = false;
+    }, { passive: true });
     t.addEventListener('touchend', function(e) {
-      var d = touchX - e.changedTouches[0].clientX;
-      if (Math.abs(d) > 50) { if (d > 0) reviewsNext(); else reviewsPrev(); }
+      if (tLocked) return;
+      var dx = tX - e.changedTouches[0].clientX;
+      var dy = tY - e.changedTouches[0].clientY;
+      // Swipe horizontal uniquement (sinon on ignore pour laisser scroll vertical)
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        tLocked = true; // évite multi-triggers sur le même swipe
+        if (dx > 0) reviewsNext();
+        else reviewsPrev();
+      }
     }, { passive: true });
   }
 });

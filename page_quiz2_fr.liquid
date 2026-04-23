@@ -591,7 +591,7 @@ header.quiz-header,
 .final-review-author { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-top: 6px; }
 .final-review-badge { display: inline-block; background: #27ae60; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
 
-/* REVIEWS CAROUSEL — Step 5 (6 blocs avec image + infos) */
+/* REVIEWS CAROUSEL — Step 5 (6 blocs structurés) */
 .reviews-carousel-wrap {
   position: relative;
   margin: 20px auto 20px;
@@ -599,11 +599,12 @@ header.quiz-header,
 .reviews-carousel-viewport {
   overflow: hidden;
   position: relative;
+  touch-action: pan-y; /* empêche le swipe natif horizontal du navigateur */
 }
 .reviews-carousel-track {
   display: flex;
   gap: 16px;
-  transition: transform 0.4s ease;
+  transition: transform 0.35s ease-out;
   will-change: transform;
 }
 .review-block {
@@ -629,50 +630,71 @@ header.quiz-header,
   gap: 8px;
 }
 .review-block-top {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
 .review-block-name { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+
+/* VERIFIED BADGE — cercle blanc + check dedans */
 .verified-badge {
-  display: inline-flex; align-items: center; gap: 4px;
+  display: inline-flex; align-items: center; gap: 5px;
   background: #0c233f; color: #fff; font-size: 11px; font-weight: 600;
-  padding: 4px 10px; border-radius: 14px; white-space: nowrap;
+  padding: 3px 10px 3px 4px; border-radius: 18px; white-space: nowrap;
+  flex-shrink: 0;
 }
-.verified-badge::before {
-  content: ''; width: 12px; height: 12px; background: #fff;
-  border-radius: 50%; display: inline-block; position: relative;
-  box-shadow: inset 0 0 0 2px #0c233f;
+.verified-badge-check {
+  width: 16px; height: 16px; border-radius: 50%; background: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
-.verified-badge svg { width: 11px; height: 11px; }
+.verified-badge-check svg {
+  width: 10px; height: 10px; stroke: #0c233f; stroke-width: 3; fill: none;
+}
+
 .review-block-stars { color: #f5a623; font-size: 16px; letter-spacing: 1px; }
 .review-block-text { font-size: 13px; color: #444; line-height: 1.5; margin: 0; }
 
+/* Nav en bas (mobile: pas de flèches, juste swipe) */
 .reviews-nav {
-  display: none;
-  align-items: center; justify-content: center; gap: 12px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
   margin-top: 16px;
 }
 .reviews-arrow {
-  width: 44px; height: 44px; border-radius: 50%; background: #0c233f;
-  border: none; color: #fff; font-size: 20px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s ease;
+  display: none; /* caché en mobile par défaut */
+  width: 48px; height: 48px; border-radius: 50%; background: #0c233f;
+  border: none; color: #fff; font-size: 22px; cursor: pointer;
+  align-items: center; justify-content: center;
+  transition: background 0.2s ease, transform 0.15s ease;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 12px rgba(12,35,63,0.25);
 }
-.reviews-arrow:hover { background: #091b30; }
-.reviews-arrow:disabled { opacity: 0.3; cursor: default; }
-.reviews-dots {
-  display: flex; gap: 6px;
-}
+.reviews-arrow:hover { background: #091b30; transform: scale(1.05); }
+.reviews-arrow:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+.reviews-dots { display: flex; gap: 6px; }
 .reviews-dot {
   width: 8px; height: 8px; border-radius: 50%; background: #ccc;
-  border: none; cursor: pointer; transition: background 0.3s ease;
-  padding: 0;
+  border: none; cursor: pointer; transition: all 0.3s ease; padding: 0;
 }
 .reviews-dot.active { background: #0c233f; width: 22px; border-radius: 4px; }
 
+/* DESKTOP : 3 cartes visibles + flèches sur les côtés */
 @media (min-width: 768px) {
-  .review-block { flex: 0 0 calc((100% - 32px) / 3); }
-  .reviews-nav { display: flex; }
+  .reviews-carousel-wrap { padding: 0 60px; }
+  .review-block {
+    flex: 0 0 calc((100% - 32px) / 3);
+    box-shadow: 0 2px 14px rgba(0,0,0,0.08);
+  }
+  .reviews-arrow {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+  .reviews-arrow:hover { transform: translateY(-50%) scale(1.05); }
+  #reviewsPrevBtn { left: 0; }
+  #reviewsNextBtn { right: 0; }
+  .reviews-nav { display: none; } /* pas de nav en bas en desktop */
 }
 
 /* LOADING PROFIL — Step 11 redesigned */
@@ -926,7 +948,7 @@ header.quiz-header,
               <div class="review-block-body">
                 <div class="review-block-top">
                   <span class="review-block-name">Joanne</span>
-                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                  <span class="verified-badge"><span class="verified-badge-check"><svg viewBox="0 0 24 24" fill="none"><polyline points="6 12 10 16 18 8"/></svg></span>Cliente vérifiée</span>
                 </div>
                 <div class="review-block-stars">★★★★★</div>
                 <p class="review-block-text">À 74 ans, je pensais que mes rides étaient trop installées. Je pensais qu'aucun soin à domicile ne pouvait sauver la peau relâchée autour de mes bajoues et ces rides d'amertume si profondes. Mais après que ma fille m'a convaincue, j'ai quand même essayé, et maintenant après 3 mois ? J'ai l'impression d'être méconnaissable.</p>
@@ -938,7 +960,7 @@ header.quiz-header,
               <div class="review-block-body">
                 <div class="review-block-top">
                   <span class="review-block-name">Christelle</span>
-                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                  <span class="verified-badge"><span class="verified-badge-check"><svg viewBox="0 0 24 24" fill="none"><polyline points="6 12 10 16 18 8"/></svg></span>Cliente vérifiée</span>
                 </div>
                 <div class="review-block-stars">★★★★★</div>
                 <p class="review-block-text">Quand je dis que j'ai tout essayé, je le pense vraiment. Toutes les crèmes miracles, les sérums, tout le rétinol du monde, et j'ai été déçue à chaque fois. Mais là c'est différent, dès la première application je sentais que ça agissait, et après quelques semaines mes rides du contour des lèvres se sont considérablement atténuées.</p>
@@ -950,7 +972,7 @@ header.quiz-header,
               <div class="review-block-body">
                 <div class="review-block-top">
                   <span class="review-block-name">Yvonne</span>
-                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                  <span class="verified-badge"><span class="verified-badge-check"><svg viewBox="0 0 24 24" fill="none"><polyline points="6 12 10 16 18 8"/></svg></span>Cliente vérifiée</span>
                 </div>
                 <div class="review-block-stars">★★★★★</div>
                 <p class="review-block-text">Je détestais me maquiller parce que le fond de teint se logeait toujours dans mes rides autour de la bouche et des lèvres, les rendant encore plus visibles. Après avoir utilisé le sérum Julie Cosmétique depuis bientôt 3 mois, tout a changé. Non seulement mes rides autour de la bouche et des lèvres ont DISPARU, mais la peau de mon cou est beaucoup plus ferme.</p>
@@ -962,7 +984,7 @@ header.quiz-header,
               <div class="review-block-body">
                 <div class="review-block-top">
                   <span class="review-block-name">Françoise</span>
-                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                  <span class="verified-badge"><span class="verified-badge-check"><svg viewBox="0 0 24 24" fill="none"><polyline points="6 12 10 16 18 8"/></svg></span>Cliente vérifiée</span>
                 </div>
                 <div class="review-block-stars">★★★★★</div>
                 <p class="review-block-text">Je l'ai pris pour mes rides du lion, mes rides du contour des lèvres et mon cou relâché. Honnêtement, je n'avais pas beaucoup d'espoir — rien de ce que j'avais essayé ces 20 dernières années n'avait tenu ses promesses. Je l'ai tenté uniquement grâce à la garantie satisfait ou remboursé, et je suis tellement contente de l'avoir fait. Après 10 ou 11 semaines, tout s'est amélioré !</p>
@@ -974,7 +996,7 @@ header.quiz-header,
               <div class="review-block-body">
                 <div class="review-block-top">
                   <span class="review-block-name">Sandrine</span>
-                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                  <span class="verified-badge"><span class="verified-badge-check"><svg viewBox="0 0 24 24" fill="none"><polyline points="6 12 10 16 18 8"/></svg></span>Cliente vérifiée</span>
                 </div>
                 <div class="review-block-stars">★★★★★</div>
                 <p class="review-block-text">J'ai fait du Botox et des injections pour mes rides autour de la bouche il y a un an. Les résultats étaient super, mais après quelques mois ils se sont estompés. Je ne pouvais pas me permettre de dépenser des milliers d'euros par an juste pour maintenir ça. Alors j'ai arrêté le Botox et les injections pour essayer le sérum Julie Cosmétique en espérant obtenir des résultats similaires à un meilleur prix. Après 3 mois, mes rides autour de la bouche sont encore mieux qu'avant.</p>
@@ -986,7 +1008,7 @@ header.quiz-header,
               <div class="review-block-body">
                 <div class="review-block-top">
                   <span class="review-block-name">Monique</span>
-                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                  <span class="verified-badge"><span class="verified-badge-check"><svg viewBox="0 0 24 24" fill="none"><polyline points="6 12 10 16 18 8"/></svg></span>Cliente vérifiée</span>
                 </div>
                 <div class="review-block-stars">★★★★★</div>
                 <p class="review-block-text">Après seulement six semaines d'utilisation, j'ai l'impression d'être revenue à mes 30 ans ! Ma peau a un bel éclat, et elle est plus lisse et plus ferme que jamais. Très contente des résultats.</p>
@@ -1425,6 +1447,6 @@ function dpPrevMonth(e){e.stopPropagation();dpM--;if(dpM<0){dpM=11;dpY--;}render
 function dpNextMonth(e){e.stopPropagation();dpM++;if(dpM>11){dpM=0;dpY++;}renderDP();}
 function renderDP(){var ms=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];var t=document.getElementById('dpMonthYear');if(t)t.textContent=ms[dpM]+'    '+dpY;var dc=document.getElementById('dpDays');if(!dc)return;dc.innerHTML='';var fd=new Date(dpY,dpM,1).getDay();fd=fd===0?6:fd-1;var dim=new Date(dpY,dpM+1,0).getDate(),dipm=new Date(dpY,dpM,0).getDate(),today=new Date();for(var i=fd-1;i>=0;i--){var b=document.createElement('button');b.className='dp-day other-month';b.textContent=dipm-i;dc.appendChild(b);}for(var d=1;d<=dim;d++){var b=document.createElement('button');b.className='dp-day';b.textContent=d;if(d===today.getDate()&&dpM===today.getMonth()&&dpY===today.getFullYear())b.classList.add('today');if(dpSel&&d===dpSel.getDate()&&dpM===dpSel.getMonth()&&dpY===dpSel.getFullYear())b.classList.add('selected');(function(day){b.addEventListener('click',function(e){e.stopPropagation();dpSel=new Date(dpY,dpM,day);var f=String(day).padStart(2,'0')+'/'+String(dpM+1).padStart(2,'0')+'/'+dpY;document.getElementById('dateInput').value=f;answers[21]=f;renderDP();setTimeout(function(){document.getElementById('datepickerDropdown').classList.remove('open');},200);});})(d);dc.appendChild(b);}var tc=fd+dim,rem=(7-(tc%7))%7;for(var i=1;i<=rem;i++){var b=document.createElement('button');b.className='dp-day other-month';b.textContent=i;dc.appendChild(b);}}
 function updateResultsPage(){var e=document.getElementById('eventName');if(e&&answers[20])e.textContent=answers[20];var t=new Date();t.setMonth(t.getMonth()+3);var d=document.getElementById('resultDate');if(d)d.textContent=String(t.getDate()).padStart(2,'0')+'/'+String(t.getMonth()+1).padStart(2,'0')+'/'+t.getFullYear();}
-document.addEventListener('DOMContentLoaded',function(){updateProgressBar(1);history.replaceState({step:1},'','#step-1');updateReviews();var t=document.getElementById('reviewsCarousel');if(t){t.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX;},{passive:true});t.addEventListener('touchend',function(e){var d=touchX-e.changedTouches[0].clientX;if(Math.abs(d)>50){if(d>0)reviewsNext();else reviewsPrev();}},{passive:true});}});
+document.addEventListener('DOMContentLoaded',function(){updateProgressBar(1);history.replaceState({step:1},'','#step-1');updateReviews();var t=document.getElementById('reviewsCarousel');if(t){var tX=0,tY=0,tLocked=false;t.addEventListener('touchstart',function(e){tX=e.touches[0].clientX;tY=e.touches[0].clientY;tLocked=false;},{passive:true});t.addEventListener('touchend',function(e){if(tLocked)return;var dx=tX-e.changedTouches[0].clientX;var dy=tY-e.changedTouches[0].clientY;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){tLocked=true;if(dx>0)reviewsNext();else reviewsPrev();}},{passive:true});}});
 }
 </script>
