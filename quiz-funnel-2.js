@@ -228,21 +228,32 @@ function lvlAnimate() {
 }
 
 /* ============================================================
-   REVIEWS CAROUSEL (étape 5) — 6 blocs, 3/page desktop, 1/page mobile
+   REVIEWS CAROUSEL (étape 5)
+   Desktop: 3 avis visibles, flèches pour naviguer par "page"
+   Mobile: scroll natif horizontal libre (suit le doigt, pas de snap)
    ============================================================ */
-var reviewsIdx = 0, reviewsTotal = 6, touchX = 0;
+var reviewsIdx = 0, reviewsTotal = 6;
 
-function getReviewsVisibleCount() { return window.innerWidth >= 768 ? 3 : 1; }
+function isMobileReviews() { return window.innerWidth < 768; }
+function getReviewsVisibleCount() { return isMobileReviews() ? 1 : 3; }
 function getReviewsPages() { return reviewsTotal - getReviewsVisibleCount() + 1; }
 
 function updateReviews() {
   var track = document.getElementById('reviewsTrack');
   if (!track) return;
-  var visible = getReviewsVisibleCount();
+
+  // Mobile: on laisse le scroll natif faire — on ne touche pas au transform
+  if (isMobileReviews()) {
+    track.style.transform = '';
+    track.style.transition = '';
+    return;
+  }
+
+  // Desktop: transform-based navigation
   var pages = getReviewsPages();
   if (reviewsIdx > pages - 1) reviewsIdx = pages - 1;
   if (reviewsIdx < 0) reviewsIdx = 0;
-  var blockW = 100 / visible;
+  var blockW = 100 / getReviewsVisibleCount();
   track.style.transform = 'translateX(-' + (reviewsIdx * blockW) + '%)';
 
   var dotsC = document.getElementById('reviewsDots');
@@ -262,38 +273,25 @@ function updateReviews() {
   if (nb) nb.disabled = reviewsIdx >= pages - 1;
 }
 
-function reviewsNext() { var pages = getReviewsPages(); if (reviewsIdx < pages - 1) { reviewsIdx++; updateReviews(); } }
-function reviewsPrev() { if (reviewsIdx > 0) { reviewsIdx--; updateReviews(); } }
+function reviewsNext() {
+  if (isMobileReviews()) return;
+  var pages = getReviewsPages();
+  if (reviewsIdx < pages - 1) { reviewsIdx++; updateReviews(); }
+}
+function reviewsPrev() {
+  if (isMobileReviews()) return;
+  if (reviewsIdx > 0) { reviewsIdx--; updateReviews(); }
+}
 
 /* Backward compat */
 function carouselNext() { reviewsNext(); }
 function carouselPrev() { reviewsPrev(); }
-function carouselGoTo(i) { reviewsIdx = i; updateReviews(); }
+function carouselGoTo(i) { if (isMobileReviews()) return; reviewsIdx = i; updateReviews(); }
 
 window.addEventListener('resize', function() { updateReviews(); });
 
 document.addEventListener('DOMContentLoaded', function() {
   updateReviews();
-  var t = document.getElementById('reviewsCarousel');
-  if (t) {
-    var tX = 0, tY = 0, tLocked = false;
-    t.addEventListener('touchstart', function(e) {
-      tX = e.touches[0].clientX;
-      tY = e.touches[0].clientY;
-      tLocked = false;
-    }, { passive: true });
-    t.addEventListener('touchend', function(e) {
-      if (tLocked) return;
-      var dx = tX - e.changedTouches[0].clientX;
-      var dy = tY - e.changedTouches[0].clientY;
-      // Swipe horizontal uniquement (sinon on ignore pour laisser scroll vertical)
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-        tLocked = true; // évite multi-triggers sur le même swipe
-        if (dx > 0) reviewsNext();
-        else reviewsPrev();
-      }
-    }, { passive: true });
-  }
 });
 
 /* ============================================================
