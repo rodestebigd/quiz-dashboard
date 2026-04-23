@@ -349,7 +349,7 @@ header.quiz-header,
 /* ============================================================
    RESULTS PAGE (etape 23) — Big cards + chevron + segmented bars
    ============================================================ */
-.results-top-text { font-size: 13px; color: #888; text-align: center; margin-bottom: 4px; }
+.results-top-text { font-size: 13px; color: #555; text-align: center; margin-bottom: 4px; font-weight: 700; }
 .results-headline { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; line-height: 1.3; }
 .results-sub { font-size: 13px; color: #555; text-align: center; margin-bottom: 14px; }
 .results-checks { margin-bottom: 20px; }
@@ -564,6 +564,156 @@ header.quiz-header,
 .final-review-author { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-top: 6px; }
 .final-review-badge { display: inline-block; background: #27ae60; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
 
+/* REVIEWS CAROUSEL — Step 5 (6 blocs avec image + infos) */
+.reviews-carousel-wrap {
+  position: relative;
+  margin: 20px auto 20px;
+}
+.reviews-carousel-viewport {
+  overflow: hidden;
+  position: relative;
+}
+.reviews-carousel-track {
+  display: flex;
+  gap: 16px;
+  transition: transform 0.4s ease;
+  will-change: transform;
+}
+.review-block {
+  flex: 0 0 100%;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+}
+.review-block-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: #e8ecef;
+}
+.review-block-body {
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.review-block-top {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.review-block-name { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+.verified-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #0c233f; color: #fff; font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 14px; white-space: nowrap;
+}
+.verified-badge::before {
+  content: ''; width: 12px; height: 12px; background: #fff;
+  border-radius: 50%; display: inline-block; position: relative;
+  box-shadow: inset 0 0 0 2px #0c233f;
+}
+.verified-badge svg { width: 11px; height: 11px; }
+.review-block-stars { color: #f5a623; font-size: 16px; letter-spacing: 1px; }
+.review-block-text { font-size: 13px; color: #444; line-height: 1.5; margin: 0; }
+
+.reviews-nav {
+  display: none;
+  align-items: center; justify-content: center; gap: 12px;
+  margin-top: 16px;
+}
+.reviews-arrow {
+  width: 44px; height: 44px; border-radius: 50%; background: #0c233f;
+  border: none; color: #fff; font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.reviews-arrow:hover { background: #091b30; }
+.reviews-arrow:disabled { opacity: 0.3; cursor: default; }
+.reviews-dots {
+  display: flex; gap: 6px;
+}
+.reviews-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #ccc;
+  border: none; cursor: pointer; transition: background 0.3s ease;
+  padding: 0;
+}
+.reviews-dot.active { background: #0c233f; width: 22px; border-radius: 4px; }
+
+@media (min-width: 768px) {
+  .review-block { flex: 0 0 calc((100% - 32px) / 3); }
+  .reviews-nav { display: flex; }
+}
+
+/* LOADING PROFIL — Step 11 redesigned */
+.profile-loading {
+  text-align: center;
+  padding: 60px 20px 40px;
+}
+.profile-loading-spinner {
+  width: 70px; height: 70px;
+  border: 3px solid #e0e5ea;
+  border-top-color: #0c233f;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  animation: spin 1s linear infinite;
+}
+.profile-loading-title {
+  font-size: 22px; font-weight: 800; color: #1a1a1a;
+  margin-bottom: 18px;
+}
+.profile-loading-bar-bg {
+  width: 100%; max-width: 420px; margin: 0 auto 24px;
+  height: 6px; background: #dde1e6; border-radius: 3px; overflow: hidden;
+}
+.profile-loading-bar-fg {
+  height: 100%; width: 0%; background: #0c233f;
+  border-radius: 3px; transition: width 0.3s ease;
+}
+.profile-loading-steps {
+  max-width: 420px; margin: 0 auto; text-align: left;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.profile-loading-step {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 15px; color: #999; font-weight: 500;
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity 0.4s ease, transform 0.4s ease, color 0.4s ease;
+}
+.profile-loading-step.visible {
+  opacity: 1; transform: translateX(0);
+  color: #1a1a1a;
+}
+.profile-loading-step-check {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #0c233f; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.profile-loading-step-check svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 3; fill: none; }
+
+/* GREEN ALERT — profil compatible */
+.profile-alert-green {
+  background: #f0faf0; border-radius: 10px; padding: 14px 16px; margin-top: 16px;
+  border-left: 4px solid #27ae60;
+}
+.profile-alert-green-title {
+  font-size: 14px; font-weight: 700; color: #1e8a4d; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.profile-alert-green-title .dot {
+  display: inline-block; width: 10px; height: 10px; background: #27ae60; border-radius: 50%;
+}
+.profile-alert-green-text { font-size: 13px; color: #444; line-height: 1.5; }
+
+/* INFO VIDEO — step 15 */
+.info-video {
+  width: 100%; max-width: 400px; margin: 0 auto 16px; display: block;
+  border-radius: 12px; background: #000;
+}
+
 /* GREEN CANDIDATE CARD */
 .candidate-card {
   background: #f0faf0; border: 2px solid #27ae60; border-radius: 14px; padding: 20px;
@@ -593,16 +743,10 @@ header.quiz-header,
          ================================================================ -->
     <div class="quiz-step active" data-step="1">
       <p class="quiz-promo">OFFRE SOLDES PRINTEMPS</p>
-      <h1 class="quiz-headline">Prenez une minute à répondre ce quiz pour <u>récupérer votre réduction de 69,80€ !</u></h1>
+      <h1 class="quiz-headline">Répondez à ce quiz d'une minute pour <u>récupérer votre réduction de 139,99€</u></h1>
       <h2 class="quiz-question">Quel est votre âge ?🤔</h2>
       <div class="options-list" style="margin-top:20px">
-        <button class="option-btn" onclick="selectSingle(1,'Au-dessus de 85')"><span class="option-text">Au-dessus de 85 ans</span></button>
-        <button class="option-btn" onclick="selectSingle(1,'75-84')"><span class="option-text">75-84 ans</span></button>
-        <button class="option-btn" onclick="selectSingle(1,'65-74')"><span class="option-text">65-74 ans</span></button>
-        <button class="option-btn" onclick="selectSingle(1,'55-64')"><span class="option-text">55-64 ans</span></button>
-        <button class="option-btn" onclick="selectSingle(1,'45-54')"><span class="option-text">45-54 ans</span></button>
-        <button class="option-btn" onclick="selectSingle(1,'35-44')"><span class="option-text">35-44 ans</span></button>
-        <button class="option-btn" onclick="selectSingle(1,'En-dessous de 35')"><span class="option-text">En-dessous de 35 ans</span></button>
+        <button class="option-btn" onclick="selectSingle(1,'Moins de 55')"><span class="option-text">Moins de 55 ans</span></button>
       </div>
     </div>
 
@@ -693,22 +837,22 @@ header.quiz-header,
       <div class="severity-grid">
         <div class="severity-option" onclick="toggleSeverity(this,4,'Rides légères')">
           <div class="severity-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
-          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/severity-1-mild.webp" alt="Rides légères">
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Mild_Wrinkles_Minimal_Sagging.avif?v=1776948509" alt="Rides légères">
           <div class="severity-label">Rides légères &amp; relâchement minimal</div>
         </div>
         <div class="severity-option" onclick="toggleSeverity(this,4,'Rides modérées')">
           <div class="severity-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
-          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/severity-2-moderate.webp" alt="Rides modérées">
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/pdpfemme-3.jpg?v=1776948447" alt="Rides modérées">
           <div class="severity-label">Rides modérées &amp; léger relâchement</div>
         </div>
         <div class="severity-option" onclick="toggleSeverity(this,4,'Rides profondes')">
           <div class="severity-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
-          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/severity-3-deep.webp" alt="Rides profondes">
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Deep_Wrinkles_Pronounced_Sagging.avif?v=1776948508" alt="Rides profondes">
           <div class="severity-label">Rides profondes &amp; relâchement prononcé</div>
         </div>
         <div class="severity-option" onclick="toggleSeverity(this,4,'Rides très profondes')">
           <div class="severity-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
-          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/severity-4-severe.webp" alt="Rides très profondes">
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Very_Deep_Wrinkles_Severe_Sagging.avif?v=1776948508" alt="Rides très profondes">
           <div class="severity-label">Rides très profondes &amp; relâchement sévère</div>
         </div>
       </div>
@@ -716,36 +860,99 @@ header.quiz-header,
     </div>
 
     <!-- ================================================================
-         STEP 5 — Carousel avis / reviews
+         STEP 5 — Reviews carousel (6 blocs structurés)
          ================================================================ -->
     <div class="quiz-step" data-step="5">
-      <h2 class="quiz-question">Vous êtes au bon endroit !💪</h2>
+      <h2 class="quiz-question">Vous êtes au bon endroit</h2>
       <p class="intermediate-text">
-        Des milliers de femmes ont réduit l'apparence des rides et du relâchement cutané autour de la <u>bouche</u>, du <u>front</u>,
-        des <u>yeux</u> et du <u>cou</u> grâce à <strong>Julie Cosmétique !</strong>
+        Des milliers de femmes ont réduit l'apparence des rides, le relâchement cutané autour de la <u>bouche</u>, du <u>front</u>,
+        des <u>yeux</u> et du <u>cou</u> grâce à <strong>Julie Cosmetics.</strong>
       </p>
-      <div class="carousel-wrapper" id="carousel">
-        <div class="carousel-viewport">
-          <div class="carousel-slide active"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres1.webp?v=1773535121" alt="Avant Après 1"></div>
-          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres2.webp?v=1773535120" alt="Avant Après 2"></div>
-          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres3.webp?v=1773535121" alt="Avant Après 3"></div>
-          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres4.webp?v=1773535120" alt="Avant Après 4"></div>
-          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres5.webp?v=1773535120" alt="Avant Après 5"></div>
-          <div class="carousel-slide"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quizlp-avantapres6.webp?v=1773535121" alt="Avant Après 6"></div>
-        </div>
-        <div class="carousel-nav">
-          <button class="carousel-arrow prev hidden" id="carouselPrevBtn" onclick="carouselPrev()">‹</button>
-          <div class="carousel-dots">
-            <button class="carousel-dot active" onclick="carouselGoTo(0)"></button>
-            <button class="carousel-dot" onclick="carouselGoTo(1)"></button>
-            <button class="carousel-dot" onclick="carouselGoTo(2)"></button>
-            <button class="carousel-dot" onclick="carouselGoTo(3)"></button>
-            <button class="carousel-dot" onclick="carouselGoTo(4)"></button>
-            <button class="carousel-dot" onclick="carouselGoTo(5)"></button>
+
+      <div class="reviews-carousel-wrap" id="reviewsCarousel">
+        <div class="reviews-carousel-viewport">
+          <div class="reviews-carousel-track" id="reviewsTrack">
+            <!-- Avis 1 -->
+            <div class="review-block">
+              <img class="review-block-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis1.webp?v=1776948079" alt="Joanne - avant/après">
+              <div class="review-block-body">
+                <div class="review-block-top">
+                  <span class="review-block-name">Joanne</span>
+                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                </div>
+                <div class="review-block-stars">★★★★★</div>
+                <p class="review-block-text">À 74 ans, je pensais que mes rides étaient trop installées. Je pensais qu'aucun soin à domicile ne pouvait sauver la peau relâchée autour de mes bajoues et ces rides d'amertume si profondes. Mais après que ma fille m'a convaincue, j'ai quand même essayé, et maintenant après 3 mois ? J'ai l'impression d'être méconnaissable.</p>
+              </div>
+            </div>
+            <!-- Avis 2 -->
+            <div class="review-block">
+              <img class="review-block-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis2.webp?v=1776948079" alt="Christelle - avant/après">
+              <div class="review-block-body">
+                <div class="review-block-top">
+                  <span class="review-block-name">Christelle</span>
+                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                </div>
+                <div class="review-block-stars">★★★★★</div>
+                <p class="review-block-text">Quand je dis que j'ai tout essayé, je le pense vraiment. Toutes les crèmes miracles, les sérums, tout le rétinol du monde, et j'ai été déçue à chaque fois. Mais là c'est différent, dès la première application je sentais que ça agissait, et après quelques semaines mes rides du contour des lèvres se sont considérablement atténuées.</p>
+              </div>
+            </div>
+            <!-- Avis 3 -->
+            <div class="review-block">
+              <img class="review-block-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis3.webp?v=1776948079" alt="Yvonne - avant/après">
+              <div class="review-block-body">
+                <div class="review-block-top">
+                  <span class="review-block-name">Yvonne</span>
+                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                </div>
+                <div class="review-block-stars">★★★★★</div>
+                <p class="review-block-text">Je détestais me maquiller parce que le fond de teint se logeait toujours dans mes rides autour de la bouche et des lèvres, les rendant encore plus visibles. Après avoir utilisé le sérum Julie Cosmétique depuis bientôt 3 mois, tout a changé. Non seulement mes rides autour de la bouche et des lèvres ont DISPARU, mais la peau de mon cou est beaucoup plus ferme.</p>
+              </div>
+            </div>
+            <!-- Avis 4 -->
+            <div class="review-block">
+              <img class="review-block-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis4.webp?v=1776948079" alt="Françoise - avant/après">
+              <div class="review-block-body">
+                <div class="review-block-top">
+                  <span class="review-block-name">Françoise</span>
+                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                </div>
+                <div class="review-block-stars">★★★★★</div>
+                <p class="review-block-text">Je l'ai pris pour mes rides du lion, mes rides du contour des lèvres et mon cou relâché. Honnêtement, je n'avais pas beaucoup d'espoir — rien de ce que j'avais essayé ces 20 dernières années n'avait tenu ses promesses. Je l'ai tenté uniquement grâce à la garantie satisfait ou remboursé, et je suis tellement contente de l'avoir fait. Après 10 ou 11 semaines, tout s'est amélioré !</p>
+              </div>
+            </div>
+            <!-- Avis 5 -->
+            <div class="review-block">
+              <img class="review-block-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis5.webp?v=1776948079" alt="Sandrine - avant/après">
+              <div class="review-block-body">
+                <div class="review-block-top">
+                  <span class="review-block-name">Sandrine</span>
+                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                </div>
+                <div class="review-block-stars">★★★★★</div>
+                <p class="review-block-text">J'ai fait du Botox et des injections pour mes rides autour de la bouche il y a un an. Les résultats étaient super, mais après quelques mois ils se sont estompés. Je ne pouvais pas me permettre de dépenser des milliers d'euros par an juste pour maintenir ça. Alors j'ai arrêté le Botox et les injections pour essayer le sérum Julie Cosmétique en espérant obtenir des résultats similaires à un meilleur prix. Après 3 mois, mes rides autour de la bouche sont encore mieux qu'avant.</p>
+              </div>
+            </div>
+            <!-- Avis 6 -->
+            <div class="review-block">
+              <img class="review-block-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/avis6.webp?v=1776948079" alt="Monique - avant/après">
+              <div class="review-block-body">
+                <div class="review-block-top">
+                  <span class="review-block-name">Monique</span>
+                  <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="6 12 10 16 18 8"/></svg>Cliente vérifiée</span>
+                </div>
+                <div class="review-block-stars">★★★★★</div>
+                <p class="review-block-text">Après seulement six semaines d'utilisation, j'ai l'impression d'être revenue à mes 30 ans ! Ma peau a un bel éclat, et elle est plus lisse et plus ferme que jamais. Très contente des résultats.</p>
+              </div>
+            </div>
           </div>
-          <button class="carousel-arrow next" id="carouselNextBtn" onclick="carouselNext()">›</button>
+        </div>
+        <div class="reviews-nav">
+          <button class="reviews-arrow" id="reviewsPrevBtn" onclick="reviewsPrev()">‹</button>
+          <div class="reviews-dots" id="reviewsDots"></div>
+          <button class="reviews-arrow" id="reviewsNextBtn" onclick="reviewsNext()">›</button>
         </div>
       </div>
+
       <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(6)">Continuer <span class="arrow">→</span></button></div>
     </div>
 
@@ -808,9 +1015,24 @@ header.quiz-header,
 
     <!-- STEP 11 — Loading création profil (auto-skip → 12) -->
     <div class="quiz-step" data-step="11">
-      <div class="loading-screen">
-        <div class="loading-icon"><div class="spinner-ring" id="spinner11"></div><div class="check-icon" id="check11"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div></div>
-        <p class="loading-text">Création de votre profil de peau...</p>
+      <div class="profile-loading">
+        <div class="profile-loading-spinner"></div>
+        <h2 class="profile-loading-title">Création de votre profil de peau...</h2>
+        <div class="profile-loading-bar-bg"><div class="profile-loading-bar-fg" id="profileLoadingBar"></div></div>
+        <div class="profile-loading-steps">
+          <div class="profile-loading-step" id="pls1">
+            <div class="profile-loading-step-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
+            <span>Évaluation de vos réponses</span>
+          </div>
+          <div class="profile-loading-step" id="pls2">
+            <div class="profile-loading-step-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
+            <span>Analyse de vos résultats</span>
+          </div>
+          <div class="profile-loading-step" id="pls3">
+            <div class="profile-loading-step-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
+            <span>Détermination de votre type de peau</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -840,9 +1062,9 @@ header.quiz-header,
             <span style="color:#e64b4b !important;font-weight:600 !important;">Élevé</span>
           </div>
         </div>
-        <div class="profile-alert">
-          <p class="profile-alert-title"><span class="dot"></span> Niveau ÉLEVÉ</p>
-          <p class="profile-alert-text">Un niveau élevé de perte de collagène peut entraîner des rides profondes, un relâchement cutané et un teint irrégulier — ce qui vous fait paraître bien plus âgée que vous ne l'êtes vraiment.</p>
+        <div class="profile-alert-green">
+          <p class="profile-alert-green-title"><span class="dot"></span> Très bonne compatibilité avec Julie Cosmetics</p>
+          <p class="profile-alert-green-text">Compte tenu de votre âge, de la profondeur de vos rides et des zones à traiter, vous êtes la candidate idéale pour obtenir une peau visiblement plus jeune grâce à Julie Cosmétique, et ce, sans douleur ni risque d'effets secondaires.</p>
         </div>
       </div>
       <div class="profile-stats">
@@ -893,8 +1115,10 @@ header.quiz-header,
         <h2>Pourquoi rien ne fonctionne contre les rides profondes et le relâchement cutané ?</h2>
         <p>Les crèmes anti-âge et le rétinol hydratent en surface… mais les rides profondes, elles, se forment par les <strong>contractions musculaires répétées</strong> de votre visage.</p>
         <p>C'est pour ça que malgré des mois de crèmes, vos rides autour de la bouche et du front ne bougent pas.</p>
-        <!-- Espace pour image 1080x1080 -->
-        <img class="info-image" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quiz2-pourquoi.webp" alt="Pourquoi les crèmes ne fonctionnent pas">
+        <!-- Vidéo explicative -->
+        <video class="info-video" autoplay muted loop playsinline>
+          <source src="https://cdn.shopify.com/videos/c/o/v/febaf277f23042cbb456880561be1d4e.webm" type="video/webm">
+        </video>
         <p>Le sérum Julie Cosmétique agit différemment : grâce à <strong>l'argireline</strong>, un peptide qui détend les micro-contractions musculaires à l'origine des rides — <strong>sans injection, sans aiguille.</strong></p>
       </div>
       <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(16)">Continuer <span class="arrow">→</span></button></div>
@@ -938,7 +1162,7 @@ header.quiz-header,
       <p class="review-quote-title">« De meilleurs résultats pour beaucoup moins cher et moins de temps »</p>
       <div class="review-card">
         <div class="review-header">
-          <div class="review-avatar"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quiz2-avatar-martine.webp" alt="Martine D."></div>
+          <div class="review-avatar"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/pdpfemme-1.jpg?v=1776948334" alt="Martine D."></div>
           <div><div class="review-name">Martine D.</div><div class="review-meta">FR · 1 avis</div></div>
           <div class="review-date">il y a 5 jours</div>
         </div>
@@ -955,7 +1179,7 @@ header.quiz-header,
       <p class="review-quote-title">« J'ai jeté toutes mes crèmes !! »</p>
       <div class="review-card">
         <div class="review-header">
-          <div class="review-avatar"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quiz2-avatar-francoise.webp" alt="Françoise M."></div>
+          <div class="review-avatar"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/pdpfemme-2.jpg?v=1776948334" alt="Françoise M."></div>
           <div><div class="review-name">Françoise M.</div><div class="review-meta">FR · 1 avis</div></div>
         </div>
         <div class="review-stars">
@@ -1087,7 +1311,7 @@ header.quiz-header,
       </div>
 
       <div class="final-review-card">
-        <img class="final-review-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/quiz2-review-final.webp" alt="Avis client">
+        <img class="final-review-img" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/pdpfemme-3.jpg?v=1776948447" alt="Avis client">
         <div class="final-review-body">
           <div class="final-review-stars">★★★★★</div>
           <p class="final-review-text">Je ne laisse jamais d'avis d'habitude, mais après avoir essayé toutes les crèmes du marché, il fallait que je le fasse. Mon cou, ma bouche et mes bajoues ont l'air d'avoir rajeuni de 15 ans.</p>
@@ -1108,7 +1332,7 @@ if (typeof goToStep === 'undefined') {
 var QUIZ_ID='quiz_2';
 var TOTAL_STEPS=24,currentStep=1,stepHistory=[1],answers={},multiSelections={};
 function updateProgressBar(s){var b=document.getElementById('progressBar');if(!b)return;b.style.width=Math.round(((s-1)/(TOTAL_STEPS-1))*100)+'%';}
-function goToStep(s,h){var c=document.querySelector('.quiz-step.active');if(c)c.classList.remove('active');currentStep=s;var n=document.querySelector('[data-step="'+s+'"]');if(n){void n.offsetWidth;n.classList.add('active');}updateProgressBar(s);window.scrollTo({top:0,behavior:'smooth'});if(h!==false){stepHistory.push(s);history.pushState({step:s},'','#step-'+s);}if(s===11)startLoading(11,2200,12);if(s===12)setTimeout(lvlAnimate,400);if(s===23)updateResultsPage();if(s===24)startCircleRedirect();}
+function goToStep(s,h){var c=document.querySelector('.quiz-step.active');if(c)c.classList.remove('active');currentStep=s;var n=document.querySelector('[data-step="'+s+'"]');if(n){void n.offsetWidth;n.classList.add('active');}updateProgressBar(s);window.scrollTo({top:0,behavior:'smooth'});if(h!==false){stepHistory.push(s);history.pushState({step:s},'','#step-'+s);}if(s===11)startProfileLoading();if(s===12)setTimeout(lvlAnimate,400);if(s===23)updateResultsPage();if(s===24)startCircleRedirect();}
 window.addEventListener('popstate',function(){if(stepHistory.length>1){stepHistory.pop();goToStep(stepHistory[stepHistory.length-1],false);}});
 function selectSingle(s,v){answers[s]=v;var el=document.querySelector('[data-step="'+s+'"]');el.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected');});event.currentTarget.classList.add('selected');setTimeout(function(){goToStep(s+1);},350);}
 function toggleMulti(b,s,v){if(!multiSelections[s])multiSelections[s]=[];b.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
@@ -1117,15 +1341,35 @@ function toggleZone(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.clas
 function toggleSeverity(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
 function startLoading(s,d,nx){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){goToStep(nx);},800);},d);}
 function startLoadingRedirect(s,d){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},800);},d);}
-function startCircleRedirect(){var circle=document.getElementById('circleProgress'),txt=document.getElementById('circleText');if(!circle||!txt)return;var total=515,dur=3000,start=null;function frame(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1);var pct=Math.round(p*100);circle.style.strokeDashoffset=total-(total*p);txt.textContent=pct+'%';if(p<1)requestAnimationFrame(frame);else setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},5000);}requestAnimationFrame(frame);}
+function startCircleRedirect(){var circle=document.getElementById('circleProgress'),txt=document.getElementById('circleText');if(!circle||!txt)return;var total=515,dur=3500,start=null;function ease(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}function frame(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1);var e=ease(p);var pct=Math.round(e*100);circle.style.strokeDashoffset=total-(total*e);txt.textContent=pct+'%';if(p<1)requestAnimationFrame(frame);else setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},5000);}requestAnimationFrame(frame);}
+function startProfileLoading(){var bar=document.getElementById('profileLoadingBar');var s1=document.getElementById('pls1'),s2=document.getElementById('pls2'),s3=document.getElementById('pls3');if(bar){setTimeout(function(){bar.style.width='100%';bar.style.transition='width 3.5s ease';},50);}if(s1)setTimeout(function(){s1.classList.add('visible');},400);if(s2)setTimeout(function(){s2.classList.add('visible');},1500);if(s3)setTimeout(function(){s3.classList.add('visible');},2700);setTimeout(function(){goToStep(12);},3500);}
 var lvlTarget=82,lvlDuration=3500,lvlStarted=false;
 function lvlEase(t){return 1-Math.pow(1-t,3);}
 function lvlAnimate(){if(lvlStarted)return;var dot=document.getElementById('lvlIndicator'),tip=document.getElementById('lvlTooltip');if(!dot||!tip)return;lvlStarted=true;tip.style.opacity='1';var st=null;function frame(ts){if(!st)st=ts;var p=Math.min((ts-st)/lvlDuration,1),e=lvlEase(p),v=e*lvlTarget;dot.style.left=v+'%';tip.style.left=v+'%';if(p<1)requestAnimationFrame(frame);}requestAnimationFrame(frame);}
-var cIdx=0,cTotal=6,touchX=0;
-function updateCarousel(){document.querySelectorAll('.carousel-slide').forEach(function(s,i){s.classList.toggle('active',i===cIdx);});document.querySelectorAll('.carousel-dot').forEach(function(d,i){d.classList.toggle('active',i===cIdx);});var p=document.getElementById('carouselPrevBtn'),n=document.getElementById('carouselNextBtn');if(p)p.classList.toggle('hidden',cIdx===0);if(n)n.classList.toggle('hidden',cIdx===cTotal-1);}
-function carouselNext(){if(cIdx<cTotal-1){cIdx++;updateCarousel();}}
-function carouselPrev(){if(cIdx>0){cIdx--;updateCarousel();}}
-function carouselGoTo(i){cIdx=i;updateCarousel();}
+/* NEW REVIEWS CAROUSEL — 6 blocs, 3 par page desktop / 1 par page mobile */
+var reviewsIdx=0,reviewsTotal=6,reviewsVisible=3,reviewsTouchX=0,reviewsTouchY=0;
+function getReviewsVisibleCount(){return window.innerWidth>=768?3:1;}
+function getReviewsPages(){return reviewsTotal-getReviewsVisibleCount()+1;}
+function updateReviews(){
+  var track=document.getElementById('reviewsTrack');if(!track)return;
+  reviewsVisible=getReviewsVisibleCount();
+  var pages=getReviewsPages();
+  if(reviewsIdx>pages-1)reviewsIdx=pages-1;if(reviewsIdx<0)reviewsIdx=0;
+  var blockW=100/reviewsVisible;
+  track.style.transform='translateX(-'+(reviewsIdx*blockW)+'%)';
+  var dotsC=document.getElementById('reviewsDots');
+  if(dotsC){dotsC.innerHTML='';for(var i=0;i<pages;i++){var d=document.createElement('button');d.className='reviews-dot'+(i===reviewsIdx?' active':'');(function(n){d.addEventListener('click',function(){reviewsIdx=n;updateReviews();});})(i);dotsC.appendChild(d);}}
+  var pb=document.getElementById('reviewsPrevBtn'),nb=document.getElementById('reviewsNextBtn');
+  if(pb)pb.disabled=reviewsIdx===0;if(nb)nb.disabled=reviewsIdx>=pages-1;
+}
+function reviewsNext(){var pages=getReviewsPages();if(reviewsIdx<pages-1){reviewsIdx++;updateReviews();}}
+function reviewsPrev(){if(reviewsIdx>0){reviewsIdx--;updateReviews();}}
+/* Backward compat for inline HTML that may still call old carousel fns */
+function carouselNext(){reviewsNext();}
+function carouselPrev(){reviewsPrev();}
+function carouselGoTo(i){reviewsIdx=i;updateReviews();}
+var touchX=0;
+window.addEventListener('resize',function(){updateReviews();});
 var dpY,dpM,dpSel=null;
 function initDP(){var n=new Date();dpY=n.getFullYear();dpM=n.getMonth();renderDP();}
 function toggleDatePicker(){var d=document.getElementById('datepickerDropdown');if(d){d.classList.toggle('open');if(d.classList.contains('open'))initDP();}}
@@ -1133,6 +1377,6 @@ function dpPrevMonth(e){e.stopPropagation();dpM--;if(dpM<0){dpM=11;dpY--;}render
 function dpNextMonth(e){e.stopPropagation();dpM++;if(dpM>11){dpM=0;dpY++;}renderDP();}
 function renderDP(){var ms=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];var t=document.getElementById('dpMonthYear');if(t)t.textContent=ms[dpM]+'    '+dpY;var dc=document.getElementById('dpDays');if(!dc)return;dc.innerHTML='';var fd=new Date(dpY,dpM,1).getDay();fd=fd===0?6:fd-1;var dim=new Date(dpY,dpM+1,0).getDate(),dipm=new Date(dpY,dpM,0).getDate(),today=new Date();for(var i=fd-1;i>=0;i--){var b=document.createElement('button');b.className='dp-day other-month';b.textContent=dipm-i;dc.appendChild(b);}for(var d=1;d<=dim;d++){var b=document.createElement('button');b.className='dp-day';b.textContent=d;if(d===today.getDate()&&dpM===today.getMonth()&&dpY===today.getFullYear())b.classList.add('today');if(dpSel&&d===dpSel.getDate()&&dpM===dpSel.getMonth()&&dpY===dpSel.getFullYear())b.classList.add('selected');(function(day){b.addEventListener('click',function(e){e.stopPropagation();dpSel=new Date(dpY,dpM,day);var f=String(day).padStart(2,'0')+'/'+String(dpM+1).padStart(2,'0')+'/'+dpY;document.getElementById('dateInput').value=f;answers[21]=f;renderDP();setTimeout(function(){document.getElementById('datepickerDropdown').classList.remove('open');},200);});})(d);dc.appendChild(b);}var tc=fd+dim,rem=(7-(tc%7))%7;for(var i=1;i<=rem;i++){var b=document.createElement('button');b.className='dp-day other-month';b.textContent=i;dc.appendChild(b);}}
 function updateResultsPage(){var e=document.getElementById('eventName');if(e&&answers[20])e.textContent=answers[20];var t=new Date();t.setMonth(t.getMonth()+3);var d=document.getElementById('resultDate');if(d)d.textContent=String(t.getDate()).padStart(2,'0')+'/'+String(t.getMonth()+1).padStart(2,'0')+'/'+t.getFullYear();}
-document.addEventListener('DOMContentLoaded',function(){updateProgressBar(1);history.replaceState({step:1},'','#step-1');var t=document.querySelector('.carousel-viewport');if(t){t.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX;},{passive:true});t.addEventListener('touchend',function(e){var d=touchX-e.changedTouches[0].clientX;if(Math.abs(d)>50){if(d>0)carouselNext();else carouselPrev();}},{passive:true});}});
+document.addEventListener('DOMContentLoaded',function(){updateProgressBar(1);history.replaceState({step:1},'','#step-1');updateReviews();var t=document.getElementById('reviewsCarousel');if(t){t.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX;},{passive:true});t.addEventListener('touchend',function(e){var d=touchX-e.changedTouches[0].clientX;if(Math.abs(d)>50){if(d>0)reviewsNext();else reviewsPrev();}},{passive:true});}});
 }
 </script>

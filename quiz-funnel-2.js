@@ -82,7 +82,7 @@ function goToStep(step, addToHistory) {
   updateProgressBar(step);
   window.scrollTo({top:0,behavior:'smooth'});
   if (addToHistory !== false) { stepHistory.push(step); history.pushState({step:step},'','#step-'+step); }
-  if (step===11) startLoading(11,2200,12);
+  if (step===11) startProfileLoading();
   if (step===12) setTimeout(lvlAnimate,400);
   if (step===23) updateResultsPage();
   if (step===24) startCircleRedirect();
@@ -154,18 +154,40 @@ function startLoadingRedirect(step,dur){
 }
 
 /* ============================================================
-   CIRCLE PROGRESS + REDIRECT (étape 24)
+   PROFILE LOADING (étape 11) — barre + 3 points progressifs
+   ============================================================ */
+function startProfileLoading() {
+  var bar = document.getElementById('profileLoadingBar');
+  var s1 = document.getElementById('pls1');
+  var s2 = document.getElementById('pls2');
+  var s3 = document.getElementById('pls3');
+  if (bar) {
+    setTimeout(function() {
+      bar.style.transition = 'width 3.5s ease';
+      bar.style.width = '100%';
+    }, 50);
+  }
+  if (s1) setTimeout(function() { s1.classList.add('visible'); }, 400);
+  if (s2) setTimeout(function() { s2.classList.add('visible'); }, 1500);
+  if (s3) setTimeout(function() { s3.classList.add('visible'); }, 2700);
+  setTimeout(function() { goToStep(12); }, 3500);
+}
+
+/* ============================================================
+   CIRCLE PROGRESS + REDIRECT (étape 24) — 3.5s ease-in-out
    ============================================================ */
 function startCircleRedirect() {
   var circle = document.getElementById('circleProgress');
   var txt = document.getElementById('circleText');
   if (!circle || !txt) return;
-  var totalDash = 515, dur = 3000, startTime = null;
+  var totalDash = 515, dur = 3500, startTime = null;
+  function ease(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2) / 2; }
   function frame(ts) {
     if (!startTime) startTime = ts;
     var p = Math.min((ts - startTime) / dur, 1);
-    var pct = Math.round(p * 100);
-    circle.style.strokeDashoffset = totalDash - (totalDash * p);
+    var e = ease(p);
+    var pct = Math.round(e * 100);
+    circle.style.strokeDashoffset = totalDash - (totalDash * e);
     txt.textContent = pct + '%';
     if (p < 1) requestAnimationFrame(frame);
     else setTimeout(function() {
@@ -206,27 +228,59 @@ function lvlAnimate() {
 }
 
 /* ============================================================
-   CAROUSEL (étape 5)
+   REVIEWS CAROUSEL (étape 5) — 6 blocs, 3/page desktop, 1/page mobile
    ============================================================ */
-var cIdx=0,cTotal=6,touchX=0;
+var reviewsIdx = 0, reviewsTotal = 6, touchX = 0;
 
-function updateCarousel(){
-  document.querySelectorAll('.carousel-slide').forEach(function(s,i){s.classList.toggle('active',i===cIdx);});
-  document.querySelectorAll('.carousel-dot').forEach(function(d,i){d.classList.toggle('active',i===cIdx);});
-  var p=document.getElementById('carouselPrevBtn'),n=document.getElementById('carouselNextBtn');
-  if(p)p.classList.toggle('hidden',cIdx===0);
-  if(n)n.classList.toggle('hidden',cIdx===cTotal-1);
+function getReviewsVisibleCount() { return window.innerWidth >= 768 ? 3 : 1; }
+function getReviewsPages() { return reviewsTotal - getReviewsVisibleCount() + 1; }
+
+function updateReviews() {
+  var track = document.getElementById('reviewsTrack');
+  if (!track) return;
+  var visible = getReviewsVisibleCount();
+  var pages = getReviewsPages();
+  if (reviewsIdx > pages - 1) reviewsIdx = pages - 1;
+  if (reviewsIdx < 0) reviewsIdx = 0;
+  var blockW = 100 / visible;
+  track.style.transform = 'translateX(-' + (reviewsIdx * blockW) + '%)';
+
+  var dotsC = document.getElementById('reviewsDots');
+  if (dotsC) {
+    dotsC.innerHTML = '';
+    for (var i = 0; i < pages; i++) {
+      var d = document.createElement('button');
+      d.className = 'reviews-dot' + (i === reviewsIdx ? ' active' : '');
+      (function(n) {
+        d.addEventListener('click', function() { reviewsIdx = n; updateReviews(); });
+      })(i);
+      dotsC.appendChild(d);
+    }
+  }
+  var pb = document.getElementById('reviewsPrevBtn'), nb = document.getElementById('reviewsNextBtn');
+  if (pb) pb.disabled = reviewsIdx === 0;
+  if (nb) nb.disabled = reviewsIdx >= pages - 1;
 }
 
-function carouselNext(){if(cIdx<cTotal-1){cIdx++;updateCarousel();}}
-function carouselPrev(){if(cIdx>0){cIdx--;updateCarousel();}}
-function carouselGoTo(i){cIdx=i;updateCarousel();}
+function reviewsNext() { var pages = getReviewsPages(); if (reviewsIdx < pages - 1) { reviewsIdx++; updateReviews(); } }
+function reviewsPrev() { if (reviewsIdx > 0) { reviewsIdx--; updateReviews(); } }
 
-document.addEventListener('DOMContentLoaded',function(){
-  var t=document.querySelector('.carousel-viewport');
-  if(t){
-    t.addEventListener('touchstart',function(e){touchX=e.touches[0].clientX;},{passive:true});
-    t.addEventListener('touchend',function(e){var d=touchX-e.changedTouches[0].clientX;if(Math.abs(d)>50){if(d>0)carouselNext();else carouselPrev();}},{passive:true});
+/* Backward compat */
+function carouselNext() { reviewsNext(); }
+function carouselPrev() { reviewsPrev(); }
+function carouselGoTo(i) { reviewsIdx = i; updateReviews(); }
+
+window.addEventListener('resize', function() { updateReviews(); });
+
+document.addEventListener('DOMContentLoaded', function() {
+  updateReviews();
+  var t = document.getElementById('reviewsCarousel');
+  if (t) {
+    t.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, { passive: true });
+    t.addEventListener('touchend', function(e) {
+      var d = touchX - e.changedTouches[0].clientX;
+      if (Math.abs(d) > 50) { if (d > 0) reviewsNext(); else reviewsPrev(); }
+    }, { passive: true });
   }
 });
 
