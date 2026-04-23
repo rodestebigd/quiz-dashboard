@@ -101,6 +101,15 @@ function selectSingle(step,value){
   setTimeout(function(){goToStep(step+1);},350);
 }
 
+function selectSingleSkip(step,value,targetStep){
+  answers[step]=value;
+  trackAnswer(step, value);
+  var el=document.querySelector('[data-step="'+step+'"]');
+  el.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected');});
+  event.currentTarget.classList.add('selected');
+  setTimeout(function(){goToStep(targetStep);},350);
+}
+
 function toggleMulti(btn,step,value){
   if(!multiSelections[step])multiSelections[step]=[];
   btn.classList.toggle('selected');
@@ -192,7 +201,7 @@ function startCircleRedirect() {
     if (p < 1) requestAnimationFrame(frame);
     else setTimeout(function() {
       window.location.href = 'https://juliecosmetique.fr/products/serum-liftant-julie';
-    }, 5000);
+    }, 4000);
   }
   requestAnimationFrame(frame);
 }

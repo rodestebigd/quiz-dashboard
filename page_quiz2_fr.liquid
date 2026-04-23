@@ -896,7 +896,7 @@ header.quiz-header,
          ================================================================ -->
     <div class="quiz-step" data-step="3">
       <h2 class="quiz-question">Lequel ou lesquels de ces éléments souhaitez-vous effacer de manière visible ?</h2>
-      <p class="quiz-subtitle-strong">(Vous pouvez en choisir autant que vous le souhaitez)</p>
+      <p class="quiz-subtitle-strong">(Cliquez sur les images pour sélectionner, sélectionnez autant que vous le souhaitez)</p>
       <div class="zone-grid-8">
         <div class="zone-option" onclick="toggleZone(this,3,'Rides de la bouche')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
@@ -1329,7 +1329,7 @@ header.quiz-header,
          STEP 19 — Peau vieillit intérieurement
          ================================================================ -->
     <div class="quiz-step" data-step="19">
-      <h2 class="quiz-question">Avez-vous déjà eu l'impression que votre peau vous vieillit par rapport à ce que vous ressentez intérieurement ? 🤔</h2>
+      <h2 class="quiz-question">Avez-vous déjà eu l'impression que votre peau vous vieillit par rapport à votre vrai âge ? 🤔</h2>
       <div class="options-list" style="margin-top:24px">
         <button class="option-btn" onclick="selectSingle(19,'Oui')"><span class="option-text">Oui</span></button>
         <button class="option-btn" onclick="selectSingle(19,'Non')"><span class="option-text">Non</span></button>
@@ -1355,14 +1355,14 @@ header.quiz-header,
          ================================================================ -->
     <div class="quiz-step" data-step="21">
       <h2 class="quiz-question">Avez-vous un événement important qui approche ?</h2>
-      <p class="quiz-subtitle" style="font-style:normal">Avoir un bel événement en vue, c'est la meilleure motivation pour atteindre votre objectif</p>
+      <p class="quiz-subtitle-strong" style="margin-bottom:20px">Avoir un bel événement en vue, c'est la meilleure motivation pour atteindre votre objectif</p>
       <div class="options-list">
         <button class="option-btn" onclick="selectSingle(21,'Anniversaire')"><span class="emoji">🎁</span><span class="option-text">Anniversaire</span></button>
         <button class="option-btn" onclick="selectSingle(21,'Vacances')"><span class="emoji">🏖️</span><span class="option-text">Vacances</span></button>
         <button class="option-btn" onclick="selectSingle(21,'Retrouvailles')"><span class="emoji">👫</span><span class="option-text">Retrouvailles</span></button>
         <button class="option-btn" onclick="selectSingle(21,'Événement sportif')"><span class="emoji">🥇</span><span class="option-text">Événement sportif</span></button>
         <button class="option-btn" onclick="selectSingle(21,'Autre')"><span class="emoji">⭐</span><span class="option-text">Autre</span></button>
-        <button class="option-btn" onclick="selectSingle(21,'Rien de prévu')"><span class="emoji">❌</span><span class="option-text">Rien de prévu prochainement</span></button>
+        <button class="option-btn" onclick="selectSingleSkip(21,'Rien de prévu',23)"><span class="emoji">❌</span><span class="option-text">Rien de prévu prochainement</span></button>
       </div>
     </div>
 
@@ -1522,13 +1522,14 @@ function updateProgressBar(s){var b=document.getElementById('progressBar');if(!b
 function goToStep(s,h){var c=document.querySelector('.quiz-step.active');if(c)c.classList.remove('active');currentStep=s;var n=document.querySelector('[data-step="'+s+'"]');if(n){void n.offsetWidth;n.classList.add('active');}updateProgressBar(s);window.scrollTo({top:0,behavior:'smooth'});if(h!==false){stepHistory.push(s);history.pushState({step:s},'','#step-'+s);}if(s===11)startProfileLoading();if(s===12)setTimeout(lvlAnimate,400);if(s===23)updateResultsPage();if(s===24)startCircleRedirect();}
 window.addEventListener('popstate',function(){if(stepHistory.length>1){stepHistory.pop();goToStep(stepHistory[stepHistory.length-1],false);}});
 function selectSingle(s,v){answers[s]=v;var el=document.querySelector('[data-step="'+s+'"]');el.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected');});event.currentTarget.classList.add('selected');setTimeout(function(){goToStep(s+1);},350);}
+function selectSingleSkip(s,v,target){answers[s]=v;var el=document.querySelector('[data-step="'+s+'"]');el.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected');});event.currentTarget.classList.add('selected');setTimeout(function(){goToStep(target);},350);}
 function toggleMulti(b,s,v){if(!multiSelections[s])multiSelections[s]=[];b.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
 function toggleImageOption(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
 function toggleZone(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
 function toggleSeverity(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.classList.toggle('selected');var i=multiSelections[s].indexOf(v);if(i>-1)multiSelections[s].splice(i,1);else multiSelections[s].push(v);answers[s]=multiSelections[s];}
 function startLoading(s,d,nx){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){goToStep(nx);},800);},d);}
 function startLoadingRedirect(s,d){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},800);},d);}
-function startCircleRedirect(){var circle=document.getElementById('circleProgress'),txt=document.getElementById('circleText');if(!circle||!txt)return;var total=515,dur=3500,start=null;function ease(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}function frame(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1);var e=ease(p);var pct=Math.round(e*100);circle.style.strokeDashoffset=total-(total*e);txt.textContent=pct+'%';if(p<1)requestAnimationFrame(frame);else setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},5000);}requestAnimationFrame(frame);}
+function startCircleRedirect(){var circle=document.getElementById('circleProgress'),txt=document.getElementById('circleText');if(!circle||!txt)return;var total=515,dur=3500,start=null;function ease(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}function frame(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1);var e=ease(p);var pct=Math.round(e*100);circle.style.strokeDashoffset=total-(total*e);txt.textContent=pct+'%';if(p<1)requestAnimationFrame(frame);else setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},4000);}requestAnimationFrame(frame);}
 function startProfileLoading(){var bar=document.getElementById('profileLoadingBar');var s1=document.getElementById('pls1'),s2=document.getElementById('pls2'),s3=document.getElementById('pls3');if(bar){bar.classList.remove('animating');void bar.offsetWidth;bar.classList.add('animating');}if(s1){s1.classList.remove('visible');setTimeout(function(){s1.classList.add('visible');},300);}if(s2){s2.classList.remove('visible');setTimeout(function(){s2.classList.add('visible');},1400);}if(s3){s3.classList.remove('visible');setTimeout(function(){s3.classList.add('visible');},2600);}setTimeout(function(){goToStep(12);},3500);}
 var lvlTarget=82,lvlDuration=3500,lvlStarted=false;
 function lvlEase(t){return 1-Math.pow(1-t,3);}
