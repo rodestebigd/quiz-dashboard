@@ -325,21 +325,21 @@ header.quiz-header,
 }
 
 /* PROFILE CARD */
-.profile-card { background: #fff; border-radius: 16px; padding: 24px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px; overflow: visible !important; }
-.profile-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
-.profile-title { font-size: 16px; font-weight: 700; }
-.profile-badge { background: #ffe0e0; color: #d63031; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
-.profile-image { width: 100%; max-width: 200px; margin: 0 auto 10px; display: block; border-radius: 12px; }
+.profile-card { background: #fff; border-radius: 16px; padding: 20px 16px 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 12px; overflow: visible !important; }
+.profile-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.profile-title { font-size: 17px; font-weight: 700; color: #1a1a1a; }
+.profile-badge { background: #ffe0e0; color: #d63031; font-size: 13px; font-weight: 700; padding: 5px 16px; border-radius: 20px; }
+.profile-image { width: 100%; max-width: 260px; margin: 0 auto; display: block; border-radius: 12px; }
 .profile-alert { background: #fff5f5; border-radius: 10px; padding: 14px 16px; margin-top: 16px; }
 .profile-alert-title { font-size: 14px; font-weight: 700; color: #d63031; margin-bottom: 4px; }
 .profile-alert-title .dot { display: inline-block; width: 10px; height: 10px; background: #d63031; border-radius: 50%; margin-right: 6px; }
 .profile-alert-text { font-size: 13px; color: #666; line-height: 1.4; }
 
-.profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-.stat-card { background: #fff; border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
-.stat-icon { width: 36px; height: 36px; background: #f0f4f8; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-.stat-label { color: #888; font-size: 12px; line-height: 1.3; }
-.stat-value { font-weight: 700; font-size: 14px; color: #1a1a1a; }
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.stat-card { background: #fff; border-radius: 12px; padding: 14px 12px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+.stat-icon { width: 40px; height: 40px; background: #f0f4f8; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.stat-label { color: #777; font-size: 11px; line-height: 1.3; margin-bottom: 2px; }
+.stat-value { font-weight: 800; font-size: 14px; color: #1a1a1a; line-height: 1.2; }
 
 /* INTERMEDIATE */
 .intermediate-text { font-size: 15px; color: #555; text-align: center; line-height: 1.5; margin-bottom: 20px; }
@@ -759,17 +759,21 @@ header.quiz-header,
 
 /* GREEN ALERT — profil compatible */
 .profile-alert-green {
-  background: #f0faf0; border-radius: 10px; padding: 14px 16px; margin-top: 16px;
-  border-left: 4px solid #27ae60;
+  background: #e8f5e9; border-radius: 12px; padding: 16px 18px; margin-top: 16px;
 }
 .profile-alert-green-title {
-  font-size: 14px; font-weight: 700; color: #1e8a4d; margin-bottom: 6px;
-  display: flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
 }
-.profile-alert-green-title .dot {
-  display: inline-block; width: 10px; height: 10px; background: #27ae60; border-radius: 50%;
+.profile-alert-green-title .check-emoji {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; background: #27ae60; border-radius: 4px;
+  flex-shrink: 0;
 }
-.profile-alert-green-text { font-size: 13px; color: #444; line-height: 1.5; }
+.profile-alert-green-title .check-emoji svg {
+  width: 12px; height: 12px; stroke: #fff; stroke-width: 3; fill: none;
+}
+.profile-alert-green-text { font-size: 13px; color: #3a3a3a; line-height: 1.5; }
 
 /* INFO VIDEO — step 15 */
 .info-video {
@@ -1123,15 +1127,11 @@ header.quiz-header,
     <!-- STEP 12 — Skin Profile -->
     <div class="quiz-step" data-step="12">
       <h2 class="quiz-question" style="margin-bottom:20px">Bilan de votre profil de peau</h2>
-      <div class="candidate-card">
-        <span class="candidate-badge">✅ Le choix idéal pour Julie Cosmétique</span>
-        <p>Compte tenu de votre âge, de la profondeur de vos rides et des zones à traiter, vous êtes <strong>la candidate idéale</strong> pour obtenir une peau visiblement plus jeune grâce à Julie Cosmétique, et ce, <strong>sans douleur ni risque d'effets secondaires.</strong></p>
-      </div>
       <div class="profile-card">
         <div class="profile-header"><span class="profile-title">Perte naturelle de collagène</span><span class="profile-badge">Élevée</span></div>
         <img class="profile-image" loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/femmepart13-quilp.webp?v=1773535302" alt="Profil de peau">
         <!-- LEVEL BAR — inline styles + !important pour forcer sur Shopify -->
-        <div id="lvlWrapper" style="width:100% !important;margin:0 auto !important;padding:50px 20px 10px !important;overflow:visible !important;">
+        <div id="lvlWrapper" style="width:100% !important;margin:0 auto !important;padding:40px 10px 6px !important;overflow:visible !important;">
           <div style="position:relative !important;width:100% !important;height:40px !important;overflow:visible !important;">
             <!-- Barre gradient -->
             <div style="position:absolute !important;top:50% !important;left:0 !important;right:0 !important;height:18px !important;transform:translateY(-50%) !important;border-radius:30px !important;background:linear-gradient(to right,#a8e4f0 0%,#7edbb5 18%,#b8e67a 30%,#d4e05a 42%,#f0d94e 52%,#f0c03e 60%,#f0a030 68%,#ef8030 75%,#ee5a3a 85%,#e63e3e 100%) !important;display:block !important;visibility:visible !important;opacity:1 !important;"></div>
@@ -1140,14 +1140,15 @@ header.quiz-header,
             <!-- Rond blanc curseur -->
             <div id="lvlIndicator" style="position:absolute !important;top:50% !important;left:0% !important;width:34px !important;height:34px !important;background:#fff !important;border-radius:50% !important;box-shadow:0 2px 8px rgba(0,0,0,0.18),0 0 0 2px rgba(0,0,0,0.04) !important;transform:translate(-50%,-50%) !important;z-index:2 !important;pointer-events:none !important;display:block !important;visibility:visible !important;opacity:1 !important;"></div>
           </div>
-          <div style="display:flex !important;justify-content:space-between !important;margin-top:12px !important;font-size:15px !important;color:#777 !important;font-weight:400 !important;">
+          <div style="display:flex !important;justify-content:space-between !important;margin-top:12px !important;font-size:13px !important;color:#888 !important;font-weight:500 !important;">
             <span>Faible</span>
             <span>Normal</span>
+            <span>Moyen</span>
             <span style="color:#e64b4b !important;font-weight:600 !important;">Élevé</span>
           </div>
         </div>
         <div class="profile-alert-green">
-          <p class="profile-alert-green-title"><span class="dot"></span> Très bonne compatibilité avec Julie Cosmetics</p>
+          <p class="profile-alert-green-title">Parfaite compatibilité avec Julie Cosmétique ! <span class="check-emoji"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></span></p>
           <p class="profile-alert-green-text">Compte tenu de votre âge, de la profondeur de vos rides et des zones à traiter, vous êtes la candidate idéale pour obtenir une peau visiblement plus jeune grâce à Julie Cosmétique, et ce, sans douleur ni risque d'effets secondaires.</p>
         </div>
       </div>
