@@ -1952,11 +1952,37 @@ var CARNATION_COLORS = {
 };
 
 var ZONE_IMAGES = {
-  'Rides bouche': 'assets/images/rides_de_la_bouche.avif',
-  'Rides front': 'assets/images/rides_du_front.avif',
-  'Rides yeux': 'assets/images/rides_des_yeux.avif',
-  'Cou relâché': 'assets/images/rides_du_cou.avif'
+  'Rides de la bouche': 'assets/images/rides_de_la_bouche.avif',
+  'Rides du fumeur': 'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Smokers_Lip_Lines.avif?v=1776943891',
+  'Sillons nasogéniens': 'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Nasolabial_Fold.avif?v=1776943891',
+  'Rides de la marionnette': 'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Marionette_Lines.avif?v=1776943891',
+  'Cou relâché': 'assets/images/rides_du_cou.avif',
+  'Bajoues': 'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Sagging_Jowls.avif?v=1776943891',
+  'Rides des yeux': 'assets/images/rides_des_yeux.avif',
+  'Rides du front': 'assets/images/rides_du_front.avif'
 };
+
+/* Alias pour fusionner les labels de zones entre Q1 et Q2 — labels canoniques = style Q2 */
+var ZONE_ALIASES = {
+  'Rides bouche': 'Rides de la bouche',
+  'Rides yeux': 'Rides des yeux',
+  'Rides front': 'Rides du front'
+};
+function normalizeZone(label) {
+  return ZONE_ALIASES[label] || label;
+}
+
+/* Ordre d'affichage des zones Q2 (palette complète) */
+var QUIZ_2_ZONES = [
+  'Rides de la bouche',
+  'Rides du fumeur',
+  'Sillons nasogéniens',
+  'Rides de la marionnette',
+  'Cou relâché',
+  'Bajoues',
+  'Rides des yeux',
+  'Rides du front'
+];
 
 function renderCarnation(card, stepAnswers) {
   var allAnswers = [];
@@ -1989,13 +2015,23 @@ function renderZones(card, stepAnswers) {
   var allAnswers = [];
   stepAnswers.forEach(function(r) {
     var parts = r.answer.split(', ');
-    parts.forEach(function(p) { if (p.trim()) allAnswers.push(p.trim()); });
+    parts.forEach(function(p) {
+      var t = p.trim();
+      if (t) allAnswers.push(normalizeZone(t));
+    });
   });
   var counts = {};
   allAnswers.forEach(function(a) { counts[a] = (counts[a] || 0) + 1; });
+
+  // En mode 'all' ou 'quiz_2' : garantir que les 8 zones Q2 apparaissent (même à 0)
+  if (currentQuizFilter === 'all' || currentQuizFilter === 'quiz_2') {
+    QUIZ_2_ZONES.forEach(function(z) { if (counts[z] == null) counts[z] = 0; });
+  }
+
   var labels = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
   var total = allAnswers.length;
   var maxCount = labels.length > 0 ? counts[labels[0]] : 1;
+  if (maxCount === 0) maxCount = 1;
 
   var html = '<div class="zones-grid">';
   labels.forEach(function(label) {
