@@ -698,29 +698,43 @@ header.quiz-header,
 }
 
 /* LOADING PROFIL — Step 11 redesigned */
+@keyframes quiz2Spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes quiz2BarFill { from { width: 0%; } to { width: 100%; } }
+
 .profile-loading {
-  text-align: center;
-  padding: 60px 20px 40px;
+  text-align: center !important;
+  padding: 40px 20px 40px !important;
+  display: block !important;
 }
 .profile-loading-spinner {
-  width: 70px; height: 70px;
-  border: 3px solid #e0e5ea;
-  border-top-color: #0c233f;
-  border-radius: 50%;
-  margin: 0 auto 24px;
-  animation: spin 1s linear infinite;
+  width: 72px !important; height: 72px !important;
+  border: 4px solid #dde1e6 !important;
+  border-top-color: #0c233f !important;
+  border-radius: 50% !important;
+  margin: 0 auto 28px !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  animation: quiz2Spin 0.9s linear infinite !important;
+  -webkit-animation: quiz2Spin 0.9s linear infinite !important;
 }
 .profile-loading-title {
-  font-size: 22px; font-weight: 800; color: #1a1a1a;
-  margin-bottom: 18px;
+  font-size: 22px !important; font-weight: 800 !important; color: #1a1a1a !important;
+  margin: 0 auto 18px !important; max-width: 340px; line-height: 1.3 !important;
 }
 .profile-loading-bar-bg {
-  width: 100%; max-width: 420px; margin: 0 auto 24px;
-  height: 6px; background: #dde1e6; border-radius: 3px; overflow: hidden;
+  width: 100% !important; max-width: 420px !important; margin: 0 auto 28px !important;
+  height: 6px !important; background: #dde1e6 !important; border-radius: 3px !important;
+  overflow: hidden !important; position: relative !important;
 }
 .profile-loading-bar-fg {
-  height: 100%; width: 0%; background: #0c233f;
-  border-radius: 3px; transition: width 0.3s ease;
+  height: 100% !important; width: 0%;
+  background: #0c233f !important;
+  border-radius: 3px !important;
+  display: block !important;
+}
+.profile-loading-bar-fg.animating {
+  animation: quiz2BarFill 3.5s linear forwards !important;
+  -webkit-animation: quiz2BarFill 3.5s linear forwards !important;
 }
 .profile-loading-steps {
   max-width: 420px; margin: 0 auto; text-align: left;
@@ -1412,7 +1426,7 @@ function toggleSeverity(el,s,v){if(!multiSelections[s])multiSelections[s]=[];el.
 function startLoading(s,d,nx){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){goToStep(nx);},800);},d);}
 function startLoadingRedirect(s,d){var sp=document.getElementById('spinner'+s),ck=document.getElementById('check'+s);if(sp)sp.style.display='block';if(ck){ck.classList.remove('visible');ck.style.display='none';}setTimeout(function(){if(sp)sp.style.display='none';if(ck)ck.style.display='flex';setTimeout(function(){if(ck)ck.classList.add('visible');},50);setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},800);},d);}
 function startCircleRedirect(){var circle=document.getElementById('circleProgress'),txt=document.getElementById('circleText');if(!circle||!txt)return;var total=515,dur=3500,start=null;function ease(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}function frame(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1);var e=ease(p);var pct=Math.round(e*100);circle.style.strokeDashoffset=total-(total*e);txt.textContent=pct+'%';if(p<1)requestAnimationFrame(frame);else setTimeout(function(){window.location.href='https://juliecosmetique.fr/products/serum-liftant-julie';},5000);}requestAnimationFrame(frame);}
-function startProfileLoading(){var bar=document.getElementById('profileLoadingBar');var s1=document.getElementById('pls1'),s2=document.getElementById('pls2'),s3=document.getElementById('pls3');if(bar){setTimeout(function(){bar.style.width='100%';bar.style.transition='width 3.5s ease';},50);}if(s1)setTimeout(function(){s1.classList.add('visible');},400);if(s2)setTimeout(function(){s2.classList.add('visible');},1500);if(s3)setTimeout(function(){s3.classList.add('visible');},2700);setTimeout(function(){goToStep(12);},3500);}
+function startProfileLoading(){var bar=document.getElementById('profileLoadingBar');var s1=document.getElementById('pls1'),s2=document.getElementById('pls2'),s3=document.getElementById('pls3');if(bar){bar.classList.remove('animating');void bar.offsetWidth;bar.classList.add('animating');}if(s1){s1.classList.remove('visible');setTimeout(function(){s1.classList.add('visible');},300);}if(s2){s2.classList.remove('visible');setTimeout(function(){s2.classList.add('visible');},1400);}if(s3){s3.classList.remove('visible');setTimeout(function(){s3.classList.add('visible');},2600);}setTimeout(function(){goToStep(12);},3500);}
 var lvlTarget=82,lvlDuration=3500,lvlStarted=false;
 function lvlEase(t){return 1-Math.pow(1-t,3);}
 function lvlAnimate(){if(lvlStarted)return;var dot=document.getElementById('lvlIndicator'),tip=document.getElementById('lvlTooltip');if(!dot||!tip)return;lvlStarted=true;tip.style.opacity='1';var st=null;function frame(ts){if(!st)st=ts;var p=Math.min((ts-st)/lvlDuration,1),e=lvlEase(p),v=e*lvlTarget;dot.style.left=v+'%';tip.style.left=v+'%';if(p<1)requestAnimationFrame(frame);}requestAnimationFrame(frame);}

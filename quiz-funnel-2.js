@@ -161,15 +161,15 @@ function startProfileLoading() {
   var s1 = document.getElementById('pls1');
   var s2 = document.getElementById('pls2');
   var s3 = document.getElementById('pls3');
+  // Reset + force reflow pour restart l'animation CSS
   if (bar) {
-    setTimeout(function() {
-      bar.style.transition = 'width 3.5s ease';
-      bar.style.width = '100%';
-    }, 50);
+    bar.classList.remove('animating');
+    void bar.offsetWidth;
+    bar.classList.add('animating');
   }
-  if (s1) setTimeout(function() { s1.classList.add('visible'); }, 400);
-  if (s2) setTimeout(function() { s2.classList.add('visible'); }, 1500);
-  if (s3) setTimeout(function() { s3.classList.add('visible'); }, 2700);
+  if (s1) { s1.classList.remove('visible'); setTimeout(function() { s1.classList.add('visible'); }, 300); }
+  if (s2) { s2.classList.remove('visible'); setTimeout(function() { s2.classList.add('visible'); }, 1400); }
+  if (s3) { s3.classList.remove('visible'); setTimeout(function() { s3.classList.add('visible'); }, 2600); }
   setTimeout(function() { goToStep(12); }, 3500);
 }
 
