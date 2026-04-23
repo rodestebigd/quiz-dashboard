@@ -453,13 +453,13 @@ header.quiz-header,
 .zone-option {
   position: relative; background: #fff; border: 2px solid #dde1e6; border-radius: 14px;
   cursor: pointer; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
-  text-align: center; padding: 14px 8px 12px; user-select: none;
+  user-select: none; overflow: hidden;
+  display: flex; flex-direction: column;
 }
 .zone-option:hover { border-color: #b0b5bd; transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.zone-option.selected { border-color: #0c233f; background: #f0f3f7; }
-.zone-option.selected .zone-label { background: #0c233f; color: #fff; }
+.zone-option.selected { border-color: #0c233f; }
 .zone-option .zone-check {
-  position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: #dde1e6;
+  position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; background: rgba(221,225,230,0.85);
   border-radius: 6px; display: flex; align-items: center; justify-content: center; z-index: 2;
   transition: all 0.2s ease;
 }
@@ -467,18 +467,37 @@ header.quiz-header,
 .zone-option .zone-check svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 3; fill: none; opacity: 0; transition: opacity 0.2s; }
 .zone-option.selected .zone-check svg { opacity: 1; }
 .zone-option .zone-circle {
-  width: 90px; height: 90px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px;
-  background: #f5f0eb; display: flex; align-items: center; justify-content: center;
+  width: 100px; height: 100px; border-radius: 50%; overflow: hidden;
+  margin: 18px auto 12px; background: #f5f0eb;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .zone-option .zone-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.zone-label { font-size: 13px; font-weight: 700; color: #1a1a1a; line-height: 1.3; margin-bottom: 2px;
-  padding: 4px 2px; border-radius: 6px; transition: all 0.2s; }
-.zone-desc { font-size: 11px; color: #888; line-height: 1.3; }
+.zone-body {
+  padding: 12px 14px 14px;
+  margin-top: auto;
+  background: #fff;
+  transition: background 0.2s ease;
+  text-align: left;
+  min-height: 68px;
+}
+.zone-option.selected .zone-body { background: #0c233f; }
+.zone-label {
+  font-size: 14px; font-weight: 700; color: #1a1a1a; line-height: 1.3;
+  margin-bottom: 3px; transition: color 0.2s ease;
+}
+.zone-desc {
+  font-size: 12px; color: #555; line-height: 1.3; font-weight: 500;
+  transition: color 0.2s ease;
+}
+.zone-option.selected .zone-label { color: #fff; }
+.zone-option.selected .zone-desc { color: rgba(255,255,255,0.85); }
 
 @media (max-width: 767px) {
   .zone-grid-8 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .zone-option .zone-circle { width: 70px; height: 70px; }
-  .zone-label { font-size: 12px; }
+  .zone-option .zone-circle { width: 80px; height: 80px; margin: 14px auto 10px; }
+  .zone-label { font-size: 13px; }
+  .zone-desc { font-size: 11px; }
+  .zone-body { padding: 10px 12px 12px; min-height: 58px; }
 }
 
 /* SEVERITY GRID — 4 photo cards */
@@ -784,50 +803,66 @@ header.quiz-header,
         <div class="zone-option" onclick="toggleZone(this,3,'Rides de la bouche')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
           <div class="zone-circle"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Mouth_Wrinkles.avif?v=1776943891" alt="Rides de la bouche"></div>
-          <div class="zone-label">Rides de la bouche</div>
-          <div class="zone-desc">tous types</div>
+          <div class="zone-body">
+            <div class="zone-label">Rides de la bouche</div>
+            <div class="zone-desc">tous types</div>
+          </div>
         </div>
         <div class="zone-option" onclick="toggleZone(this,3,'Rides du fumeur')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
           <div class="zone-circle"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Smokers_Lip_Lines.avif?v=1776943891" alt="Rides du fumeur"></div>
-          <div class="zone-label">Rides du fumeur</div>
-          <div class="zone-desc">lignes verticales au-dessus de la lèvre</div>
+          <div class="zone-body">
+            <div class="zone-label">Rides du fumeur</div>
+            <div class="zone-desc">lignes verticales au-dessus de la lèvre</div>
+          </div>
         </div>
         <div class="zone-option" onclick="toggleZone(this,3,'Sillons nasogéniens')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
           <div class="zone-circle"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Nasolabial_Fold.avif?v=1776943891" alt="Sillons nasogéniens"></div>
-          <div class="zone-label">Sillons nasogéniens</div>
-          <div class="zone-desc">du nez aux coins de la bouche</div>
+          <div class="zone-body">
+            <div class="zone-label">Sillons nasogéniens</div>
+            <div class="zone-desc">du nez aux coins de la bouche</div>
+          </div>
         </div>
         <div class="zone-option" onclick="toggleZone(this,3,'Rides de la marionnette')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
           <div class="zone-circle"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Marionette_Lines.avif?v=1776943891" alt="Rides de la marionnette"></div>
-          <div class="zone-label">Rides de la marionnette</div>
-          <div class="zone-desc">des coins de la bouche au menton</div>
+          <div class="zone-body">
+            <div class="zone-label">Rides de la marionnette</div>
+            <div class="zone-desc">des coins de la bouche au menton</div>
+          </div>
         </div>
         <div class="zone-option" onclick="toggleZone(this,3,'Cou relâché')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
           <div class="zone-circle"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Turkey_Neck.avif?v=1776943891" alt="Cou relâché"></div>
-          <div class="zone-label">Cou relâché</div>
-          <div class="zone-desc"></div>
+          <div class="zone-body">
+            <div class="zone-label">Cou relâché</div>
+            <div class="zone-desc">peau distendue sous le menton</div>
+          </div>
         </div>
         <div class="zone-option" onclick="toggleZone(this,3,'Bajoues')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
           <div class="zone-circle"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Sagging_Jowls.avif?v=1776943891" alt="Bajoues"></div>
-          <div class="zone-label">Bajoues</div>
-          <div class="zone-desc">peau relâchée le long de la mâchoire</div>
+          <div class="zone-body">
+            <div class="zone-label">Bajoues</div>
+            <div class="zone-desc">peau relâchée le long de la mâchoire</div>
+          </div>
         </div>
         <div class="zone-option" onclick="toggleZone(this,3,'Rides des yeux')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
           <div class="zone-circle"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Eye_Wrinkles.avif?v=1776943891" alt="Rides des yeux"></div>
-          <div class="zone-label">Rides des yeux</div>
-          <div class="zone-desc">pattes d'oie / poches</div>
+          <div class="zone-body">
+            <div class="zone-label">Rides des yeux</div>
+            <div class="zone-desc">pattes d'oie / poches sous les yeux</div>
+          </div>
         </div>
         <div class="zone-option" onclick="toggleZone(this,3,'Rides du front')">
           <div class="zone-check"><svg viewBox="0 0 24 24"><polyline points="6 12 10 16 18 8"></polyline></svg></div>
           <div class="zone-circle"><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Forehead_Wrinkles.avif?v=1776943891" alt="Rides du front"></div>
-          <div class="zone-label">Rides du front</div>
-          <div class="zone-desc">horizontales et verticales</div>
+          <div class="zone-body">
+            <div class="zone-label">Rides du front</div>
+            <div class="zone-desc">rides horizontales et verticales</div>
+          </div>
         </div>
       </div>
       <div class="sticky-mobile-btn"><button class="btn-continue" onclick="goToStep(4)">Continuer <span class="arrow">→</span></button></div>
