@@ -1984,6 +1984,23 @@ var QUIZ_2_ZONES = [
   'Rides du front'
 ];
 
+/* ---- Sévérité des rides (fusion Q1 step 3 + Q2 step 4) ---- */
+var SEVERITY_IMAGES = {
+  'Rides légères': 'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Mild_Wrinkles_Minimal_Sagging.avif?v=1776948509',
+  'Rides modérées': 'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Moderate_Wrinkles_Some_Sagging.avif?v=1776948508',
+  'Rides profondes': 'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Deep_Wrinkles_Pronounced_Sagging.avif?v=1776948508',
+  'Rides très profondes': 'https://cdn.shopify.com/s/files/1/0985/2964/0797/files/Very_Deep_Wrinkles_Severe_Sagging.avif?v=1776948508'
+};
+/* Q1 → Q2 : corrélation sémantique entre les 2 échelles */
+var SEVERITY_ALIASES = {
+  'À peine visibles': 'Rides légères',
+  'Bien visibles': 'Rides modérées'
+};
+function normalizeSeverity(label) {
+  return SEVERITY_ALIASES[label] || label;
+}
+var SEVERITY_ORDER = ['Rides légères', 'Rides modérées', 'Rides profondes', 'Rides très profondes'];
+
 function renderCarnation(card, stepAnswers) {
   var allAnswers = [];
   stepAnswers.forEach(function(r) { if (r.answer.trim()) allAnswers.push(r.answer.trim()); });
@@ -2006,6 +2023,47 @@ function renderCarnation(card, stepAnswers) {
       + '<div class="carnation-bar-bg"><div class="carnation-bar-fg" style="width:' + barW + '%;background:' + color + '"></div></div>'
       + '<div class="carnation-pct">' + pct + '%</div>'
       + '</div>';
+  });
+  html += '</div>';
+  card.insertAdjacentHTML('beforeend', html);
+}
+
+function renderSeverity(card, stepAnswers) {
+  var allAnswers = [];
+  stepAnswers.forEach(function(r) {
+    var parts = r.answer.split(', ');
+    parts.forEach(function(p) {
+      var t = p.trim();
+      if (t) allAnswers.push(normalizeSeverity(t));
+    });
+  });
+  var counts = {};
+  allAnswers.forEach(function(a) { counts[a] = (counts[a] || 0) + 1; });
+
+  // En mode 'all' ou 'quiz_2' : garantir que les 4 niveaux de sévérité Q2 apparaissent
+  if (currentQuizFilter === 'all' || currentQuizFilter === 'quiz_2') {
+    SEVERITY_ORDER.forEach(function(s) { if (counts[s] == null) counts[s] = 0; });
+  }
+
+  var labels = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
+  var total = allAnswers.length;
+  var maxCount = labels.length > 0 ? counts[labels[0]] : 1;
+  if (maxCount === 0) maxCount = 1;
+
+  var html = '<div class="zones-grid">';
+  labels.forEach(function(label) {
+    var c = counts[label];
+    var pct = total > 0 ? Math.round(c / total * 100) : 0;
+    var barW = Math.round(c / maxCount * 100);
+    var img = SEVERITY_IMAGES[label] || '';
+    var imgTag = img ? '<img class="zone-img" src="' + img + '" alt="' + label + '" loading="lazy">' : '';
+    html += '<div class="zone-card">'
+      + imgTag
+      + '<div class="zone-body">'
+      + '<div class="zone-name">' + label + '</div>'
+      + '<div class="zone-stats"><strong>' + c + '</strong> sélection' + (c > 1 ? 's' : '') + ' — ' + pct + '%</div>'
+      + '<div class="zone-bar-bg"><div class="zone-bar-fg" style="width:' + barW + '%"></div></div>'
+      + '</div></div>';
   });
   html += '</div>';
   card.insertAdjacentHTML('beforeend', html);
@@ -2093,7 +2151,7 @@ var CHART_TYPE_BY_QUESTION = {
   'Miroir rajeuni': 'emoji',
   'Événement important': 'emoji',
   'Préoccupation peau': 'bar',
-  'Profondeur / Sévérité des rides': 'bar',
+  'Profondeur / Sévérité des rides': 'severity',
   'Solutions déjà essayées': 'bar',
   'Zones à traiter': 'zones',
   'Expérience produits': 'bar',
@@ -2178,6 +2236,7 @@ function renderCharts(sessions) {
 
     /* ---- ZONES RIDES ---- */
     if (chartKind === 'zones') { renderZones(card, stepAnswers); return; }
+    if (chartKind === 'severity') { renderSeverity(card, stepAnswers); return; }
 
     // Variables utilisées par les autres types — keep hardcoded step for legacy chart id
     var step = q.step;
